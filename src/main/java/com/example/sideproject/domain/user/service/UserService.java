@@ -13,7 +13,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
