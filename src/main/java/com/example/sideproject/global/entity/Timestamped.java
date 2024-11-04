@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.user.entity;
+package com.example.sideproject.global.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
