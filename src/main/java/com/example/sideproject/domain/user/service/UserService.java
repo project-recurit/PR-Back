@@ -6,6 +6,7 @@ import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,18 +42,31 @@ public class UserService {
                email,
                nickname,
                name,
-               headline,
                phone
        );
 
         return new SignUpResponseDto(user);
     }
 
+    @Transactional
+    public void withdrawUser(Long userId) {
+        User user = findUser(userId);
+        user.withDraw();
+        userRepository.save(user);
+    }
 
+    public void findUserDetail(Long userId) {
 
+    }
 
+    public void updateUserStack(Long userId) {
+        User validUser =  findUser(userId);
+        // 로직 구성
+    }
 
-
-
-
+    //유저 조회
+    private User findUser(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다."));
+    }
 }

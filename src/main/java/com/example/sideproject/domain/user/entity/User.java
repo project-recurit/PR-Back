@@ -41,15 +41,22 @@ public class User extends Timestamped {
 
     private String headline;
 
+    //kakaoOpenTalk
     private String phoneNumber;
 
     private LocalDateTime lastLoginTime;
 
     private UserRole userRole;
 
+    private UserStatus userStatus;
+
+    private String refreshToken;
+
+    private String statusUpdate;
+
 
     public User(String username, String password, String email, String nickname,
-               String name, String headline, String phoneNumber){
+               String name, String phoneNumber){
         this.username = username;
         this.password = password;
         this.email = email;
@@ -57,9 +64,25 @@ public class User extends Timestamped {
 //        this.profileUrl = profileUrl;
         this.name = name;
 //        this.userTechStack = userTechStack;
-        this.headline = headline;
         this.phoneNumber = phoneNumber;
         this.userRole = UserRole.USER;
+        this.userStatus = UserStatus.ACTIVE_USER;
+    }
+
+
+    public void withDraw() {
+        this.userStatus = UserStatus.INACTIVE_USER;
+        this.statusUpdate = this.getModifiedAt();
+        this.refreshToken = null;
+    }
+
+    public boolean logout() {
+        refreshToken = null;
+        return true;
+    }
+
+    public void saveRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
 
