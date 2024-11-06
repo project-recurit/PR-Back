@@ -1,9 +1,12 @@
 package com.example.sideproject.domain.user.dto;
 
+import com.example.sideproject.domain.user.entity.TechStack;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+
+import java.util.Set;
 
 @Getter
 public class SignUpRequestDto {
@@ -23,13 +26,9 @@ public class SignUpRequestDto {
 
     private String nickname;
 
-    private String name;
-
     private String phone;
 
-    private String headline;
-
-
+    private Set<TechStack> techStacks;
 
 
 

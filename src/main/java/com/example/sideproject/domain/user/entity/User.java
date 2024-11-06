@@ -17,8 +17,6 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private long id;
 
-    private String username;
-
     private String password;
 
     private String email;
@@ -26,8 +24,6 @@ public class User extends Timestamped {
     private String nickname;
 
     private String profileUrl;
-
-    private String name;
 
     @ElementCollection
     @CollectionTable(
@@ -39,9 +35,18 @@ public class User extends Timestamped {
     // 순서 보장이 필요X, 중복 허용X -> Set 사용(List랑 반대)
     private Set<TechStack> techStacks = new HashSet<>();
 
-    private String headline;
+    @ElementCollection
+    @CollectionTable(
+            name = "user_history",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_history")
+    private Set<String> userHistory = new HashSet<>();
 
-    //kakaoOpenTalk
+    /**
+     * 추후 연락할 수 있는 서비스에 사용, 카카오톡 링크 or Email에 따라서 다르게 할거임
+     */
     private String phoneNumber;
 
     private LocalDateTime lastLoginTime;
@@ -55,18 +60,22 @@ public class User extends Timestamped {
     private String statusUpdate;
 
 
-    public User(String username, String password, String email, String nickname,
-               String name, String phoneNumber){
-        this.username = username;
+    public void addTechStack(Set<TechStack> techStacks) {
+        this.techStacks.addAll(techStacks);
+    }
+
+
+    public User(String password, String email, String nickname, String phoneNumber, Set<TechStack> techStacks){
         this.password = password;
         this.email = email;
         this.nickname = nickname;
 //        this.profileUrl = profileUrl;
-        this.name = name;
-//        this.userTechStack = userTechStack;
         this.phoneNumber = phoneNumber;
         this.userRole = UserRole.USER;
         this.userStatus = UserStatus.ACTIVE_USER;
+        if(techStacks != null){
+            this.techStacks = techStacks;
+        }
     }
 
 

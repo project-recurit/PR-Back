@@ -2,11 +2,14 @@ package com.example.sideproject.domain.user.service;
 
 import com.example.sideproject.domain.user.dto.SignUpRequestDto;
 import com.example.sideproject.domain.user.dto.SignUpResponseDto;
+import com.example.sideproject.domain.user.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +24,7 @@ public class UserService {
         String nickname = requestDto.getNickname();
         String checkPassword = requestDto.getCheckPassword();
         String email = requestDto.getEmail();
-        String name = requestDto.getName();
         String phone = requestDto.getPhone();
-        String headline = requestDto.getHeadline();
 
         if(userRepository.existsByUsername(username)){
             throw new RuntimeException("이미 있는 ID입니다.");
@@ -37,12 +38,11 @@ public class UserService {
         }
 
        User user = new User(
-               username,
                password,
                email,
                nickname,
-               name,
-               phone
+               phone,
+               requestDto.getTechStacks()
        );
 
         return new SignUpResponseDto(user);
@@ -59,9 +59,11 @@ public class UserService {
 
     }
 
-    public void updateUserStack(Long userId) {
-        User validUser =  findUser(userId);
-        // 로직 구성
+    @Transactional
+    public void updateUserStack(Long userId, Set<TechStack> newTechStacks) {
+        User user =  findUser(userId);
+        user.addTechStack(newTechStacks);
+        userRepository.save(user);
     }
 
     //유저 조회
