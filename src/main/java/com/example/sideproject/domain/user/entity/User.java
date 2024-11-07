@@ -2,6 +2,7 @@ package com.example.sideproject.domain.user.entity;
 
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,8 @@ public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private long id;
+
+    private String username;
 
     private String password;
 
@@ -47,7 +50,7 @@ public class User extends Timestamped {
     /**
      * 추후 연락할 수 있는 서비스에 사용, 카카오톡 링크 or Email에 따라서 다르게 할거임
      */
-    private String phoneNumber;
+    private String contact;
 
     private LocalDateTime lastLoginTime;
 
@@ -65,12 +68,15 @@ public class User extends Timestamped {
     }
 
 
-    public User(String password, String email, String nickname, String phoneNumber, Set<TechStack> techStacks){
+    @Builder
+    public User(String username ,String password, String email, String nickname, String contact,
+                Set<TechStack> techStacks){
+        this.username = username;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
 //        this.profileUrl = profileUrl;
-        this.phoneNumber = phoneNumber;
+        this.contact = contact;
         this.userRole = UserRole.USER;
         this.userStatus = UserStatus.ACTIVE_USER;
         if(techStacks != null){

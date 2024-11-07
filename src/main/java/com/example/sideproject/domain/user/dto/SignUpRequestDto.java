@@ -4,11 +4,14 @@ import com.example.sideproject.domain.user.entity.TechStack;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Getter
+@NoArgsConstructor  // 기본 생성자
 public class SignUpRequestDto {
 
     @Size(min = 4, max = 20)
@@ -26,10 +29,20 @@ public class SignUpRequestDto {
 
     private String nickname;
 
-    private String phone;
+    private String contact;
 
     private Set<TechStack> techStacks;
 
-
-
+    @Builder
+    public SignUpRequestDto(String username, String password, String checkPassword,
+                            String email, String nickname, String contact,
+                            Set<TechStack> techStacks) {
+        this.username = username;
+        this.password = password;
+        this.checkPassword = checkPassword;
+        this.email = email;
+        this.nickname = nickname;
+        this.contact = contact;
+        this.techStacks = techStacks;
+    }
 }

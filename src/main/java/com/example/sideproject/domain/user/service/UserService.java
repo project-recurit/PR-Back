@@ -1,5 +1,7 @@
 package com.example.sideproject.domain.user.service;
 
+import com.example.sideproject.domain.user.dto.ProfileRequestDto;
+import com.example.sideproject.domain.user.dto.ProfileResponseDto;
 import com.example.sideproject.domain.user.dto.SignUpRequestDto;
 import com.example.sideproject.domain.user.dto.SignUpResponseDto;
 import com.example.sideproject.domain.user.entity.TechStack;
@@ -18,13 +20,18 @@ public class UserService {
     private final UserRepository userRepository;
 
 
+    /**
+     * 회원가입
+     * @param requestDto
+     * @return SingResponseDto
+     */
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
         String nickname = requestDto.getNickname();
         String checkPassword = requestDto.getCheckPassword();
         String email = requestDto.getEmail();
-        String phone = requestDto.getPhone();
+        String contact = requestDto.getContact();
 
         if(userRepository.existsByUsername(username)){
             throw new RuntimeException("이미 있는 ID입니다.");
@@ -38,16 +45,21 @@ public class UserService {
         }
 
        User user = new User(
+               username,
                password,
                email,
                nickname,
-               phone,
+               contact,
                requestDto.getTechStacks()
        );
 
         return new SignUpResponseDto(user);
     }
 
+    /**
+     * 유저-회원탈퇴(소프트 리셋)
+     * @param userId
+     */
     @Transactional
     public void withdrawUser(Long userId) {
         User user = findUser(userId);
@@ -55,20 +67,43 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void findUserDetail(Long userId) {
-
+    /**
+     * 유저 프로필 상세 조회-> 마이페이지
+     * @param userId
+     * @return ProfileResponseDto
+     */
+    public ProfileResponseDto findUserDetail(Long userId) {
+        return new ProfileResponseDto(findUser(userId));
     }
 
+    /**
+     * 유저 상세정보 - 기술 스택 추가
+     * @param userId
+     * @param newTechStacks
+     */
     @Transactional
     public void updateUserStack(Long userId, Set<TechStack> newTechStacks) {
-        User user =  findUser(userId);
+        User user = findUser(userId);
         user.addTechStack(newTechStacks);
         userRepository.save(user);
     }
 
-    //유저 조회
+    /**
+     * 유저 조회
+     * @param userId
+     * @return User
+     */
     private User findUser(Long userId){
         return userRepository.findById(userId)
                 .orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다."));
+    }
+
+    /**
+     * 유저 정보 수정
+     * @param userId
+     * @param requestDto
+     */
+    public void updateUserDetails(Long userId, ProfileRequestDto requestDto) {
+
     }
 }
