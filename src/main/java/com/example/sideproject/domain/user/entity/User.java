@@ -5,10 +5,13 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,12 +21,14 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private long id;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
 
     private String email;
 
+    @Column(unique = true)
     private String nickname;
 
     private String profileUrl;
@@ -58,9 +63,13 @@ public class User extends Timestamped {
 
     private UserStatus userStatus;
 
+
     private String refreshToken;
 
     private String statusUpdate;
+
+    @Column(unique = true, nullable = false)
+    private UUID uuid;
 
 
     public void addTechStack(Set<TechStack> techStacks) {
@@ -82,6 +91,8 @@ public class User extends Timestamped {
         if(techStacks != null){
             this.techStacks = techStacks;
         }
+        this.lastLoginTime = LocalDateTime.now();
+        this.uuid = generateType4UUID();
     }
 
 
@@ -100,5 +111,9 @@ public class User extends Timestamped {
         this.refreshToken = refreshToken;
     }
 
+    private UUID generateType4UUID(){
+        UUID userUuid = UUID.randomUUID();
+        return userUuid;
+    }
 
 }

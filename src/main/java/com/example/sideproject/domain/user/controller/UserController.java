@@ -1,6 +1,7 @@
 package com.example.sideproject.domain.user.controller;
 
 import com.example.sideproject.domain.user.dto.ProfileRequestDto;
+import com.example.sideproject.domain.user.dto.ProfileResponseDto;
 import com.example.sideproject.domain.user.dto.SignUpRequestDto;
 import com.example.sideproject.domain.user.dto.UpdateTechStackRequest;
 import com.example.sideproject.domain.user.entity.User;
@@ -20,7 +21,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody SignUpRequestDto requestDto) {
         userService.register(requestDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(requestDto.getUsername());
     }
 
     //Todo 추후 비밀번호 검증 추가
@@ -31,14 +32,14 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity findUser(@PathVariable Long userId) {
-        userService.findUserDetail(userId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ProfileResponseDto> findUser(@PathVariable Long userId) {
+        ProfileResponseDto profileResponse = userService.findUserDetail(userId);
+        return ResponseEntity.ok(profileResponse);
     }
 
-    @PatchMapping("/{userId}/tech-stack")
-    public ResponseEntity updateUserStack(@PathVariable Long userId, @RequestBody UpdateTechStackRequest requestDto){
-        userService.updateUserStack(userId, requestDto.getTechStacks());
+    @PatchMapping("/my-page/tech-stack")
+    public ResponseEntity updateUserStack(@PathVariable String username, @RequestBody UpdateTechStackRequest requestDto){
+        userService.updateUserStack(username, requestDto.getTechStacks());
         return ResponseEntity.ok().build();
     }
 

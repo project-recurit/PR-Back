@@ -25,6 +25,7 @@ public class UserService {
      * @param requestDto
      * @return SingResponseDto
      */
+    @Transactional
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
@@ -52,6 +53,7 @@ public class UserService {
                contact,
                requestDto.getTechStacks()
        );
+       userRepository.save(user);
 
         return new SignUpResponseDto(user);
     }
@@ -62,7 +64,7 @@ public class UserService {
      */
     @Transactional
     public void withdrawUser(Long userId) {
-        User user = findUser(userId);
+        User user = findByid(userId);
         user.withDraw();
         userRepository.save(user);
     }
@@ -73,28 +75,28 @@ public class UserService {
      * @return ProfileResponseDto
      */
     public ProfileResponseDto findUserDetail(Long userId) {
-        return new ProfileResponseDto(findUser(userId));
+        return new ProfileResponseDto(findByid(userId));
     }
 
     /**
      * 유저 상세정보 - 기술 스택 추가
-     * @param userId
+     * @param username
      * @param newTechStacks
      */
     @Transactional
-    public void updateUserStack(Long userId, Set<TechStack> newTechStacks) {
-        User user = findUser(userId);
+    public void updateUserStack(String username,Set<TechStack> newTechStacks) {
+        User user = findUser(username);
         user.addTechStack(newTechStacks);
         userRepository.save(user);
     }
 
     /**
      * 유저 조회
-     * @param userId
+     * @param username
      * @return User
      */
-    private User findUser(Long userId){
-        return userRepository.findById(userId)
+    private User findUser(String username){
+        return userRepository.findByUsername(username)
                 .orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
 
@@ -106,4 +108,10 @@ public class UserService {
     public void updateUserDetails(Long userId, ProfileRequestDto requestDto) {
 
     }
+    
+    private User findByid(Long id){
+        return userRepository.findById(id).orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다."));
+    }
+
+
 }

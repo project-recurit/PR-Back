@@ -12,6 +12,7 @@ public class ProfileResponseDto {
     private String email;
     private String contact;
     private String profileUrl;
+    private User user;
 
     @Builder
     public ProfileResponseDto(User user) {
@@ -19,5 +20,6 @@ public class ProfileResponseDto {
         this.email = user.getEmail();
         this.contact = user.getContact();
         this.profileUrl = user.getProfileUrl();
+        this.user = user;
     }
 }
