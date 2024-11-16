@@ -2,12 +2,16 @@ package com.example.sideproject.domain.user.entity;
 
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -17,17 +21,17 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private long id;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
 
     private String email;
 
+    @Column(unique = true)
     private String nickname;
 
     private String profileUrl;
-
-    private String name;
 
     @ElementCollection
     @CollectionTable(
@@ -39,28 +43,77 @@ public class User extends Timestamped {
     // 순서 보장이 필요X, 중복 허용X -> Set 사용(List랑 반대)
     private Set<TechStack> techStacks = new HashSet<>();
 
-    private String headline;
+    @ElementCollection
+    @CollectionTable(
+            name = "user_history",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_history")
+    private Set<String> userHistory = new HashSet<>();
 
-    private String phoneNumber;
+    /**
+     * 추후 연락할 수 있는 서비스에 사용, 카카오톡 링크 or Email에 따라서 다르게 할거임
+     */
+    private String contact;
 
     private LocalDateTime lastLoginTime;
 
     private UserRole userRole;
 
+    private UserStatus userStatus;
 
-    public User(String username, String password, String email, String nickname,
-               String name, String headline, String phoneNumber){
+
+    private String refreshToken;
+
+    private String statusUpdate;
+
+    @Column(unique = true, nullable = false)
+    private UUID uuid;
+
+
+    public void addTechStack(Set<TechStack> techStacks) {
+        this.techStacks.addAll(techStacks);
+    }
+
+
+    @Builder
+    public User(String username ,String password, String email, String nickname, String contact,
+                Set<TechStack> techStacks){
         this.username = username;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
 //        this.profileUrl = profileUrl;
-        this.name = name;
-//        this.userTechStack = userTechStack;
-        this.headline = headline;
-        this.phoneNumber = phoneNumber;
+        this.contact = contact;
         this.userRole = UserRole.USER;
+        this.userStatus = UserStatus.ACTIVE_USER;
+        if(techStacks != null){
+            this.techStacks = techStacks;
+        }
+        this.lastLoginTime = LocalDateTime.now();
+        this.uuid = generateType4UUID();
     }
 
+
+    public void withDraw() {
+        this.userStatus = UserStatus.INACTIVE_USER;
+        this.statusUpdate = this.getModifiedAt();
+        this.refreshToken = null;
+    }
+
+    public boolean logout() {
+        refreshToken = null;
+        return true;
+    }
+
+    public void saveRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    private UUID generateType4UUID(){
+        UUID userUuid = UUID.randomUUID();
+        return userUuid;
+    }
 
 }
