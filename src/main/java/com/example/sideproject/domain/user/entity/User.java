@@ -7,8 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -71,6 +73,10 @@ public class User extends Timestamped {
     @Column(unique = true, nullable = false)
     private UUID uuid;
 
+    public User(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+        super();
+    }
+
 
     public void addTechStack(Set<TechStack> techStacks) {
         this.techStacks.addAll(techStacks);
@@ -102,9 +108,25 @@ public class User extends Timestamped {
         this.refreshToken = null;
     }
 
-    public boolean logout() {
-        refreshToken = null;
-        return true;
+    // 로그인 정보 업데이트
+    public void updateLoginInfo(String refreshToken, LocalDateTime loginTime) {
+        this.refreshToken = refreshToken;
+        this.lastLoginTime = loginTime;
+    }
+
+    // 로그아웃 시 리프레시 토큰 제거
+    public void logout() {
+        this.refreshToken = null;
+    }
+
+    // 리프레시 토큰 업데이트
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    // 마지막 로그인 시간 업데이트
+    public void updateLastLoginTime(LocalDateTime loginTime) {
+        this.lastLoginTime = loginTime;
     }
 
     public void saveRefreshToken(String refreshToken) {
@@ -115,5 +137,23 @@ public class User extends Timestamped {
         UUID userUuid = UUID.randomUUID();
         return userUuid;
     }
+
+    public void setLogin(){
+        this.lastLoginTime = LocalDateTime.now();
+    }
+
+    public boolean isActive() {
+        return this.userStatus == UserStatus.ACTIVE_USER;
+    }
+
+    public void updateTechStacks(Set<TechStack> newTechStacks) {
+        this.techStacks.clear();
+        this.techStacks.addAll(newTechStacks);
+    }
+
+    public void updateProfile(String nickname) {
+        this.nickname = nickname;
+    }
+
 
 }

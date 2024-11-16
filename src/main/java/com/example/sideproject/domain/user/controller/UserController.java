@@ -4,11 +4,17 @@ import com.example.sideproject.domain.user.dto.ProfileRequestDto;
 import com.example.sideproject.domain.user.dto.ProfileResponseDto;
 import com.example.sideproject.domain.user.dto.SignUpRequestDto;
 import com.example.sideproject.domain.user.dto.UpdateTechStackRequest;
-import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.service.UserService;
+import com.example.sideproject.global.dto.ResponseDataDto;
+import com.example.sideproject.global.dto.ResponseMessageDto;
+import com.example.sideproject.global.security.UserDetailsImpl;
+import com.example.sideproject.global.enums.ErrorType;
+import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.example.sideproject.global.enums.ResponseStatus;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,37 +23,46 @@ public class UserController {
 
     private final UserService userService;
 
-
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody SignUpRequestDto requestDto) {
+    public ResponseEntity<ResponseDataDto<String>> register(@RequestBody SignUpRequestDto requestDto) {
         userService.register(requestDto);
-        return ResponseEntity.ok(requestDto.getUsername());
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SIGNUP_SUCCESS, requestDto.getUsername()));
     }
 
-    //Todo 추후 비밀번호 검증 추가
-    @PutMapping("/{userId}/withdraw")
-    public ResponseEntity withdrawUser(@PathVariable Long userId) {
-        userService.withdrawUser(userId);
-        return ResponseEntity.ok().build();
+    @PutMapping("/withdraw")
+    public ResponseEntity<ResponseMessageDto> withdrawUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        validateUser(userDetails);
+        userService.withdrawUser(userDetails.getUser().getId());
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.WITHDRAW_SUCCESS));
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ProfileResponseDto> findUser(@PathVariable Long userId) {
+    public ResponseEntity<ResponseDataDto<ProfileResponseDto>> findUser(@PathVariable Long userId) {
         ProfileResponseDto profileResponse = userService.findUserDetail(userId);
-        return ResponseEntity.ok(profileResponse);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.GET_USER_SUCCESS, profileResponse));
     }
 
     @PatchMapping("/my-page/tech-stack")
-    public ResponseEntity updateUserStack(@PathVariable String username, @RequestBody UpdateTechStackRequest requestDto){
-        userService.updateUserStack(username, requestDto.getTechStacks());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ResponseMessageDto> updateUserStack(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UpdateTechStackRequest requestDto) {
+        validateUser(userDetails);
+        userService.updateUserStack(userDetails.getUsername(), requestDto.getTechStacks());
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.PROFILE_UPDATE));
     }
 
-    @PatchMapping("/{userId}/user-details")
-    public ResponseEntity updateUser(@PathVariable Long userId, @RequestBody ProfileRequestDto requestDto){
-        userService.updateUserDetails(userId, requestDto);
-        return ResponseEntity.ok().build();
+    @PatchMapping("/user-details")
+    public ResponseEntity<ResponseMessageDto> updateUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody ProfileRequestDto requestDto) {
+        validateUser(userDetails);
+        userService.updateUserDetails(userDetails.getUser().getId(), requestDto);
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.PROFILE_UPDATE));
     }
 
-
+    private void validateUser(UserDetailsImpl userDetails) {
+        if (userDetails == null || userDetails.getUser() == null) {
+            throw new CustomException(ErrorType.UNAUTHORIZED);
+        }
+    }
 }
