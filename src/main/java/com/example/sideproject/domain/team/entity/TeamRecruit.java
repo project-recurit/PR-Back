@@ -18,7 +18,6 @@ import jakarta.persistence.CollectionTable;
 import com.example.sideproject.global.entity.Timestamped;
 
 
-
 @Entity 
 @Getter
 @NoArgsConstructor
@@ -51,6 +50,7 @@ public class TeamRecruit extends Timestamped{
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
 
     @Builder
     public TeamRecruit(String title, String content, Set<TechStack> techStacks, String expectedPeriod, String fileUrl, String contact, User user){

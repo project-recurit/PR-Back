@@ -31,8 +31,6 @@ public class SecurityConfig {
 
     private final JwtTokenHelper jwtTokenHelper;
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthenticationConfiguration authenticationConfiguration;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

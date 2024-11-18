@@ -115,8 +115,10 @@ public enum ResponseStatus {
     DELETE_TEAM_RECRUIT_SUCCESS(HttpStatus.OK, "팀 모집 게시글이 삭제되었습니다."),
     CREATE_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 생성되었습니다."),
     UPDATE_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 수정되었습니다."),
-    GET_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 조회되었습니다."),
-    DELETE_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 삭제되었습니다.");
+    GET_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 조회되었습니다."), 
+    DELETE_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 삭제되었습니다."),
+    GET_BOOKMARKS_SUCCESS(HttpStatus.OK, "북마크 조회에 성공하였습니다."),
+    BOOKMARK_SUCCESS(HttpStatus.OK, "북마크 상태가 변경되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

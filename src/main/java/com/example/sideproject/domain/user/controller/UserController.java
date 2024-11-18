@@ -8,8 +8,6 @@ import com.example.sideproject.domain.user.service.UserService;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.security.UserDetailsImpl;
-import com.example.sideproject.global.enums.ErrorType;
-import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,7 +29,6 @@ public class UserController {
 
     @PutMapping("/withdraw")
     public ResponseEntity<ResponseMessageDto> withdrawUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        validateUser(userDetails);
         userService.withdrawUser(userDetails.getUser().getId());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.WITHDRAW_SUCCESS));
     }
@@ -46,7 +43,6 @@ public class UserController {
     public ResponseEntity<ResponseMessageDto> updateUserStack(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody UpdateTechStackRequest requestDto) {
-        validateUser(userDetails);
         userService.updateUserStack(userDetails.getUsername(), requestDto.getTechStacks());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.PROFILE_UPDATE));
     }
@@ -55,14 +51,7 @@ public class UserController {
     public ResponseEntity<ResponseMessageDto> updateUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody ProfileRequestDto requestDto) {
-        validateUser(userDetails);
         userService.updateUserDetails(userDetails.getUser().getId(), requestDto);
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.PROFILE_UPDATE));
-    }
-
-    private void validateUser(UserDetailsImpl userDetails) {
-        if (userDetails == null || userDetails.getUser() == null) {
-            throw new CustomException(ErrorType.UNAUTHORIZED);
-        }
     }
 }

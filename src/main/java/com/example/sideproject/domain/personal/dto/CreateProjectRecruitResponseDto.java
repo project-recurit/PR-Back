@@ -9,13 +9,13 @@ import lombok.Getter;
 
 @Getter
 public class CreateProjectRecruitResponseDto {
-    private Long id;
-    private String title;
-    private String content;
-    private Set<TechStack> techStacks;
-    private String expectedPeriod;
-    private String fileUrl;
-    private String contact;
+    private final Long id;
+    private final String title;
+    private final String content;
+    private final Set<TechStack> techStacks;
+    private final String expectedPeriod;
+    private final String fileUrl;
+    private final String contact;
 
     public CreateProjectRecruitResponseDto(ProjectRecruit projectRecruit) {
         this.id = projectRecruit.getId();

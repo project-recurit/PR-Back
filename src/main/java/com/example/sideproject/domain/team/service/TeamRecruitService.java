@@ -2,6 +2,7 @@ package com.example.sideproject.domain.team.service;
 
 import com.example.sideproject.domain.team.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.team.dto.CreateTeamRecruitResponseDto;
+import com.example.sideproject.domain.team.dto.CreateTeamRecruitPageResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +14,13 @@ import com.example.sideproject.global.exception.CustomException;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.domain.team.repository.TeamRecruitRepository;
 import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 
 @Service
@@ -58,6 +65,32 @@ public class TeamRecruitService {
             requestDto.getExpectedPeriod(),
             requestDto.getFileUrl(),
             requestDto.getContact()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public CreateTeamRecruitPageResponseDto getTeamRecruits(String page) {                                                                                                                                                 
+        
+        // 기본값: 페이지 0, 사이즈 10
+        int pageNumber = (page != null) ? Integer.parseInt(page) : 0;
+        int pageSize = 10;
+        
+        // 기본 정렬: 생성일 기준 내림차순
+        Sort sorting = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sorting);
+        
+        Page<TeamRecruit> teamRecruitPage = teamRecruitRepository.findAll(pageable);
+        
+        List<CreateTeamRecruitResponseDto> teamRecruits = teamRecruitPage.getContent()
+                .stream()
+                .map(CreateTeamRecruitResponseDto::new)
+                .collect(Collectors.toList());
+        
+        return new CreateTeamRecruitPageResponseDto(
+                teamRecruits,
+                teamRecruitPage.getNumber(),
+                teamRecruitPage.getTotalPages(),
+                teamRecruitPage.getTotalElements()
         );
     }
 

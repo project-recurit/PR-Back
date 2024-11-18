@@ -2,18 +2,15 @@ package com.example.sideproject.domain.user.entity;
 
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
+import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 
 @Entity
 @Getter
@@ -80,9 +77,9 @@ public class User extends Timestamped {
         this.techStacks.addAll(techStacks);
     }
 
-    // // 북마크 관련 필드 추가
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private Set<Bookmark> bookmarks = new HashSet<>();
+    // 북마크 관련 필드 추가
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
     public User(String username, String password, String email, String nickname, 
                 String contact, Set<TechStack> techStacks) {
@@ -94,7 +91,7 @@ public class User extends Timestamped {
         this.userRole = UserRole.USER;
         this.userStatus = UserStatus.ACTIVE_USER;
         this.lastLoginTime = LocalDateTime.now();
-        this.uuid = UUID.randomUUID();
+        this.uuid = generateType4UUID();
         if(techStacks != null) {
             this.techStacks = techStacks;
         }
