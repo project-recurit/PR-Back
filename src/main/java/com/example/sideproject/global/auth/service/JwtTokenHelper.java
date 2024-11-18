@@ -135,8 +135,9 @@ public class JwtTokenHelper {
 
     public Claims getExpiredAccessToken(String accessToken) {
         try {
-            return Jwts.parser()
-                    .setSigningKey(secretKey)
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
                     .parseClaimsJws(accessToken.substring(7))
                     .getBody();
         } catch (ExpiredJwtException e) {

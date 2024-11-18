@@ -45,6 +45,7 @@ public class User extends Timestamped {
     // 순서 보장이 필요X, 중복 허용X -> Set 사용(List랑 반대)
     private Set<TechStack> techStacks = new HashSet<>();
 
+    // 경력
     @ElementCollection
     @CollectionTable(
             name = "user_history",
@@ -61,10 +62,11 @@ public class User extends Timestamped {
 
     private LocalDateTime lastLoginTime;
 
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
-
 
     private String refreshToken;
 
@@ -73,32 +75,31 @@ public class User extends Timestamped {
     @Column(unique = true, nullable = false)
     private UUID uuid;
 
-    public User(String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        super();
-    }
-
-
+    
     public void addTechStack(Set<TechStack> techStacks) {
         this.techStacks.addAll(techStacks);
     }
 
+    // // 북마크 관련 필드 추가
+    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private Set<Bookmark> bookmarks = new HashSet<>();
 
-    @Builder
-    public User(String username ,String password, String email, String nickname, String contact,
-                Set<TechStack> techStacks){
+    public User(String username, String password, String email, String nickname, 
+                String contact, Set<TechStack> techStacks) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
-//        this.profileUrl = profileUrl;
         this.contact = contact;
         this.userRole = UserRole.USER;
         this.userStatus = UserStatus.ACTIVE_USER;
-        if(techStacks != null){
+        this.lastLoginTime = LocalDateTime.now();
+        this.uuid = UUID.randomUUID();
+        if(techStacks != null) {
             this.techStacks = techStacks;
         }
-        this.lastLoginTime = LocalDateTime.now();
-        this.uuid = generateType4UUID();
+        this.userRole = UserRole.USER;
+        this.userStatus = UserStatus.ACTIVE_USER;
     }
 
 

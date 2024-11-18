@@ -3,10 +3,10 @@ POST {{host}}/api/v1/users/register
 Content-Type: application/json
 
 {
-  "username": "testuser",
+  "username": "test",
   "password": "password123",
   "checkPassword": "password123",
-  "nickname": "testnick",
+  "nickname": "test",
   "email": "test@example.com",
   "contact": "010-1234-5678",
   "techStacks": ["JAVA", "SPRING"]

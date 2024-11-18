@@ -106,7 +106,17 @@ public enum ResponseStatus {
     CHECK_PASSWORD(HttpStatus.OK, "비밀번호가 일치합니다."),
 
     SUCCESS_ACTIVATE_USER(HttpStatus.OK, "계정이 활성화되었습니다."),
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 되지 않았습니다." );
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 되지 않았습니다." ),
+    CREATE_TEAM_RECRUIT_SUCCESS(HttpStatus.OK, "팀 모집 게시글이 생성되었습니다."),
+
+    UPDATE_TEAM_RECRUIT_SUCCESS(HttpStatus.OK, "팀 모집 게시글이 수정되었습니다."),
+
+    GET_TEAM_RECRUIT_SUCCESS(HttpStatus.OK, "팀 모집 게시글이 조회되었습니다."),
+    DELETE_TEAM_RECRUIT_SUCCESS(HttpStatus.OK, "팀 모집 게시글이 삭제되었습니다."),
+    CREATE_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 생성되었습니다."),
+    UPDATE_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 수정되었습니다."),
+    GET_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 조회되었습니다."),
+    DELETE_PROJECT_RECRUIT_SUCCESS(HttpStatus.OK, "프로젝트 모집 게시글이 삭제되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

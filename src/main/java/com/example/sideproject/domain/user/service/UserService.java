@@ -27,14 +27,14 @@ public class UserService {
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
         validateSignUpRequest(requestDto);
 
-        User user = User.builder()
-                .username(requestDto.getUsername())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .email(requestDto.getEmail())
-                .nickname(requestDto.getNickname())
-                .contact(requestDto.getContact())
-                .techStacks(requestDto.getTechStacks())
-                .build();
+        User user = new User(
+            requestDto.getUsername(),
+            passwordEncoder.encode(requestDto.getPassword()),
+            requestDto.getEmail(),
+            requestDto.getNickname(),
+            requestDto.getContact(),
+            requestDto.getTechStacks()
+        );  
 
         return new SignUpResponseDto(userRepository.save(user));
     }

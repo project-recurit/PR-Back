@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final TokenService tokenService;
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDataDto<LoginResponseDto>> login(

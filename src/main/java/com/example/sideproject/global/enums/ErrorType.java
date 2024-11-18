@@ -121,7 +121,12 @@ public enum ErrorType implements ErrorCode {
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
     TOKEN_INVALIDATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 무효화 중 오류가 발생했습니다."),
     TOKEN_REFRESH_FAILED(HttpStatus.BAD_REQUEST, "토큰 갱신에 실패했습니다."),
-    LOGOUT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "로그아웃 처리 중 오류가 발생했습니다.")
+    LOGOUT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "로그아웃 처리 중 오류가 발생했습니다."), 
+    TEAM_RECRUIT_NOT_FOUND(HttpStatus.NOT_FOUND, "팀 모집글을 찾을 수 없습니다."), 
+    NOT_YOUR_POST(HttpStatus.NOT_ACCEPTABLE, "작성자가 아닙니다."),
+
+    PROJECT_RECRUIT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트 구인 게시글입니다."),
+
 
 
     ;
