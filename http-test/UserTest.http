@@ -1,0 +1,68 @@
+### 회원가입 요청
+POST {{host}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "password123",
+  "checkPassword": "password123",
+  "nickname": "test",
+  "email": "test@example.com",
+  "contact": "010-1234-5678",
+  "techStacks": ["JAVA", "SPRING"]
+}
+
+### 로그인 요청
+# @name login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "id": "testuser",
+  "password": "password123"
+}
+
+> {%
+    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set("refreshToken", response.body.data.refreshToken);
+%}
+
+### 유저 조회 요청
+GET {{host}}/api/v1/users/3
+Content-Type: application/json
+
+### 회원 탈퇴 요청
+PUT {{host}}/api/v1/users/withdraw
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### 기술 스택 업데이트 요청
+PATCH {{host}}/api/v1/users/my-page/tech-stack
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "techStacks": ["JAVA", "SPRING", "REACT", "PYTHON"]
+}
+
+### 회원 정보 업데이트 요청
+PATCH {{host}}/api/v1/users/user-details
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "nickname": "updatedNickname",
+  "contact": "010-9876-5432",
+  "email": "updated@example.com"
+}
+
+### 로그아웃 요청
+POST {{host}}/api/v1/auth/logout
+Authorization: Bearer {{accessToken}}
+
+### 토큰 갱신 요청
+POST {{host}}/api/v1/auth/refresh
+Authorization: Bearer {{accessToken}}
+Refresh-Token: {{refreshToken}}
+//400에러
+###

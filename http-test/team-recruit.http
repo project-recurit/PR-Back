@@ -1,0 +1,35 @@
+### 팀 모집 게시글 생성
+POST http://localhost:8080/api/v1/team-recruit
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "사이드 프로젝트 팀원 모집합니다",
+  "content": "백엔드 개발자 2명 모집합니다",
+  "techStacks": ["JAVA", "SPRING", "MYSQL"],
+  "expectedPeriod": "3개월",
+  "fileUrl": "http://example.com/file",
+  "contact": "kakao: example"
+}
+
+### 팀 모집 게시글 조회
+GET http://localhost:8080/api/v1/team-recruit/1
+Content-Type: application/json
+
+### 팀 모집 게시글 수정
+PUT http://localhost:8080/api/v1/team-recruit/2
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "사이드 프로젝트 팀원 모집합니다 (수정)",
+  "content": "백엔드 개발자 1명 모집합니다",
+  "techStacks": ["JAVA", "SPRING", "MYSQL"],
+  "expectedPeriod": "2개월",
+  "fileUrl": "http://example.com/file-updated",
+  "contact": "kakao: example-updated"
+}
+
+### 팀 모집 게시글 삭제
+DELETE http://localhost:8080/api/v1/team-recruit/2
+Authorization: Bearer {{accessToken}} 

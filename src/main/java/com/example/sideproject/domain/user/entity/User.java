@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
+import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 
 @Entity
 @Getter
@@ -17,10 +20,14 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private long id;
 
+    @Column(unique = true)
+    private String username;
+
     private String password;
 
     private String email;
 
+    @Column(unique = true)
     private String nickname;
 
     private String profileUrl;
@@ -35,6 +42,7 @@ public class User extends Timestamped {
     // 순서 보장이 필요X, 중복 허용X -> Set 사용(List랑 반대)
     private Set<TechStack> techStacks = new HashSet<>();
 
+    // 경력
     @ElementCollection
     @CollectionTable(
             name = "user_history",
@@ -47,35 +55,48 @@ public class User extends Timestamped {
     /**
      * 추후 연락할 수 있는 서비스에 사용, 카카오톡 링크 or Email에 따라서 다르게 할거임
      */
-    private String phoneNumber;
+    private String contact;
 
     private LocalDateTime lastLoginTime;
 
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
     private String refreshToken;
 
     private String statusUpdate;
 
+    @Column(unique = true, nullable = false)
+    private UUID uuid;
 
+    
     public void addTechStack(Set<TechStack> techStacks) {
         this.techStacks.addAll(techStacks);
     }
 
+    // 북마크 관련 필드 추가
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
-    public User(String password, String email, String nickname, String phoneNumber, Set<TechStack> techStacks){
+    public User(String username, String password, String email, String nickname, 
+                String contact, Set<TechStack> techStacks) {
+        this.username = username;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
-//        this.profileUrl = profileUrl;
-        this.phoneNumber = phoneNumber;
+        this.contact = contact;
         this.userRole = UserRole.USER;
         this.userStatus = UserStatus.ACTIVE_USER;
-        if(techStacks != null){
+        this.lastLoginTime = LocalDateTime.now();
+        this.uuid = generateType4UUID();
+        if(techStacks != null) {
             this.techStacks = techStacks;
         }
+        this.userRole = UserRole.USER;
+        this.userStatus = UserStatus.ACTIVE_USER;
     }
 
 
@@ -85,13 +106,51 @@ public class User extends Timestamped {
         this.refreshToken = null;
     }
 
-    public boolean logout() {
-        refreshToken = null;
-        return true;
+    // 로그인 정보 업데이트
+    public void updateLoginInfo(String refreshToken, LocalDateTime loginTime) {
+        this.refreshToken = refreshToken;
+        this.lastLoginTime = loginTime;
+    }
+
+    // 로그아웃 시 리프레시 토큰 제거
+    public void logout() {
+        this.refreshToken = null;
+    }
+
+    // 리프레시 토큰 업데이트
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    // 마지막 로그인 시간 업데이트
+    public void updateLastLoginTime(LocalDateTime loginTime) {
+        this.lastLoginTime = loginTime;
     }
 
     public void saveRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    private UUID generateType4UUID(){
+        UUID userUuid = UUID.randomUUID();
+        return userUuid;
+    }
+
+    public void setLogin(){
+        this.lastLoginTime = LocalDateTime.now();
+    }
+
+    public boolean isActive() {
+        return this.userStatus == UserStatus.ACTIVE_USER;
+    }
+
+    public void updateTechStacks(Set<TechStack> newTechStacks) {
+        this.techStacks.clear();
+        this.techStacks.addAll(newTechStacks);
+    }
+
+    public void updateProfile(String nickname) {
+        this.nickname = nickname;
     }
 
 
