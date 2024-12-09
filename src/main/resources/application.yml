@@ -12,8 +12,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
   jwt:
     secret:
       key: ${JWT_SECRET_KEY}
-  profiles:
-    active: local
