@@ -1,6 +1,5 @@
 package com.example.sideproject.global.notification.repository;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -12,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EmitterRepository {
     private final Map<Long, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
-    public void connect(Long id) {
-        emitterMap.computeIfAbsent(id, key -> new SseEmitter());
+    public SseEmitter connect(Long id) {
+        return emitterMap.computeIfAbsent(id, key -> new SseEmitter());
     }
 
     public void disconnect(Long id) {

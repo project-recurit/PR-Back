@@ -17,9 +17,9 @@ import java.io.IOException;
 public class SseService {
     private final EmitterRepository emitterRepository;
 
-    public void connect(Long userId) {
-        emitterRepository.connect(userId);
+    public SseEmitter connect(Long userId) {
         log.info("{} 알림 서비스 접속", userId);
+        return emitterRepository.connect(userId);
     }
 
     public void send(EventDto eventDto) {
