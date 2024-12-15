@@ -3,7 +3,9 @@ package com.example.sideproject.global.notification.dto;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.notification.entity.Notification;
 import com.example.sideproject.global.notification.entity.NotificationType;
+import lombok.Builder;
 
+@Builder
 public record NotificationRequestDto(
         Long to,
         NotificationType type,

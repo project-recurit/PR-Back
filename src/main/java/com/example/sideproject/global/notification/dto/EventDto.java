@@ -1,12 +1,14 @@
 package com.example.sideproject.global.notification.dto;
 
+import com.example.sideproject.global.notification.entity.NotificationType;
 import lombok.Builder;
 
 @Builder
 public record EventDto(
         Long to,
+        Long from,
         String msg,
-        String type,
+        NotificationType type,
         String relatedUrl
 ) {
 
