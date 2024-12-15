@@ -10,7 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-@RequestMapping("/api/v1/notifications")
+@RequestMapping("/api/v1/sse")
 @RestController
 @RequiredArgsConstructor
 public class SseController {

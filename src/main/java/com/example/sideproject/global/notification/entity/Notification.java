@@ -1,6 +1,8 @@
 package com.example.sideproject.global.notification.entity;
 
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.global.enums.ErrorType;
+import com.example.sideproject.global.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -38,7 +40,18 @@ public class Notification {
         this.isRead = isRead;
     }
 
-    public void read() {
+    public void read(Long userId) {
+        checkOwn(userId);
+        read();
+    }
+
+    private void read() {
         this.isRead = true;
+    }
+
+    public void checkOwn(Long userId) {
+        if (this.from.getId() != userId) {
+            throw new CustomException(ErrorType.NOTIFICATION_NOT_FOUND);
+        }
     }
 }

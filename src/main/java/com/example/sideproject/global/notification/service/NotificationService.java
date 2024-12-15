@@ -25,9 +25,9 @@ public class NotificationService {
     }
 
     @Transactional
-    public NotificationDto updateNotification(Long notificationId) {
+    public NotificationDto updateNotification(Long notificationId, User user) {
         Notification notification = getNotification(notificationId);
-        notification.read();
+        notification.read(user.getId());
         return NotificationDto.of(notification);
     }
 
@@ -37,8 +37,9 @@ public class NotificationService {
         return results;
     }
 
-    public void deleteNotification(Long notificationId) {
+    public void deleteNotification(Long notificationId, User user) {
         Notification notification = getNotification(notificationId);
+        notification.checkOwn(user.getId());
         notificationRepository.delete(notification);
     }
 
