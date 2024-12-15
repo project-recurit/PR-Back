@@ -40,8 +40,10 @@ public class PublicRelationService {
         return PublicRelationDto.of(publicRelationRepository.save(pr));
     }
 
+    @Transactional
     public PublicRelationDto getPublicRelation(Long projectRecruitId) {
         PublicRelation publicRelation = findPublicRelation(projectRecruitId);
+        publicRelation.plusViewCount();
         return PublicRelationDto.of(publicRelation);
     }
 

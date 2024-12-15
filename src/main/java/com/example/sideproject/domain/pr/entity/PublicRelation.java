@@ -66,5 +66,9 @@ public class PublicRelation extends Timestamped {
             addDetails();
         }
     }
+
+    public void plusViewCount() {
+        this.viewCount++;
+    }
 }
 
