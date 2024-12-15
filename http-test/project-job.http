@@ -1,39 +1,42 @@
 ### 개발자 PR 게시글 생성
-POST {{host}}/api/v1/project-recruit
+POST {{host}}/api/v1/pr
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
   "title": "3년차 백엔드 개발자입니다",
-  "content": "Spring, JPA 기반 서버 개발 경험이 있으며, MSA 아키텍처에 관심이 많습니다",
   "techStacks": ["JAVA", "SPRING", "MYSQL"],
-  "expectedPeriod": "6개월",
-  "fileUrl": "https://github.com/myportfolio",
-  "contact": "이메일: developer@example.com"
+  "prDetails": [{
+    "title": "경력",
+    "description": "00서비스 개발 - 대규모 트래픽 처리 및 클라우드 아키텍처 설계"
+  }, {
+    "title": "포트폴리오",
+    "description": "https://github.com/myportfolio-updated"
+  }]
 }
 
 ### 개발자 PR 게시글 조회
-GET {{host}}/api/v1/project-recruit/1
+GET {{host}}/api/v1/pr/1
 Content-Type: application/json
 
 ### 개발자 PR 게시글 수정
-PUT {{host}}/api/v1/project-recruit/1
+PUT {{host}}/api/v1/pr/1
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
   "title": "AWS 경험이 풍부한 백엔드 개발자입니다",
-  "content": "대규모 트래픽 처리 경험이 있으며, 클라우드 아키텍처 설계가 가능합니다",
   "techStacks": ["JAVA", "SPRING", "MYSQL", "AWS"],
-  "expectedPeriod": "4개월",
-  "fileUrl": "https://github.com/myportfolio-updated",
-  "contact": "카카오톡: developer123"
+  "prDetails": [{
+    "title": "포트폴리오",
+    "description": "https://github.com/myportfolio-updated"
+  }]
 }
 
 ### 개발자 PR 게시글 삭제
-DELETE {{host}}/api/v1/project-recruit/1
+DELETE {{host}}/api/v1/pr/1
 Authorization: Bearer {{accessToken}}
 
 ### 개발자 PR 게시글 목록 조회
-GET {{host}}/api/v1/project-recruit
+GET {{host}}/api/v1/pr?page=0&size=20
 Content-Type: application/json 
