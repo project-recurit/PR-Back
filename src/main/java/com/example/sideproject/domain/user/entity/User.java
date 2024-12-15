@@ -99,6 +99,10 @@ public class User extends Timestamped {
         this.userStatus = UserStatus.ACTIVE_USER;
     }
 
+    public User(Long id) {
+        this.id = id;
+    }
+
 
     public void withDraw() {
         this.userStatus = UserStatus.INACTIVE_USER;
