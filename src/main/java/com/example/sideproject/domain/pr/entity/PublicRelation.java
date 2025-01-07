@@ -43,7 +43,7 @@ public class PublicRelation extends Timestamped {
     private int likeCount;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "users_id")
     private User user;
 
     public void addDetails(List<PublicRelationDetail> prDetails) {
