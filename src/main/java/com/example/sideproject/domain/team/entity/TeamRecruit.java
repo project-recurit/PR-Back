@@ -48,7 +48,7 @@ public class TeamRecruit extends Timestamped{
     private int likeCount;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "users_id")
     private User user;
 
 

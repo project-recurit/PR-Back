@@ -15,6 +15,7 @@ import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "users")
 public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
@@ -35,7 +36,7 @@ public class User extends Timestamped {
     @ElementCollection
     @CollectionTable(
             name = "user_tech_stacks",
-            joinColumns = @JoinColumn(name = "user_id")
+            joinColumns = @JoinColumn(name = "users_id")
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "tech_stack")
@@ -45,12 +46,12 @@ public class User extends Timestamped {
     // 경력
     @ElementCollection
     @CollectionTable(
-            name = "user_history",
-            joinColumns = @JoinColumn(name = "user_id")
+            name = "users_history",
+            joinColumns = @JoinColumn(name = "users_id")
     )
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_history")
-    private Set<String> userHistory = new HashSet<>();
+    @Column(name = "users_history")
+    private Set<String> usersHistory = new HashSet<>();
 
     /**
      * 추후 연락할 수 있는 서비스에 사용, 카카오톡 링크 or Email에 따라서 다르게 할거임
@@ -99,9 +100,13 @@ public class User extends Timestamped {
         this.userStatus = UserStatus.ACTIVE_USER;
     }
 
+    public User(Long id) {
+        this.id = id;
+    }
+
 
     public void withDraw() {
-        this.userStatus = UserStatus.INACTIVE_USER;
+        this.userStatus = UserStatus.WITHDRAW_USER;
         this.statusUpdate = this.getModifiedAt();
         this.refreshToken = null;
     }

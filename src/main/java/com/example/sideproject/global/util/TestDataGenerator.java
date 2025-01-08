@@ -9,7 +9,7 @@ import java.util.UUID;
 import com.example.sideproject.domain.user.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.team.entity.TeamRecruit;
-import com.example.sideproject.domain.personal.entity.ProjectRecruit;
+import com.example.sideproject.domain.pr.entity.PublicRelation;
 import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 
 import com.github.javafaker.Faker;
@@ -110,16 +110,12 @@ public class TestDataGenerator {
     }
 
     // ProjectRecruit 더미 데이터 생성
-    public static ProjectRecruit createFakeProjectRecruit(User user) {
-        return new ProjectRecruit(
-                generateRecruitTitle(),
-                generateRecruitContent(),
-                generateRandomTechStacks(),
-                generateRandomPeriod(),
-                generateRandomFileUrl(),
-                generateRandomContact(),
-                user
-        );
+    public static PublicRelation createFakeProjectRecruit(User user) {
+        return PublicRelation.builder()
+                .user(user)
+                .title(generateRecruitTitle())
+                .techStacks(generateRandomTechStacks())
+                .build();
     }
 
     // TeamRecruitBookmark 더미 데이터 생성

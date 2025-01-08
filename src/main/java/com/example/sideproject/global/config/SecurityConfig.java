@@ -63,16 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/**",  // 새로운 인증 관련 엔드포인트
                                 "/api/v1/users/**",
-                                "/users/invite/artist",
-                                "/users/invite/entertainment",
-                                "/users/admin",
-                                "/mailsend", 
-                                "/mailableCheck",
-                                "/users/checkId", 
-                                "/users/checkNickname", 
-                                "/users/checkPassword",
-                                "/Inactive", 
-                                "/fromInactiveToActive",
+                                "/ws-stomp/**",
                                 "/error"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET).permitAll()

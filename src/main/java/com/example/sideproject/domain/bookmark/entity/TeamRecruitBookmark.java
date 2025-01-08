@@ -17,7 +17,7 @@ public class TeamRecruitBookmark extends Timestamped {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "users_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

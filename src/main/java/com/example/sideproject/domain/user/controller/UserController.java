@@ -27,7 +27,7 @@ public class UserController {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SIGNUP_SUCCESS, requestDto.getUsername()));
     }
 
-    @PutMapping("/withdraw")
+    @DeleteMapping("/withdraw")
     public ResponseEntity<ResponseMessageDto> withdrawUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.withdrawUser(userDetails.getUser().getId());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.WITHDRAW_SUCCESS));
