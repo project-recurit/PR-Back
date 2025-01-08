@@ -29,11 +29,15 @@ public class ChatMessage {
     private LocalDateTime sentAt;
     private boolean read;
 
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
+
     @Builder
-    public ChatMessage(ChatRoom chatRoom, User sender, String content) {
+    public ChatMessage(ChatRoom chatRoom, User sender, String content, MessageType type) {
         this.chatRoom = chatRoom;
         this.sender = sender;
         this.content = content;
+        this.type = type != null ? type : MessageType.CHAT;
         this.sentAt = LocalDateTime.now();
         this.read = false;
     }

@@ -1,8 +1,6 @@
 package com.example.sideproject.domain.chat.controller;
 
-import com.example.sideproject.domain.chat.dto.ChatMessageRequest;
-import com.example.sideproject.domain.chat.dto.ChatMessageResponse;
-import com.example.sideproject.domain.chat.dto.ChatRoomRequest;
+import com.example.sideproject.domain.chat.dto.*;
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.chat.service.ChatService;
@@ -52,5 +50,33 @@ public class ChatController {
     @ResponseBody
     public List<ChatRoom> getRooms(@RequestParam Long memberId) {
         return chatService.getRooms(memberId);
+    }
+
+    @MessageMapping("/room/{roomId}/enter")
+    @SendTo("/sub/chat/room/{roomId}")
+    public ChatMessageResponse enterRoom(@DestinationVariable Long roomId, @Payload EnterRoomRequest request) {
+        log.info("User {} entering room {}", request.getSenderId(), roomId);
+        return chatService.enterRoom(roomId, request.getSenderId());
+    }
+
+    @MessageMapping("/room/{roomId}/leave")
+    @SendTo("/sub/chat/room/{roomId}")
+    public ChatMessageResponse leaveRoom(@DestinationVariable Long roomId, @Payload LeaveRoomRequest request) {
+        log.info("User {} leaving room {}", request.getSenderId(), roomId);
+        return chatService.leaveRoom(roomId, request.getSenderId());
+    }
+
+    @PostMapping("/chat/room/{roomId}/read")
+    @ResponseBody
+    public ResponseEntity<Void> markAsRead(@PathVariable Long roomId, @RequestParam Long userId) {
+        chatService.markAsRead(roomId, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/chat/room/{roomId}/unread")
+    @ResponseBody
+    public ResponseEntity<Long> getUnreadCount(@PathVariable Long roomId, @RequestParam Long userId) {
+        long count = chatService.getUnreadCount(roomId, userId);
+        return ResponseEntity.ok(count);
     }
 }

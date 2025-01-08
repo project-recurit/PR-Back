@@ -2,10 +2,7 @@ package com.example.sideproject.domain.chat.entity;
 
 import com.example.sideproject.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +14,7 @@ public class ChatRoomMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
@@ -27,6 +25,7 @@ public class ChatRoomMember {
 
     private LocalDateTime lastReadAt;
     private boolean isLeft;
+    @Setter
     private LocalDateTime leftAt;
 
     @Builder
@@ -36,9 +35,12 @@ public class ChatRoomMember {
         this.isLeft = false;
     }
 
-    public void setChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
+    public void setLeft(boolean left) {
+        this.isLeft = left;
     }
 
 
+    public void updateLastRead() {
+        this.lastReadAt = LocalDateTime.now();
+    }
 }
