@@ -106,7 +106,7 @@ public class User extends Timestamped {
 
 
     public void withDraw() {
-        this.userStatus = UserStatus.INACTIVE_USER;
+        this.userStatus = UserStatus.WITHDRAW_USER;
         this.statusUpdate = this.getModifiedAt();
         this.refreshToken = null;
     }
