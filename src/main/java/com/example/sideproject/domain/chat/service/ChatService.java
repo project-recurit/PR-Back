@@ -47,6 +47,7 @@ public class ChatService {
                 .content(request.getContent())
                 .build();
 
+
         return chatMessageRepository.save(message);
     }
 
