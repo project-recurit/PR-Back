@@ -26,7 +26,6 @@ public class Notification {
     private String relatedUrl;
 
     @ColumnDefault("false")
-    @Column(columnDefinition = "TINYINT(1)")
     private boolean isRead;
 
     @Builder

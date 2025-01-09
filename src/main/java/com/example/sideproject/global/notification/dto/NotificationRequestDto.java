@@ -21,4 +21,13 @@ public record NotificationRequestDto(
                 .relatedUrl(relatedUrl)
                 .build();
     }
+
+    public static NotificationRequestDto of(EventDto eventDto) {
+        return NotificationRequestDto.builder()
+                .to(eventDto.to())
+                .type(eventDto.type())
+                .message(eventDto.msg())
+                .relatedUrl(eventDto.relatedUrl())
+                .build();
+    }
 }

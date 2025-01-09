@@ -25,7 +25,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public NotificationDto updateNotification(Long notificationId, User user) {
+    public NotificationDto readNotification(Long notificationId, User user) {
         Notification notification = getNotification(notificationId);
         notification.read(user.getId());
         return NotificationDto.of(notification);
