@@ -102,6 +102,7 @@ public class ChatService {
      * @param userId
      * @return
      */
+    @Transactional
     public ChatMessageResponse enterRoom(Long roomId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -109,10 +110,8 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
         ChatRoomMember member = findChatRoomMember(roomId, userId);
-        markAsRead(roomId, userId);
+        markAllMessagesAsRead(roomId, member);
         member.setLeft(false);
-
-        markAllMessagesAsRead(roomId, userId);
 
         // 입장 메시지 생성
         ChatMessage enterMessage = ChatMessage.builder()
@@ -184,11 +183,10 @@ public class ChatService {
     /**
      * 모든 메시지 읽음 처리
      * @param roomId
-     * @param userId
+     * @param member
      */
     @Transactional
-    public void markAllMessagesAsRead(Long roomId, Long userId) {
-        ChatRoomMember member = findChatRoomMember(roomId, userId);
+    public void markAllMessagesAsRead(Long roomId, ChatRoomMember member) {
         chatMessageRepository.markMessagesAsRead(roomId, member.getLastReadAt());
         member.updateLastRead();
     }
