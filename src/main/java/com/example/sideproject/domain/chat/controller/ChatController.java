@@ -1,8 +1,6 @@
 package com.example.sideproject.domain.chat.controller;
 
-import com.example.sideproject.domain.chat.dto.ChatMessageRequest;
-import com.example.sideproject.domain.chat.dto.ChatMessageResponse;
-import com.example.sideproject.domain.chat.dto.ChatRoomRequest;
+import com.example.sideproject.domain.chat.dto.*;
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.chat.service.ChatService;
@@ -24,6 +22,12 @@ public class ChatController {
 
     private final ChatService chatService;
 
+    /**
+     * 메시지 보내기
+     * @param roomId
+     * @param message
+     * @return
+     */
     @MessageMapping("/room/{roomId}/message")
     @SendTo("/sub/chat/room/{roomId}")
     public ChatMessageResponse message(@DestinationVariable Long roomId,
@@ -32,8 +36,7 @@ public class ChatController {
         if (!roomId.equals(message.getRoomId())) {
             throw new IllegalArgumentException("Room id not matched");
         }
-        ChatMessage chatMessage = chatService.sendMessage(message);
-        return ChatMessageResponse.from(chatMessage);
+        return chatService.sendMessage(message);
     }
 
     /**
@@ -48,9 +51,66 @@ public class ChatController {
         return ResponseEntity.ok(chatRoom);
     }
 
+    /**
+     * 채팅방 조회
+     * @param memberId
+     * @return
+     */
     @GetMapping("/chat/rooms")
     @ResponseBody
     public List<ChatRoom> getRooms(@RequestParam Long memberId) {
         return chatService.getRooms(memberId);
+    }
+
+    /**
+     * 채팅방 입장
+     * @param roomId
+     * @param request
+     * @return
+     */
+    @MessageMapping("/room/{roomId}/enter")
+    @SendTo("/sub/chat/room/{roomId}")
+    public ChatMessageResponse enterRoom(@DestinationVariable Long roomId, @Payload EnterRoomRequest request) {
+        log.info("User {} entering room {}", request.getSenderId(), roomId);
+        return chatService.enterRoom(roomId, request.getSenderId());
+    }
+
+    /**
+     * 채팅방 퇴장
+     * @param roomId
+     * @param request
+     * @return
+     */
+    @MessageMapping("/room/{roomId}/leave")
+    @SendTo("/sub/chat/room/{roomId}")
+    public ChatMessageResponse leaveRoom(@DestinationVariable Long roomId, @Payload LeaveRoomRequest request) {
+        log.info("User {} leaving room {}", request.getSenderId(), roomId);
+        return chatService.leaveRoom(roomId, request.getSenderId());
+    }
+
+    /**
+     * 읽지 않은 채팅 읽음처리
+     * @param roomId
+     * @param userId
+     * @return
+     */
+    @PostMapping("/chat/room/{roomId}/read")
+    @ResponseBody
+    public ResponseEntity<Void> markAsRead(@PathVariable Long roomId, @RequestParam Long userId) {
+        chatService.markAsRead(roomId, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 읽지 않은 채팅 카운팅
+     * @param roomId
+     * @param userId
+     * @return
+     */
+    @GetMapping("/chat/room/{roomId}/unread")
+    @ResponseBody
+    public ResponseEntity<Long> getUnreadCount(@PathVariable Long roomId, @RequestParam Long userId) {
+        long count = chatService.getUnreadCount(roomId, userId);
+        return ResponseEntity.ok(count);
     }
 }
