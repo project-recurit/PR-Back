@@ -3,6 +3,7 @@ package com.example.sideproject.global.notification.service;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.notification.aop.annotation.NotifyOn;
 import com.example.sideproject.global.notification.dto.EventDto;
+import com.example.sideproject.global.notification.entity.NotificationType;
 import com.example.sideproject.global.notification.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,12 @@ public class SseService {
 
     public SseEmitter connect(Long userId) {
         log.debug("{} 알림 서비스 접속", userId);
-        return emitterRepository.connect(userId);
+        SseEmitter session = emitterRepository.connect(userId);
+
+        EventDto data = new EventDto(userId, userId, "connect", NotificationType.CONNECT, "");
+        send(userId, data, session);
+
+        return session;
     }
 
     public void send(EventDto eventDto) {
@@ -32,13 +38,16 @@ public class SseService {
 
         log.debug("{}에게 알람 전송을 시작합니다.", eventDto.to());
 
+        send(eventDto.to(), eventDto, session);
+    }
+
+    public void send(Long sseId, Object data, SseEmitter session) {
         try {
             session.send(SseEmitter.event()
-                    .data(eventDto)
+                    .data(data)
                     .build());
         } catch (IOException e) {
-            log.debug("알림 메시지 전송 중 오류가 발생했습니다.");
-            throw new RuntimeException(e);
+            disconnect(sseId);
         }
     }
 
