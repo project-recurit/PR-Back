@@ -18,20 +18,26 @@ public class SseService {
     private final EmitterRepository emitterRepository;
 
     public SseEmitter connect(Long userId) {
-        log.info("{} 알림 서비스 접속", userId);
+        log.debug("{} 알림 서비스 접속", userId);
         return emitterRepository.connect(userId);
     }
 
     public void send(EventDto eventDto) {
-        log.info("{}에게 알람 전송을 시작합니다.", eventDto.to());
         SseEmitter session = emitterRepository.getSession(eventDto.to())
-                .orElseThrow(RuntimeException::new);
+                .orElse(null);
+
+        if (session == null) {
+            return;
+        }
+
+        log.debug("{}에게 알람 전송을 시작합니다.", eventDto.to());
+
         try {
             session.send(SseEmitter.event()
                     .data(eventDto)
                     .build());
         } catch (IOException e) {
-            log.info("알림 메시지 전송 중 오류가 발생했습니다.");
+            log.debug("알림 메시지 전송 중 오류가 발생했습니다.");
             throw new RuntimeException(e);
         }
     }

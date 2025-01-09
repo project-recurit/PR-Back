@@ -3,6 +3,9 @@ package com.example.sideproject.domain.team.service;
 import com.example.sideproject.domain.team.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.team.dto.CreateTeamRecruitResponseDto;
 import com.example.sideproject.domain.team.dto.CreateTeamRecruitPageResponseDto;
+import com.example.sideproject.global.notification.aop.annotation.NotifyOn;
+import com.example.sideproject.global.notification.dto.EventDto;
+import com.example.sideproject.global.notification.entity.NotificationType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +18,7 @@ import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.domain.team.repository.TeamRecruitRepository;
 import java.util.Objects;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -29,6 +33,7 @@ import org.springframework.data.domain.Sort;
 public class TeamRecruitService {
     private final UserRepository userRepository;
     private final TeamRecruitRepository teamRecruitRepository;
+    private final TeamRecruitNoticeService teamRecruitNoticeService;
 
     @Transactional
     public void createTeamRecruit(CreateTeamRecruitRequestDto requestDto, User user) {
@@ -45,7 +50,15 @@ public class TeamRecruitService {
         );
 
         teamRecruitRepository.save(teamRecruit);
+
+        List<User> users = findUserByTechStacks(teamRecruit.getTechStacks());
+        teamRecruitNoticeService.notice(teamRecruit, users, requestDto.getTechStacks());
     }
+
+    private List<User> findUserByTechStacks(Set<TechStack> techStacks) {
+        return userRepository.findByTechStacksIn(techStacks);
+    }
+
 
     public CreateTeamRecruitResponseDto getTeamRecruit(Long teamRecruitId) {
         TeamRecruit teamRecruit = findTeamRecruit(teamRecruitId);

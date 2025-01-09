@@ -6,7 +6,7 @@ Authorization: Bearer {{accessToken}}
 {
   "title": "사이드 프로젝트 팀원 모집합니다",
   "content": "백엔드 개발자 2명 모집합니다",
-  "techStacks": ["JAVA", "SPRING", "MYSQL"],
+  "techStacks": ["JAVA", "SPRING", "MYSQL", "PYTHON"],
   "expectedPeriod": "3개월",
   "fileUrl": "http://example.com/file",
   "contact": "kakao: example"

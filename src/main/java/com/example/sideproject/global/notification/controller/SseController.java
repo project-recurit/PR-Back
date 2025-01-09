@@ -17,8 +17,8 @@ public class SseController {
     private final SseService sseService;
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> connect(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(sseService.connect(userDetails.getUser().getId()));
+    public SseEmitter connect(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return sseService.connect(userDetails.getUser().getId());
     }
 
     @DeleteMapping
