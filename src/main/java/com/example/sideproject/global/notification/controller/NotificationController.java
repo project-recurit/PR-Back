@@ -2,14 +2,11 @@ package com.example.sideproject.global.notification.controller;
 
 import com.example.sideproject.global.notification.dto.NotificationDto;
 import com.example.sideproject.global.notification.service.NotificationService;
-import com.example.sideproject.global.notification.service.SseService;
 import com.example.sideproject.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -25,9 +22,9 @@ public class NotificationController {
     }
 
     @PutMapping("/{notificationId}")
-    public ResponseEntity<NotificationDto> updateNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                              @PathVariable("notificationId") Long notificationId) {
-        return ResponseEntity.ok(notificationService.updateNotification(notificationId, userDetails.getUser()));
+    public ResponseEntity<NotificationDto> readNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @PathVariable("notificationId") Long notificationId) {
+        return ResponseEntity.ok(notificationService.readNotification(notificationId, userDetails.getUser()));
     }
 
     @DeleteMapping("/{notificationId}")
