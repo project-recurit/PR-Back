@@ -67,6 +67,10 @@ public class ChatService {
                 .build();
 
         ChatMessage savedMessage = chatMessageRepository.save(message);
+
+        chatRoom.updateLastMessage(savedMessage);
+        chatRoomRepository.save(chatRoom);
+
         Map<Long, Long> unreadCounts = getUnreadCountsForMembers(chatRoom);
 
         return ChatMessageResponse.builder()
@@ -180,15 +184,11 @@ public class ChatService {
      * @param roomId
      * @param userId
      */
+
     private void markAllMessagesAsRead(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
-        List<ChatMessage> unreadMessages = chatMessageRepository.findUnreadMessages(
-                roomId,
-                member.getLastReadAt()
-        );
-
-        unreadMessages.forEach(ChatMessage::markAsRead);
-        member.updateLastRead(); // 마지막 읽은 시간 업데이트
+        chatMessageRepository.markMessagesAsRead(roomId, member.getLastReadAt());
+        member.updateLastRead();
     }
 
     /**
