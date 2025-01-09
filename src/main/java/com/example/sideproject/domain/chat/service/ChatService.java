@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,12 @@ public class ChatService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 채팅방 생성
+     * @param senderId
+     * @param receiverId
+     * @return
+     */
     public ChatRoom createRoom(Long senderId, Long receiverId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
@@ -40,7 +48,12 @@ public class ChatService {
         return chatRoomRepository.save(chatRoom);
     }
 
-    public ChatMessage sendMessage(ChatMessageRequest request) {
+    /**
+     * 메시지 보내기
+     * @param request
+     * @return
+     */
+    public ChatMessageResponse sendMessage(ChatMessageRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
         User sender = userRepository.findById(request.getSenderId())
@@ -50,17 +63,39 @@ public class ChatService {
                 .chatRoom(chatRoom)
                 .sender(sender)
                 .content(request.getContent())
+                .type(MessageType.CHAT)
                 .build();
 
+        ChatMessage savedMessage = chatMessageRepository.save(message);
+        Map<Long, Long> unreadCounts = getUnreadCountsForMembers(chatRoom);
 
-        return chatMessageRepository.save(message);
+        return ChatMessageResponse.builder()
+                .messageId(savedMessage.getId())
+                .roomId(savedMessage.getChatRoom().getId())
+                .senderId(savedMessage.getSender().getId())
+                .senderNickname(savedMessage.getSender().getNickname())
+                .content(savedMessage.getContent())
+                .sentAt(savedMessage.getSentAt())
+                .type(savedMessage.getType())
+                .unreadCounts(unreadCounts)  // 읽지 않은 메시지 수 추가
+                .build();
     }
 
+    /**
+     * 내가 있는 채팅방 불러오기
+     * @param userId
+     * @return
+     */
     public List<ChatRoom> getRooms(Long userId) {
         return chatRoomRepository.findByUserId(userId);
     }
 
-    // 채팅방 입장
+    /**
+     * 채팅방 입장
+     * @param roomId
+     * @param userId
+     * @return
+     */
     public ChatMessageResponse enterRoom(Long roomId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -70,6 +105,8 @@ public class ChatService {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
         markAsRead(roomId, userId);
         member.setLeft(false);
+
+        markAllMessagesAsRead(roomId, userId);
 
         // 입장 메시지 생성
         ChatMessage enterMessage = ChatMessage.builder()
@@ -83,7 +120,12 @@ public class ChatService {
         return ChatMessageResponse.from(savedMessage);
     }
 
-    // 채팅방 퇴장
+    /**
+     * 채팅방 퇴장
+     * @param roomId
+     * @param userId
+     * @return
+     */
     public ChatMessageResponse leaveRoom(Long roomId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -106,13 +148,22 @@ public class ChatService {
         return ChatMessageResponse.from(savedMessage);
     }
 
-    // 메시지 읽음 처리
+    /**
+     * 메시지 읽음처리
+     * @param roomId
+     * @param userId
+     */
     public void markAsRead(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
         member.updateLastRead();
     }
 
-    // 읽지 않은 메시지 수 조회
+    /**
+     * 읽지 않은 메시지 카운트
+     * @param roomId
+     * @param userId
+     * @return
+     */
     public long getUnreadCount(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
         return chatMessageRepository.countUnreadMessages(roomId, member.getLastReadAt());
@@ -122,5 +173,37 @@ public class ChatService {
     private ChatRoomMember findChatRoomMember(Long roomId, Long userId) {
         return chatRoomMemberRepository.findByChatRoomIdAndMemberId(roomId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room member not found"));
+    }
+
+    /**
+     * 모든 메시지 읽음 처리
+     * @param roomId
+     * @param userId
+     */
+    private void markAllMessagesAsRead(Long roomId, Long userId) {
+        ChatRoomMember member = findChatRoomMember(roomId, userId);
+        List<ChatMessage> unreadMessages = chatMessageRepository.findUnreadMessages(
+                roomId,
+                member.getLastReadAt()
+        );
+
+        unreadMessages.forEach(ChatMessage::markAsRead);
+        member.updateLastRead(); // 마지막 읽은 시간 업데이트
+    }
+
+    /**
+     * 멤버별 읽지 않은 메시지 카운트
+     * @param chatRoom
+     * @return
+     */
+    private Map<Long, Long> getUnreadCountsForMembers(ChatRoom chatRoom) {
+        return chatRoom.getMembers().stream()
+                .collect(Collectors.toMap(
+                        member -> member.getMember().getId(),
+                        member -> chatMessageRepository.countUnreadMessages(
+                                chatRoom.getId(),
+                                member.getLastReadAt()
+                        )
+                ));
     }
 }

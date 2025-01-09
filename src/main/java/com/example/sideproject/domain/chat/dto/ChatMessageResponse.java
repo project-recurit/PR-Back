@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -19,6 +20,7 @@ public class ChatMessageResponse {
     private String content;
     private LocalDateTime sentAt;
     private MessageType type;
+    private Map<Long, Long> unreadCounts;  // 각 멤버별 읽지 않은 메시지 수
 
     public static ChatMessageResponse from(ChatMessage message) {
         return ChatMessageResponse.builder()

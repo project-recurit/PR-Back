@@ -14,4 +14,13 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             "WHERE m.chatRoom.id = :roomId " +
             "AND m.sentAt > :lastReadAt")
     long countUnreadMessages(@Param("roomId") Long roomId, @Param("lastReadAt") LocalDateTime lastReadAt);
+
+    @Query("SELECT m FROM ChatMessage m " +
+            "WHERE m.chatRoom.id = :roomId " +
+            "AND m.sentAt > :lastReadAt " +
+            "AND m.read = false")
+    List<ChatMessage> findUnreadMessages(
+            @Param("roomId") Long roomId,
+            @Param("lastReadAt") LocalDateTime lastReadAt
+    );
 }

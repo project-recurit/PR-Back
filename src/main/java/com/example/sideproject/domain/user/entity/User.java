@@ -127,11 +127,6 @@ public class User extends Timestamped {
         this.refreshToken = refreshToken;
     }
 
-    // 마지막 로그인 시간 업데이트
-    public void updateLastLoginTime(LocalDateTime loginTime) {
-        this.lastLoginTime = loginTime;
-    }
-
     public void saveRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }

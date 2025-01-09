@@ -22,6 +22,12 @@ public class ChatController {
 
     private final ChatService chatService;
 
+    /**
+     * 메시지 보내기
+     * @param roomId
+     * @param message
+     * @return
+     */
     @MessageMapping("/room/{roomId}/message")
     @SendTo("/sub/chat/room/{roomId}")
     public ChatMessageResponse message(@DestinationVariable Long roomId,
@@ -30,8 +36,7 @@ public class ChatController {
         if (!roomId.equals(message.getRoomId())) {
             throw new IllegalArgumentException("Room id not matched");
         }
-        ChatMessage chatMessage = chatService.sendMessage(message);
-        return ChatMessageResponse.from(chatMessage);
+        return chatService.sendMessage(message);
     }
 
     /**
@@ -46,12 +51,23 @@ public class ChatController {
         return ResponseEntity.ok(chatRoom);
     }
 
+    /**
+     * 채팅방 조회
+     * @param memberId
+     * @return
+     */
     @GetMapping("/chat/rooms")
     @ResponseBody
     public List<ChatRoom> getRooms(@RequestParam Long memberId) {
         return chatService.getRooms(memberId);
     }
 
+    /**
+     * 채팅방 입장
+     * @param roomId
+     * @param request
+     * @return
+     */
     @MessageMapping("/room/{roomId}/enter")
     @SendTo("/sub/chat/room/{roomId}")
     public ChatMessageResponse enterRoom(@DestinationVariable Long roomId, @Payload EnterRoomRequest request) {
@@ -59,6 +75,12 @@ public class ChatController {
         return chatService.enterRoom(roomId, request.getSenderId());
     }
 
+    /**
+     * 채팅방 퇴장
+     * @param roomId
+     * @param request
+     * @return
+     */
     @MessageMapping("/room/{roomId}/leave")
     @SendTo("/sub/chat/room/{roomId}")
     public ChatMessageResponse leaveRoom(@DestinationVariable Long roomId, @Payload LeaveRoomRequest request) {
@@ -66,6 +88,12 @@ public class ChatController {
         return chatService.leaveRoom(roomId, request.getSenderId());
     }
 
+    /**
+     * 읽지 않은 채팅 읽음처리
+     * @param roomId
+     * @param userId
+     * @return
+     */
     @PostMapping("/chat/room/{roomId}/read")
     @ResponseBody
     public ResponseEntity<Void> markAsRead(@PathVariable Long roomId, @RequestParam Long userId) {
@@ -73,6 +101,12 @@ public class ChatController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 읽지 않은 채팅 카운팅
+     * @param roomId
+     * @param userId
+     * @return
+     */
     @GetMapping("/chat/room/{roomId}/unread")
     @ResponseBody
     public ResponseEntity<Long> getUnreadCount(@PathVariable Long roomId, @RequestParam Long userId) {
