@@ -12,6 +12,7 @@ import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -67,12 +69,12 @@ public class ChatService {
                 .build();
 
         ChatMessage savedMessage = chatMessageRepository.save(message);
-
+        
         chatRoom.updateLastMessage(savedMessage);
         chatRoomRepository.save(chatRoom);
 
         Map<Long, Long> unreadCounts = getUnreadCountsForMembers(chatRoom);
-
+        log.info("{} unread messages have been sent", unreadCounts.size());
         return ChatMessageResponse.builder()
                 .messageId(savedMessage.getId())
                 .roomId(savedMessage.getChatRoom().getId())
@@ -184,8 +186,8 @@ public class ChatService {
      * @param roomId
      * @param userId
      */
-
-    private void markAllMessagesAsRead(Long roomId, Long userId) {
+    @Transactional
+    public void markAllMessagesAsRead(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
         chatMessageRepository.markMessagesAsRead(roomId, member.getLastReadAt());
         member.updateLastRead();
