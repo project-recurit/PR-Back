@@ -29,7 +29,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     );
 
     @Modifying  // 벌크 업데이트를 위한 어노테이션 추가
-    @Transactional
     @Query("UPDATE ChatMessage m SET m.read = true " +
             "WHERE m.chatRoom.id = :roomId " +
             "AND m.sentAt > :lastReadAt " +

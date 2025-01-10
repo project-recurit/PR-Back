@@ -11,6 +11,7 @@ import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
+import com.example.sideproject.global.config.WebSocketEventHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class ChatService {
      * @param receiverId
      * @return
      */
+    @Transactional(readOnly = true)
     public ChatRoom createRoom(Long senderId, Long receiverId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
@@ -55,6 +57,7 @@ public class ChatService {
      * @param request
      * @return
      */
+    @Transactional
     public ChatMessageResponse sendMessage(ChatMessageRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
@@ -69,9 +72,10 @@ public class ChatService {
                 .build();
 
         ChatMessage savedMessage = chatMessageRepository.save(message);
-        
         chatRoom.updateLastMessage(savedMessage);
         chatRoomRepository.save(chatRoom);
+
+        autoMarkAsReadForActiveUsers(chatRoom);
 
         Map<Long, Long> unreadCounts = getUnreadCountsForMembers(chatRoom);
         log.info("{} unread messages have been sent", unreadCounts.size());
@@ -92,6 +96,7 @@ public class ChatService {
      * @param userId
      * @return
      */
+    @Transactional
     public List<ChatRoom> getRooms(Long userId) {
         return chatRoomRepository.findByUserId(userId);
     }
@@ -131,6 +136,7 @@ public class ChatService {
      * @param userId
      * @return
      */
+    @Transactional
     public ChatMessageResponse leaveRoom(Long roomId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -185,8 +191,7 @@ public class ChatService {
      * @param roomId
      * @param member
      */
-    @Transactional
-    public void markAllMessagesAsRead(Long roomId, ChatRoomMember member) {
+    private void markAllMessagesAsRead(Long roomId, ChatRoomMember member) {
         chatMessageRepository.markMessagesAsRead(roomId, member.getLastReadAt());
         member.updateLastRead();
     }
@@ -205,5 +210,16 @@ public class ChatService {
                                 member.getLastReadAt()
                         )
                 ));
+    }
+
+    /**
+     * 채팅방에 현재 connect되어있는 멤버 찾아서 읽음처리 진행
+     * @param chatRoom
+     */
+    private void autoMarkAsReadForActiveUsers(ChatRoom chatRoom) {
+        chatRoom.getMembers().stream()
+                .map(member -> member.getMember().getId())
+                .filter(userId -> WebSocketEventHandler.isUserInRoom(userId, chatRoom.getId()))
+                .forEach(userId -> markAsRead(chatRoom.getId(), userId));
     }
 }

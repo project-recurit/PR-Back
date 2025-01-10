@@ -26,6 +26,10 @@ public class User extends Timestamped {
 
     private String password;
 
+    private String socialId;
+
+    private String socialProvider;
+
     private String email;
 
     @Column(unique = true)
@@ -83,7 +87,7 @@ public class User extends Timestamped {
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
     public User(String username, String password, String email, String nickname, 
-                String contact, Set<TechStack> techStacks) {
+                String contact, Set<TechStack> techStacks, String socialId, String socialProvider) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -96,6 +100,8 @@ public class User extends Timestamped {
         if(techStacks != null) {
             this.techStacks = techStacks;
         }
+        this.socialId = socialId;
+        this.socialProvider = socialProvider;
         this.userRole = UserRole.USER;
         this.userStatus = UserStatus.ACTIVE_USER;
     }
