@@ -17,8 +17,6 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Entity
 @Getter
 public class PublicRelation extends Timestamped {
@@ -29,15 +27,12 @@ public class PublicRelation extends Timestamped {
     private String title;
 
     @OneToMany(mappedBy = "pr", orphanRemoval = true, cascade = CascadeType.ALL)
+    @BatchSize(size = 20)
     private List<PublicRelationDetail> prDetails;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "public_relation_tech_stacks",
-            joinColumns = @JoinColumn(name = "public_relation_id")
-    )
+    @OneToMany(mappedBy = "publicRelation", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 20)
-    private Set<TechStack> techStacks = new HashSet<>();
+    private List<PublicRelationTechStacks> techStacks;
 
     private int viewCount;
     private int likeCount;
@@ -45,6 +40,17 @@ public class PublicRelation extends Timestamped {
     @ManyToOne
     @JoinColumn(name = "users_id")
     private User user;
+
+    @Builder
+    public PublicRelation(long id, String title, List<PublicRelationDetail> prDetails, Set<TechStack> techStacks, int viewCount, int likeCount, User user) {
+        this.id = id;
+        this.title = title;
+        this.prDetails = prDetails;
+        this.techStacks = toTechStacks(techStacks);
+        this.viewCount = viewCount;
+        this.likeCount = likeCount;
+        this.user = user;
+    }
 
     public void addDetails(List<PublicRelationDetail> prDetails) {
         this.prDetails = prDetails;
@@ -57,18 +63,36 @@ public class PublicRelation extends Timestamped {
         }
     }
 
+    private List<PublicRelationTechStacks> toTechStacks(Set<TechStack> techStacks) {
+        List<PublicRelationTechStacks> result = new ArrayList<>();
+        for (TechStack techStack : techStacks) {
+            result.add(
+                    PublicRelationTechStacks.builder()
+                            .publicRelation(this)
+                            .techStack(techStack)
+                            .build()
+            );
+        }
+        return result;
+    }
+
     public void update(String title, List<PublicRelationDetail> prDetails, Set<TechStack> techStacks) {
         this.title = title;
-        this.techStacks = techStacks;
-        if (!this.prDetails.isEmpty()) {
-            this.prDetails.clear();
-            this.prDetails.addAll(prDetails);
-            addDetails();
-        }
+
+        this.techStacks.clear();
+        this.techStacks.addAll(toTechStacks(techStacks));
+
+        this.prDetails.clear();
+        this.prDetails.addAll(prDetails);
+        addDetails();
     }
 
     public void plusViewCount() {
         this.viewCount++;
+    }
+
+    public List<TechStack> getTechStackList() {
+        return techStacks.stream().map(PublicRelationTechStacks::getTechStack).toList();
     }
 }
 

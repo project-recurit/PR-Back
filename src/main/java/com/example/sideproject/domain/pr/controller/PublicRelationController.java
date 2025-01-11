@@ -1,7 +1,7 @@
 package com.example.sideproject.domain.pr.controller;
 
-import com.example.sideproject.domain.pr.dto.PublicRelationListResponseDto;
-import org.springframework.data.domain.Page;
+import com.example.sideproject.domain.pr.dto.read.PublicRelationListResponseDto;
+import com.example.sideproject.domain.pr.dto.search.SearchPublicRelationRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +39,9 @@ public class PublicRelationController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDataDto<PagedModel<PublicRelationListResponseDto>>> getPublicRelations(Pageable pageable) {
-        PagedModel<PublicRelationListResponseDto> responseDto = publicRelationService.getPublicRelations(pageable);
+    public ResponseEntity<ResponseDataDto<PagedModel<PublicRelationListResponseDto>>> getPublicRelations(SearchPublicRelationRequest request,
+                                                                                                         Pageable pageable) {
+        PagedModel<PublicRelationListResponseDto> responseDto = publicRelationService.getPublicRelations(request, pageable);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.GET_PROJECT_RECRUIT_SUCCESS, responseDto));
     }
 
