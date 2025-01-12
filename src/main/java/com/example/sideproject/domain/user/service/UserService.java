@@ -33,7 +33,9 @@ public class UserService {
             requestDto.getEmail(),
             requestDto.getNickname(),
             requestDto.getContact(),
-            requestDto.getTechStacks()
+            requestDto.getTechStacks(),
+            requestDto.getSocialId(),
+            requestDto.getSocialProvider()
         );  
 
         return new SignUpResponseDto(userRepository.save(user));

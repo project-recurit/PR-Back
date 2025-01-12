@@ -11,7 +11,9 @@ import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
+import com.example.sideproject.global.config.WebSocketEventHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -35,6 +38,7 @@ public class ChatService {
      * @param receiverId
      * @return
      */
+    @Transactional(readOnly = true)
     public ChatRoom createRoom(Long senderId, Long receiverId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
@@ -53,6 +57,7 @@ public class ChatService {
      * @param request
      * @return
      */
+    @Transactional
     public ChatMessageResponse sendMessage(ChatMessageRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
@@ -67,8 +72,13 @@ public class ChatService {
                 .build();
 
         ChatMessage savedMessage = chatMessageRepository.save(message);
-        Map<Long, Long> unreadCounts = getUnreadCountsForMembers(chatRoom);
+        chatRoom.updateLastMessage(savedMessage);
+        chatRoomRepository.save(chatRoom);
 
+        autoMarkAsReadForActiveUsers(chatRoom);
+
+        Map<Long, Long> unreadCounts = getUnreadCountsForMembers(chatRoom);
+        log.info("{} unread messages have been sent", unreadCounts.size());
         return ChatMessageResponse.builder()
                 .messageId(savedMessage.getId())
                 .roomId(savedMessage.getChatRoom().getId())
@@ -86,6 +96,7 @@ public class ChatService {
      * @param userId
      * @return
      */
+    @Transactional
     public List<ChatRoom> getRooms(Long userId) {
         return chatRoomRepository.findByUserId(userId);
     }
@@ -96,6 +107,7 @@ public class ChatService {
      * @param userId
      * @return
      */
+    @Transactional
     public ChatMessageResponse enterRoom(Long roomId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -103,10 +115,8 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
         ChatRoomMember member = findChatRoomMember(roomId, userId);
-        markAsRead(roomId, userId);
+        markAllMessagesAsRead(roomId, member);
         member.setLeft(false);
-
-        markAllMessagesAsRead(roomId, userId);
 
         // 입장 메시지 생성
         ChatMessage enterMessage = ChatMessage.builder()
@@ -126,6 +136,7 @@ public class ChatService {
      * @param userId
      * @return
      */
+    @Transactional
     public ChatMessageResponse leaveRoom(Long roomId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -178,17 +189,11 @@ public class ChatService {
     /**
      * 모든 메시지 읽음 처리
      * @param roomId
-     * @param userId
+     * @param member
      */
-    private void markAllMessagesAsRead(Long roomId, Long userId) {
-        ChatRoomMember member = findChatRoomMember(roomId, userId);
-        List<ChatMessage> unreadMessages = chatMessageRepository.findUnreadMessages(
-                roomId,
-                member.getLastReadAt()
-        );
-
-        unreadMessages.forEach(ChatMessage::markAsRead);
-        member.updateLastRead(); // 마지막 읽은 시간 업데이트
+    private void markAllMessagesAsRead(Long roomId, ChatRoomMember member) {
+        chatMessageRepository.markMessagesAsRead(roomId, member.getLastReadAt());
+        member.updateLastRead();
     }
 
     /**
@@ -205,5 +210,16 @@ public class ChatService {
                                 member.getLastReadAt()
                         )
                 ));
+    }
+
+    /**
+     * 채팅방에 현재 connect되어있는 멤버 찾아서 읽음처리 진행
+     * @param chatRoom
+     */
+    private void autoMarkAsReadForActiveUsers(ChatRoom chatRoom) {
+        chatRoom.getMembers().stream()
+                .map(member -> member.getMember().getId())
+                .filter(userId -> WebSocketEventHandler.isUserInRoom(userId, chatRoom.getId()))
+                .forEach(userId -> markAsRead(chatRoom.getId(), userId));
     }
 }

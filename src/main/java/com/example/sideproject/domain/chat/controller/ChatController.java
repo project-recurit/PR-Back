@@ -4,6 +4,7 @@ import com.example.sideproject.domain.chat.dto.*;
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.chat.service.ChatService;
+import com.example.sideproject.global.config.WebSocketEventHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Logger;
@@ -68,10 +69,14 @@ public class ChatController {
      * @param request
      * @return
      */
+    //TODO 채팅방 생성 및 입장을 하나의 로직에서 처리하기
     @MessageMapping("/room/{roomId}/enter")
     @SendTo("/sub/chat/room/{roomId}")
-    public ChatMessageResponse enterRoom(@DestinationVariable Long roomId, @Payload EnterRoomRequest request) {
+    public ChatMessageResponse enterRoom(@DestinationVariable Long roomId,
+                                         @Payload EnterRoomRequest request,
+                                         @Header("simpSessionId") String sessionId) {
         log.info("User {} entering room {}", request.getSenderId(), roomId);
+        WebSocketEventHandler.addUserChatSession(sessionId, request.getSenderId(), roomId);
         return chatService.enterRoom(roomId, request.getSenderId());
     }
 
