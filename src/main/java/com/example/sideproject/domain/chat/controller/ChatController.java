@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 public class ChatController {
@@ -41,24 +41,11 @@ public class ChatController {
     }
 
     /**
-     * 채팅방 생성
-     * @param request
-     * @return
-     */
-    @PostMapping("/chat/room")
-    @ResponseBody
-    public ResponseEntity<ChatRoom> createRoom(@RequestBody ChatRoomRequest request) {
-        ChatRoom chatRoom = chatService.createRoom(request.getSenderId(), request.getReceiverId());
-        return ResponseEntity.ok(chatRoom);
-    }
-
-    /**
      * 채팅방 조회
      * @param memberId
      * @return
      */
     @GetMapping("/chat/rooms")
-    @ResponseBody
     public List<ChatRoom> getRooms(@RequestParam Long memberId) {
         return chatService.getRooms(memberId);
     }
@@ -100,7 +87,6 @@ public class ChatController {
      * @return
      */
     @PostMapping("/chat/room/{roomId}/read")
-    @ResponseBody
     public ResponseEntity<Void> markAsRead(@PathVariable Long roomId, @RequestParam Long userId) {
         chatService.markAsRead(roomId, userId);
         return ResponseEntity.ok().build();
@@ -113,7 +99,6 @@ public class ChatController {
      * @return
      */
     @GetMapping("/chat/room/{roomId}/unread")
-    @ResponseBody
     public ResponseEntity<Long> getUnreadCount(@PathVariable Long roomId, @RequestParam Long userId) {
         long count = chatService.getUnreadCount(roomId, userId);
         return ResponseEntity.ok(count);
