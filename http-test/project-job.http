@@ -42,5 +42,5 @@ DELETE {{host}}/api/v1/pr/{{prId}}
 Authorization: Bearer {{accessToken}}
 
 ### 개발자 PR 게시글 목록 조회
-GET localhost:8080/api/v1/pr?page=0&size=20&stacks=DOCKER,SPRING
+GET localhost:8080/api/v1/pr?page=0&size=20&stacks=DOCKER,SPRING,MYSQL,AWS,JAVA
 Content-Type: application/json 
