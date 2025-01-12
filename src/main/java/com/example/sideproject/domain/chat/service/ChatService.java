@@ -2,6 +2,8 @@ package com.example.sideproject.domain.chat.service;
 
 import com.example.sideproject.domain.chat.dto.ChatMessageRequest;
 import com.example.sideproject.domain.chat.dto.ChatMessageResponse;
+import com.example.sideproject.domain.chat.dto.ChatRoomDetailResponse;
+import com.example.sideproject.domain.chat.dto.ChatRoomMemberResponse;
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.chat.entity.ChatRoomMember;
@@ -158,6 +160,55 @@ public class ChatService {
         ChatMessage savedMessage = chatMessageRepository.save(leaveMessage);
         return ChatMessageResponse.from(savedMessage);
     }
+
+    /**
+     * 특정 채팅방 조회
+     * @param roomId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ChatRoomDetailResponse getChatRoomDetail(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
+
+        List<ChatMessage> messages = chatMessageRepository.findAllByChatRoomIdOrderBySentAtAsc(roomId);
+
+        return ChatRoomDetailResponse.builder()
+                .roomId(chatRoom.getId())
+                .messages(messages.stream()
+                        .map(this::convertToChatMessageResponse)
+                        .collect(Collectors.toList()))
+                .lastMessage(chatRoom.getLastMessage() != null ?
+                        convertToChatMessageResponse(chatRoom.getLastMessage()) : null)
+                .members(chatRoom.getMembers().stream()
+                        .map(this::convertToChatRoomMemberResponse)
+                        .collect(Collectors.toList()))
+                .createdAt(chatRoom.getCreatedAt())
+                .build();
+    }
+
+    private ChatMessageResponse convertToChatMessageResponse(ChatMessage message) {
+        return ChatMessageResponse.builder()
+                .messageId(message.getId())
+                .senderId(message.getSender().getId())
+                .senderNickname(message.getSender().getNickname())
+                .content(message.getContent())
+                .type(message.getType())
+                .sentAt(message.getSentAt())
+                .read(message.isRead())
+                .build();
+    }
+
+    private ChatRoomMemberResponse convertToChatRoomMemberResponse(ChatRoomMember member) {
+        return ChatRoomMemberResponse.builder()
+                .userId(member.getMember().getId())
+                .nickname(member.getMember().getNickname())
+                .lastReadAt(member.getLastReadAt())
+                .isLeft(member.isLeft())
+                .leftAt(member.getLeftAt())
+                .build();
+    }
+
 
     /**
      * 메시지 읽음처리

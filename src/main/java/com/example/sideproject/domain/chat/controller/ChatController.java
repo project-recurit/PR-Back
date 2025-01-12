@@ -41,16 +41,6 @@ public class ChatController {
     }
 
     /**
-     * 채팅방 조회
-     * @param memberId
-     * @return
-     */
-    @GetMapping("/chat/rooms")
-    public List<ChatRoom> getRooms(@RequestParam Long memberId) {
-        return chatService.getRooms(memberId);
-    }
-
-    /**
      * 채팅방 입장
      * @param roomId
      * @param request

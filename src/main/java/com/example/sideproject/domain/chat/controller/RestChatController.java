@@ -1,16 +1,18 @@
 package com.example.sideproject.domain.chat.controller;
 
+import com.example.sideproject.domain.chat.dto.ChatRoomDetailResponse;
 import com.example.sideproject.domain.chat.dto.ChatRoomRequest;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/chat")
 public class RestChatController {
     private final ChatService chatService;
 
@@ -19,9 +21,30 @@ public class RestChatController {
      * @param request
      * @return
      */
-    @PostMapping("/chat/room")
+    @PostMapping("/creat/room")
     public ResponseEntity<ChatRoom> createRoom(@RequestBody ChatRoomRequest request) {
         ChatRoom chatRoom = chatService.createRoom(request.getSenderId(), request.getReceiverId());
+        return ResponseEntity.ok(chatRoom);
+    }
+
+    /**
+     * 채팅방 조회
+     * @param memberId
+     * @return
+     */
+    @GetMapping("/rooms")
+    public List<ChatRoom> getRooms(@RequestParam Long memberId) {
+        return chatService.getRooms(memberId);
+    }
+
+    /**
+     * 특정 채팅방 조회
+     * @param roomId
+     * @return
+     */
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<ChatRoomDetailResponse> getRoom(@PathVariable Long roomId) {
+        ChatRoomDetailResponse chatRoom = chatService.getChatRoomDetail(roomId);
         return ResponseEntity.ok(chatRoom);
     }
 }
