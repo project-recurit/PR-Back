@@ -30,4 +30,8 @@ public enum TechStack {
         this.displayName = displayName;
         this.iconClass = iconClass;
     }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 }

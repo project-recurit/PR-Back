@@ -12,7 +12,22 @@ public class EmitterRepository {
     private final Map<Long, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
     public SseEmitter connect(Long id) {
-        return emitterMap.computeIfAbsent(id, key -> new SseEmitter());
+        // 5분 동안 연결
+        SseEmitter sseEmitter = emitterMap.computeIfAbsent(id, key -> new SseEmitter((long) (60000 * 5)));
+        // sse 연결 완료 시 삭제
+        sseEmitter.onCompletion(() -> {
+            disconnect(id);
+        });
+
+        sseEmitter.onTimeout(() -> {
+            disconnect(id);
+        });
+
+        sseEmitter.onError((ex) -> {
+            disconnect(id);
+        });
+
+        return sseEmitter;
     }
 
     public void disconnect(Long id) {

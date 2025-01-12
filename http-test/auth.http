@@ -3,7 +3,7 @@ POST {{host}}/api/v1/auth/login
 Content-Type: application/json
 
 {
-  "id": "test",
+  "id": "test2",
   "password": "password123"
 }
 
