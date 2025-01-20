@@ -24,6 +24,8 @@ public class User extends Timestamped {
     @Column(unique = true)
     private String username;
 
+    private String password;
+
     private String socialId;
 
     private String socialProvider;
@@ -79,9 +81,10 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
-    public User(String username, String email, String nickname,
+    public User(String username, String password, String email, String nickname,
                 Set<TechStack> techStacks, String socialId, String socialProvider) {
         this.username = username;
+        this.password = password;
         this.email = email;
         this.nickname = nickname;
         this.userRole = UserRole.USER;

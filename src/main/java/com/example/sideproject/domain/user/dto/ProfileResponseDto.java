@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class ProfileResponseDto {
     private String nickname;
     private String email;
-    private String contact;
     private String profileUrl;
     private User user;
 
@@ -18,7 +17,6 @@ public class ProfileResponseDto {
     public ProfileResponseDto(User user) {
         this.nickname = user.getNickname();
         this.email = user.getEmail();
-        this.contact = user.getContact();
         this.profileUrl = user.getProfileUrl();
         this.user = user;
     }

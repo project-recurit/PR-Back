@@ -9,13 +9,11 @@ public class SignUpResponseDto {
     private String password;
     private String email;
     private String nickname;
-    private String phone;
 
     public SignUpResponseDto(User user) {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.email = user.getEmail();
         this.nickname = user.getNickname();
-        this.phone = user.getContact();
     }
 }
