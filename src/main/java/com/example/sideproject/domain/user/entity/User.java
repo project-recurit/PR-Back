@@ -24,8 +24,6 @@ public class User extends Timestamped {
     @Column(unique = true)
     private String username;
 
-    private String password;
-
     private String socialId;
 
     private String socialProvider;
@@ -57,11 +55,6 @@ public class User extends Timestamped {
     @Column(name = "users_history")
     private Set<String> usersHistory = new HashSet<>();
 
-    /**
-     * 추후 연락할 수 있는 서비스에 사용, 카카오톡 링크 or Email에 따라서 다르게 할거임
-     */
-    private String contact;
-
     private LocalDateTime lastLoginTime;
 
     @Enumerated(EnumType.STRING)
@@ -86,13 +79,11 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
-    public User(String username, String password, String email, String nickname, 
-                String contact, Set<TechStack> techStacks, String socialId, String socialProvider) {
+    public User(String username, String email, String nickname,
+                Set<TechStack> techStacks, String socialId, String socialProvider) {
         this.username = username;
-        this.password = password;
         this.email = email;
         this.nickname = nickname;
-        this.contact = contact;
         this.userRole = UserRole.USER;
         this.userStatus = UserStatus.ACTIVE_USER;
         this.lastLoginTime = LocalDateTime.now();

@@ -21,6 +21,7 @@ public class ChatMessageResponse {
     private LocalDateTime sentAt;
     private MessageType type;
     private Map<Long, Long> unreadCounts;  // 각 멤버별 읽지 않은 메시지 수
+    private boolean read;
 
     public static ChatMessageResponse from(ChatMessage message) {
         return ChatMessageResponse.builder()
@@ -31,6 +32,7 @@ public class ChatMessageResponse {
                 .content(message.getContent())
                 .sentAt(message.getSentAt())
                 .type(message.getType())
+                .read(message.isRead())
                 .build();
     }
 }

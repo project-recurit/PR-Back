@@ -38,5 +38,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             @Param("lastReadAt") LocalDateTime lastReadAt
     );
 
+    @Query("SELECT m FROM ChatMessage m " +
+            "WHERE m.chatRoom.id = :roomId " +
+            "ORDER BY m.sentAt ASC")
+    List<ChatMessage> findAllByChatRoomIdOrderBySentAtAsc(@Param("roomId") Long roomId);
+
+
 
 }

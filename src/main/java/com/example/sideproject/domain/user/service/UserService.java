@@ -29,32 +29,25 @@ public class UserService {
 
         User user = new User(
             requestDto.getUsername(),
-            passwordEncoder.encode(requestDto.getPassword()),
             requestDto.getEmail(),
             requestDto.getNickname(),
-            requestDto.getContact(),
             requestDto.getTechStacks(),
             requestDto.getSocialId(),
             requestDto.getSocialProvider()
-        );  
+        );
 
         return new SignUpResponseDto(userRepository.save(user));
     }
 
     private void validateSignUpRequest(SignUpRequestDto requestDto) {
         // 아이디 중복 검사
-        if (userRepository.existsByUsername(requestDto.getUsername())) {
+        if (userRepository.existsBySocialId(requestDto.getSocialId())) {
             throw new CustomException(ErrorType.DUPLICATE_ID);
         }
 
         // 닉네임 중복 검사
         if (userRepository.existsByNickname(requestDto.getNickname())) {
             throw new CustomException(ErrorType.DUPLICATE_NICKNAME);
-        }
-
-        // 비밀번호 확인
-        if (!requestDto.getPassword().equals(requestDto.getCheckPassword())) {
-            throw new CustomException(ErrorType.MISMATCH_PASSWORD);
         }
     }
 

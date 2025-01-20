@@ -3,10 +3,12 @@ package com.example.sideproject.domain.pr.service;
 import com.example.sideproject.domain.pr.dto.CreatePublicRelationRequestDto;
 import com.example.sideproject.domain.pr.dto.CreatePublicRelationDetailRequestDto;
 import com.example.sideproject.domain.pr.dto.PublicRelationDto;
-import com.example.sideproject.domain.pr.dto.PublicRelationListResponseDto;
+import com.example.sideproject.domain.pr.dto.read.PublicRelationListResponseDto;
+import com.example.sideproject.domain.pr.dto.search.SearchPublicRelationRequest;
 import com.example.sideproject.domain.pr.entity.PublicRelation;
 import com.example.sideproject.domain.pr.entity.PublicRelationDetail;
 import com.example.sideproject.domain.pr.repository.PublicRelationRepository;
+import com.example.sideproject.domain.pr.repository.query.PublicRelationQueryRepository;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserStatus;
@@ -14,8 +16,6 @@ import com.example.sideproject.global.exception.CustomException;
 import com.example.sideproject.global.enums.ErrorType;  
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,7 @@ import java.util.Objects;
 public class PublicRelationService {
     private final UserRepository userRepository;
     private final PublicRelationRepository publicRelationRepository;
+    private final PublicRelationQueryRepository publicRelationQueryRepository;
 
     @Transactional
     public PublicRelationDto createPublicRelation(CreatePublicRelationRequestDto requestDto, User user) {
@@ -48,9 +49,9 @@ public class PublicRelationService {
     }
 
     @Transactional(readOnly = true)
-    public PagedModel<PublicRelationListResponseDto> getPublicRelations(Pageable pageable) {
-        Page<PublicRelation> publicRelations = publicRelationRepository.findAll(pageable);
-        return new PagedModel<>(publicRelations.map(PublicRelationListResponseDto::of));
+    public PagedModel<PublicRelationListResponseDto> getPublicRelations(SearchPublicRelationRequest request, Pageable pageable) {
+        Page<PublicRelationListResponseDto> publicRelations = publicRelationQueryRepository.findPublicRelationList(request, pageable);
+        return new PagedModel<>(publicRelations);
     }
 
     @Transactional

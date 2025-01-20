@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 public class ChatController {
@@ -41,29 +41,6 @@ public class ChatController {
     }
 
     /**
-     * 채팅방 생성
-     * @param request
-     * @return
-     */
-    @PostMapping("/chat/room")
-    @ResponseBody
-    public ResponseEntity<ChatRoom> createRoom(@RequestBody ChatRoomRequest request) {
-        ChatRoom chatRoom = chatService.createRoom(request.getSenderId(), request.getReceiverId());
-        return ResponseEntity.ok(chatRoom);
-    }
-
-    /**
-     * 채팅방 조회
-     * @param memberId
-     * @return
-     */
-    @GetMapping("/chat/rooms")
-    @ResponseBody
-    public List<ChatRoom> getRooms(@RequestParam Long memberId) {
-        return chatService.getRooms(memberId);
-    }
-
-    /**
      * 채팅방 입장
      * @param roomId
      * @param request
@@ -71,7 +48,6 @@ public class ChatController {
      */
     //TODO 채팅방 생성 및 입장을 하나의 로직에서 처리하기
     @MessageMapping("/room/{roomId}/enter")
-    @SendTo("/sub/chat/room/{roomId}")
     public ChatMessageResponse enterRoom(@DestinationVariable Long roomId,
                                          @Payload EnterRoomRequest request,
                                          @Header("simpSessionId") String sessionId) {
@@ -100,7 +76,6 @@ public class ChatController {
      * @return
      */
     @PostMapping("/chat/room/{roomId}/read")
-    @ResponseBody
     public ResponseEntity<Void> markAsRead(@PathVariable Long roomId, @RequestParam Long userId) {
         chatService.markAsRead(roomId, userId);
         return ResponseEntity.ok().build();
@@ -113,7 +88,6 @@ public class ChatController {
      * @return
      */
     @GetMapping("/chat/room/{roomId}/unread")
-    @ResponseBody
     public ResponseEntity<Long> getUnreadCount(@PathVariable Long roomId, @RequestParam Long userId) {
         long count = chatService.getUnreadCount(roomId, userId);
         return ResponseEntity.ok(count);
