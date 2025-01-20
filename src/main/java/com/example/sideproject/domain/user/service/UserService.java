@@ -29,6 +29,7 @@ public class UserService {
 
         User user = new User(
             requestDto.getUsername(),
+            requestDto.getPassword(),
             requestDto.getEmail(),
             requestDto.getNickname(),
             requestDto.getTechStacks(),
