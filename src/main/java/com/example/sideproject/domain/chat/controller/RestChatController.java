@@ -42,6 +42,7 @@ public class RestChatController {
      * @param roomId
      * @return
      */
+    // TODO 이 컨트롤러를 나중에 채팅방 들어가는걸로 해야하나?
     @GetMapping("/room/{roomId}")
     public ResponseEntity<ChatRoomDetailResponse> getRoom(@PathVariable Long roomId) {
         ChatRoomDetailResponse chatRoom = chatService.getChatRoomDetail(roomId);

@@ -59,6 +59,7 @@ public class ChatService {
      * @param request
      * @return
      */
+    // TODO 이미지도 넣게할 것인가?
     @Transactional
     public ChatMessageResponse sendMessage(ChatMessageRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId())
@@ -138,6 +139,7 @@ public class ChatService {
      * @param userId
      * @return
      */
+    // TODO 채팅방 나가기 했을 때 채팅 보내지 못하게
     @Transactional
     public ChatMessageResponse leaveRoom(Long roomId, Long userId) {
         User user = userRepository.findById(userId)
@@ -187,9 +189,14 @@ public class ChatService {
                 .build();
     }
 
+
+
+
+
     private ChatMessageResponse convertToChatMessageResponse(ChatMessage message) {
         return ChatMessageResponse.builder()
                 .messageId(message.getId())
+                .roomId(message.getChatRoom().getId())
                 .senderId(message.getSender().getId())
                 .senderNickname(message.getSender().getNickname())
                 .content(message.getContent())

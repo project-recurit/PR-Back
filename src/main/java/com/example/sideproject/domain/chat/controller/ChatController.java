@@ -48,7 +48,6 @@ public class ChatController {
      */
     //TODO 채팅방 생성 및 입장을 하나의 로직에서 처리하기
     @MessageMapping("/room/{roomId}/enter")
-    @SendTo("/sub/chat/room/{roomId}")
     public ChatMessageResponse enterRoom(@DestinationVariable Long roomId,
                                          @Payload EnterRoomRequest request,
                                          @Header("simpSessionId") String sessionId) {
