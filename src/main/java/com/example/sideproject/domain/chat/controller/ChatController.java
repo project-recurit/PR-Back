@@ -53,6 +53,7 @@ public class ChatController {
                                          @Header("simpSessionId") String sessionId) {
         log.info("User {} entering room {}", request.getSenderId(), roomId);
         WebSocketEventHandler.addUserChatSession(sessionId, request.getSenderId(), roomId);
+        chatService.markAsRead(roomId, request.getSenderId());
         return chatService.enterRoom(roomId, request.getSenderId());
     }
 
@@ -64,9 +65,25 @@ public class ChatController {
      */
     @MessageMapping("/room/{roomId}/leave")
     @SendTo("/sub/chat/room/{roomId}")
-    public ChatMessageResponse leaveRoom(@DestinationVariable Long roomId, @Payload LeaveRoomRequest request) {
+    public ChatMessageResponse leaveRoom(@DestinationVariable Long roomId, @Payload LeaveRoomRequest request,
+                                         @Header("simpSessionId") String sessionId) {
         log.info("User {} leaving room {}", request.getSenderId(), roomId);
-        return chatService.leaveRoom(roomId, request.getSenderId());
+        return chatService.leaveRoom(roomId, request.getSenderId(), sessionId);
+    }
+
+    /**
+     * 채팅방 세션 종료(뒤로가기)
+     * @param roomId
+     * @param request
+     * @param sessionId
+     */
+    @MessageMapping("/room/{roomId}/disconnect")
+    public void disconnectRoom(@DestinationVariable Long roomId,
+                               @Payload LeaveRoomRequest request,
+                               @Header("simpSessionId") String sessionId) {
+        log.info("User {} disconnecting from room {}", request.getSenderId(), roomId);
+        chatService.disconnectFromRoom(roomId, request.getSenderId());
+        WebSocketEventHandler.removeUserChatSession(sessionId);
     }
 
     /**

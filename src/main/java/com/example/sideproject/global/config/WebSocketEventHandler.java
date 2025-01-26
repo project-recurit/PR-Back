@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class WebSocketEventHandler {
 
-    private final ChatService chatService;
     private final SimpMessageSendingOperations simpMessageSendingOperations;
     private static final Map<String, UserChatSession> chatSessions = new ConcurrentHashMap<>();
 
@@ -47,6 +46,14 @@ public class WebSocketEventHandler {
         if (userChatSession != null) {
             log.info("User disconnected : {} from room : {}", userChatSession.getUserId(), userChatSession.getRoomId());
         }
+    }
+
+    /**
+     * 채팅방 세션 종료(뒤로가기)
+     * @param sessionId
+     */
+    public static void removeUserChatSession(String sessionId) {
+        chatSessions.remove(sessionId);
     }
 
     /**
