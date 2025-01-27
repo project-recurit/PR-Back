@@ -33,14 +33,13 @@ public class AuthService  {
     private final PasswordEncoder passwordEncoder;
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
-        User user = userRepository.findByUsername(requestDto.getId())
+        User user = userRepository.findBySocialId(requestDto.getSocialId())
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
         validateUserStatus(user);
-        validatePassword(requestDto.getPassword(), user.getPassword());
 
         String accessToken = tokenService.createAccessToken(
-                user.getUsername(),
+                user.getSocialId(),
                 user.getUserStatus(),
                 user.getUserRole()
         );
@@ -48,10 +47,10 @@ public class AuthService  {
 
         updateUserLoginInfo(user, refreshToken);
 
-        log.info("User logged in successfully: {}", user.getUsername());
+        log.info("User logged in successfully: {}", user.getSocialId());
 
         return LoginResponseDto.builder()
-                .loginId(user.getUsername())
+                .loginId(user.getSocialId())
                 .userRole(user.getUserRole())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -63,16 +62,16 @@ public class AuthService  {
             if (token.startsWith(JwtTokenHelper.BEARER_PREFIX)) {
                 token = token.substring(JwtTokenHelper.BEARER_PREFIX.length());
             }
-            
-            String username = tokenService.getUserIdFromToken(token);
-            User user = userRepository.findByUsername(username)
+
+            String socialId = tokenService.getUserIdFromToken(token);
+            User user = userRepository.findBySocialId(socialId)
                     .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
             user.logout();
             userRepository.save(user);
             tokenService.invalidateToken(token);
 
-            log.info("User logged out successfully: {}", username);
+            log.info("User logged out successfully: {}", socialId);
         } catch (Exception e) {
             log.error("Logout failed: {}", e.getMessage());
             throw new CustomException(ErrorType.LOGOUT_FAILED);
@@ -81,8 +80,8 @@ public class AuthService  {
 
     public TokenResponseDto refreshToken(String accessToken, String refreshToken) {
         try {
-            String userId = tokenService.getUserIdFromToken(accessToken);
-            User user = userRepository.findByUsername(userId)
+            String socialId = tokenService.getUserIdFromToken(accessToken);
+            User user = userRepository.findBySocialId(socialId)
                     .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
             if (!refreshToken.equals(user.getRefreshToken())) {
@@ -102,7 +101,7 @@ public class AuthService  {
 
             updateUserLoginInfo(user, newRefreshToken);
 
-            log.info("Token refreshed successfully for user: {}", userId);
+            log.info("Token refreshed successfully for user: {}", socialId);
 
             return new TokenResponseDto(newAccessToken, newRefreshToken);
         } catch (Exception e) {
@@ -125,9 +124,5 @@ public class AuthService  {
         }
     }
 
-    private void validatePassword(String requestPassword, String userPassword) {
-        if (!passwordEncoder.matches(requestPassword, userPassword)) {
-            throw new CustomException(ErrorType.MISMATCH_PASSWORD);
-        }
-    }
+
 }

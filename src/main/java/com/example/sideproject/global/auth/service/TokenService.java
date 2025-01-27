@@ -43,8 +43,9 @@ public class TokenService {
     }
 
     private Authentication createAuthentication(String username) {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findBySocialId(username)
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
+
 
         // 토큰에서 추출한 role로 권한 생성
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getUserRole().getAuthority()));

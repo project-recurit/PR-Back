@@ -58,11 +58,11 @@ public class JwtTokenHelper {
     }
 
     // 토큰 생성
-    public String createToken(String username, UserStatus status, UserRole authority) {
+    public String createToken(String socialId, UserStatus status, UserRole authority) {
         Date date = new Date();
 
         String token = Jwts.builder()
-                .setSubject(username)
+                .setSubject(socialId)
                 .claim(AUTHORIZATION_KEY, authority)
                 .claim(STATUS_KET, status)
                 .setExpiration(new Date(date.getTime() + TOKEN_TIME))
@@ -125,8 +125,8 @@ public class JwtTokenHelper {
     }
 
     @Transactional
-    public void loginDateAndSaveRefreshToken(String username, String refreshToken) {
-        User user = userRepository.findByUsername(username)
+    public void loginDateAndSaveRefreshToken(String socialId, String refreshToken) {
+        User user = userRepository.findBySocialId(socialId)
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
         user.saveRefreshToken(refreshToken);
         user.setLogin();

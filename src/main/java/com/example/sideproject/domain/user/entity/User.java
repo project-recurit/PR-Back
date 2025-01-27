@@ -21,7 +21,7 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private long id;
 
-    @Column(unique = true)
+//    @Column(unique = true)
     private String username;
 
     private String password;
@@ -32,7 +32,7 @@ public class User extends Timestamped {
 
     private String email;
 
-    @Column(unique = true)
+//    @Column(unique = true)
     private String nickname;
 
     private String profileUrl;
