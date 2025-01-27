@@ -20,8 +20,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(id)
+    public UserDetails loadUserByUsername(String socialId) throws UsernameNotFoundException {
+        User user = userRepository.findBySocialId(socialId)
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
         if (user.getUserStatus() == UserStatus.WITHDRAW_USER) {
             throw new CustomException(ErrorType.WITHDRAW_USER);
