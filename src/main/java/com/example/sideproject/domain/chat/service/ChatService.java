@@ -2,6 +2,8 @@ package com.example.sideproject.domain.chat.service;
 
 import com.example.sideproject.domain.chat.dto.ChatMessageRequest;
 import com.example.sideproject.domain.chat.dto.ChatMessageResponse;
+import com.example.sideproject.domain.chat.dto.ChatRoomDetailResponse;
+import com.example.sideproject.domain.chat.dto.ChatRoomMemberResponse;
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.chat.entity.ChatRoomMember;
@@ -31,6 +33,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final UserRepository userRepository;
+    private final WebSocketEventHandler webSocketEventHandler;
 
     /**
      * 채팅방 생성
@@ -57,6 +60,7 @@ public class ChatService {
      * @param request
      * @return
      */
+    // TODO 이미지도 넣게할 것인가?
     @Transactional
     public ChatMessageResponse sendMessage(ChatMessageRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId())
@@ -92,6 +96,16 @@ public class ChatService {
     }
 
     /**
+     * 채팅방 세션 종료(뒤로가기)
+     * @param roomId
+     * @param userId
+     */
+    @Transactional
+    public void disconnectFromRoom(Long roomId, Long userId) {
+        ChatRoomMember member = findChatRoomMember(roomId, userId);
+        member.updateLastRead(); // 마지막 읽은 시간 업데이트
+    }
+    /**
      * 내가 있는 채팅방 불러오기
      * @param userId
      * @return
@@ -122,7 +136,7 @@ public class ChatService {
         ChatMessage enterMessage = ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .sender(user)
-                .content(user.getNickname() + "님이 입장하셨습니다.")
+                .content(user.getNickname())
                 .type(MessageType.ENTER)
                 .build();
 
@@ -136,8 +150,9 @@ public class ChatService {
      * @param userId
      * @return
      */
+    // TODO 채팅방 나가기 했을 때 채팅 보내지 못하게
     @Transactional
-    public ChatMessageResponse leaveRoom(Long roomId, Long userId) {
+    public ChatMessageResponse leaveRoom(Long roomId, Long userId, String sessionId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
@@ -147,17 +162,71 @@ public class ChatService {
         member.setLeft(true);
         member.setLeftAt(LocalDateTime.now());
 
-        // 퇴장 메시지 생성
         ChatMessage leaveMessage = ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .sender(user)
                 .content(user.getNickname() + "님이 퇴장하셨습니다.")
-                .type(MessageType.LEAVE)  // 메시지 타입 추가 필요
+                .type(MessageType.LEAVE)
                 .build();
 
         ChatMessage savedMessage = chatMessageRepository.save(leaveMessage);
+        webSocketEventHandler.removeUserChatSession(sessionId);
         return ChatMessageResponse.from(savedMessage);
     }
+
+    /**
+     * 특정 채팅방 조회
+     * @param roomId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ChatRoomDetailResponse getChatRoomDetail(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
+
+        List<ChatMessage> messages = chatMessageRepository.findAllByChatRoomIdOrderBySentAtAsc(roomId);
+
+        return ChatRoomDetailResponse.builder()
+                .roomId(chatRoom.getId())
+                .messages(messages.stream()
+                        .map(this::convertToChatMessageResponse)
+                        .collect(Collectors.toList()))
+                .lastMessage(chatRoom.getLastMessage() != null ?
+                        convertToChatMessageResponse(chatRoom.getLastMessage()) : null)
+                .members(chatRoom.getMembers().stream()
+                        .map(this::convertToChatRoomMemberResponse)
+                        .collect(Collectors.toList()))
+                .createdAt(chatRoom.getCreatedAt())
+                .build();
+    }
+
+
+
+
+
+    private ChatMessageResponse convertToChatMessageResponse(ChatMessage message) {
+        return ChatMessageResponse.builder()
+                .messageId(message.getId())
+                .roomId(message.getChatRoom().getId())
+                .senderId(message.getSender().getId())
+                .senderNickname(message.getSender().getNickname())
+                .content(message.getContent())
+                .type(message.getType())
+                .sentAt(message.getSentAt())
+                .read(message.isRead())
+                .build();
+    }
+
+    private ChatRoomMemberResponse convertToChatRoomMemberResponse(ChatRoomMember member) {
+        return ChatRoomMemberResponse.builder()
+                .userId(member.getMember().getId())
+                .nickname(member.getMember().getNickname())
+                .lastReadAt(member.getLastReadAt())
+                .isLeft(member.isLeft())
+                .leftAt(member.getLeftAt())
+                .build();
+    }
+
 
     /**
      * 메시지 읽음처리

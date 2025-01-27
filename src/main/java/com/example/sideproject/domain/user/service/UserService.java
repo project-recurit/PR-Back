@@ -29,33 +29,27 @@ public class UserService {
 
         User user = new User(
             requestDto.getUsername(),
-            passwordEncoder.encode(requestDto.getPassword()),
+            requestDto.getPassword(),
             requestDto.getEmail(),
             requestDto.getNickname(),
-            requestDto.getContact(),
             requestDto.getTechStacks(),
             requestDto.getSocialId(),
             requestDto.getSocialProvider()
-        );  
+        );
 
         return new SignUpResponseDto(userRepository.save(user));
     }
 
     private void validateSignUpRequest(SignUpRequestDto requestDto) {
         // 아이디 중복 검사
-        if (userRepository.existsByUsername(requestDto.getUsername())) {
+        if (userRepository.existsBySocialId(requestDto.getSocialId())) {
             throw new CustomException(ErrorType.DUPLICATE_ID);
         }
 
-        // 닉네임 중복 검사
-        if (userRepository.existsByNickname(requestDto.getNickname())) {
-            throw new CustomException(ErrorType.DUPLICATE_NICKNAME);
-        }
-
-        // 비밀번호 확인
-        if (!requestDto.getPassword().equals(requestDto.getCheckPassword())) {
-            throw new CustomException(ErrorType.MISMATCH_PASSWORD);
-        }
+//        // 닉네임 중복 검사
+//        if (userRepository.existsByNickname(requestDto.getNickname())) {
+//            throw new CustomException(ErrorType.DUPLICATE_NICKNAME);
+//        }
     }
 
     @Transactional
@@ -71,8 +65,9 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserStack(String username, Set<TechStack> newTechStacks) {
-        User user = findByUsername(username);
+    public void updateUserStack(String socialId, Set<TechStack> newTechStacks) {
+        User user = userRepository.findBySocialId(socialId)
+                .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
         validateActiveUser(user);
         
         user.updateTechStacks(newTechStacks);
@@ -96,8 +91,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    private User findByUsername(String username) {
-        return userRepository.findByUsername(username)
+    private User findBySocialId(String username) {
+        return userRepository.findBySocialId(username)
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
     }
 

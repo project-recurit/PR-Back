@@ -3,6 +3,7 @@ package com.example.sideproject.domain.pr.repository;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.Entity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -14,6 +15,7 @@ import com.example.sideproject.domain.pr.entity.PublicRelation;
 
 @Repository
 public interface PublicRelationRepository extends JpaRepository<PublicRelation, Long> {
+    @EntityGraph(attributePaths = {"techStacks"})
     Optional<PublicRelation> findById(Long projectRecruitId);
 
     Page<PublicRelation> findAll(Pageable pageable);
