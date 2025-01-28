@@ -1,9 +1,12 @@
 package com.example.sideproject.global.auth.service;
 
+import com.example.sideproject.domain.user.dto.SignUpRequestDto;
+import com.example.sideproject.domain.user.dto.SignUpResponseDto;
 import com.example.sideproject.domain.user.entity.User;
 
 import com.example.sideproject.domain.user.entity.UserStatus;
 import com.example.sideproject.domain.user.repository.UserRepository;
+import com.example.sideproject.domain.user.service.UserService;
 import com.example.sideproject.global.auth.dto.LoginRequestDto;
 import com.example.sideproject.global.auth.dto.LoginResponseDto;
 import com.example.sideproject.global.auth.dto.TokenResponseDto;
@@ -20,7 +23,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDateTime;
-
+import java.util.HashSet;
+import java.util.Optional;
 
 
 @Service
@@ -31,12 +35,33 @@ public class AuthService  {
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
-        User user = userRepository.findBySocialId(requestDto.getSocialId())
-                .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
+        Optional<User> optionalUser = userRepository.findBySocialId(requestDto.getSocialId());
 
-        validateUserStatus(user);
+        User user;
+        if (optionalUser.isEmpty()) {
+            SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
+                    .socialId(requestDto.getSocialId())
+                    .socialProvider(requestDto.getProvider())
+                    .email(requestDto.getEmail())
+                    .nickname(requestDto.getNickname())
+                    // 소셜 로그인의 경우 필요한 기본값 설정
+                    .username(requestDto.getSocialId()) // 소셜 ID를 username으로 사용
+                    .password(passwordEncoder.encode(requestDto.getSocialId())) // 임시 비밀번호
+                    .techStacks(requestDto.getTechStacks()) // 빈 기술 스택으로 시작
+                    .build();
+
+            SignUpResponseDto signUpResponse = userService.register(signUpRequestDto);
+            user = userRepository.findBySocialId(signUpResponse.getUsername())
+                    .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
+        }
+
+        else {
+            user = optionalUser.get();
+            validateUserStatus(user);
+        }
 
         String accessToken = tokenService.createAccessToken(
                 user.getSocialId(),
