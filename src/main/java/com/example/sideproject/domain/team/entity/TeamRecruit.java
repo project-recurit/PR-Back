@@ -53,7 +53,8 @@ public class TeamRecruit extends Timestamped{
 
 
     @Builder
-    public TeamRecruit(String title, String content, Set<TechStack> techStacks, String expectedPeriod, String fileUrl, String contact, User user){
+    public TeamRecruit(Long id, String title, String content, Set<TechStack> techStacks, String expectedPeriod, String fileUrl, String contact, User user){
+        this.id = id;
         this.title = title;
         this.content = content;
         this.techStacks = techStacks;

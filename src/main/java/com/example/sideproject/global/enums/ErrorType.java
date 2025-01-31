@@ -127,6 +127,9 @@ public enum ErrorType implements ErrorCode {
 
     PROJECT_RECRUIT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트 구인 게시글입니다."),
 
+    APPLICANT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지원서입니다."),
+    DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST, "이미 지원한 사용자입니다."),
+
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 알림 데이터를 찾을 수 없습니다."),
     ;
 

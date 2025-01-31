@@ -40,6 +40,7 @@ public class TeamRecruitService {
         User foundUser = validateActiveUser(user);
 
         TeamRecruit teamRecruit = new TeamRecruit(
+                null,
             requestDto.getTitle(),
             requestDto.getContent(),
             requestDto.getTechStacks(),

@@ -1,0 +1,24 @@
+### 지원
+POST http://localhost:8080/api/v1/project/18/applicant
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+> {%
+    if (response.body.data) {
+        client.global.set("applicantId", response.body.data)
+    }
+%}
+
+### 지원 상태 변경
+PUT http://localhost:8080/api/v1/project/18/applicant/{{applicantId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "status": "viewed"
+}
+
+### 지원 취소
+DELETE http://localhost:8080/api/v1/project/18/applicant/{{applicantId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
