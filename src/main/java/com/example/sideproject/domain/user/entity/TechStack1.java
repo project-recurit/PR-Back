@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.user.entity;
 
-public enum TechStack {
+public enum TechStack1 {
     // 언어
     JAVA("Java", "java-icon"),
     PYTHON("Python", "python-icon"),
@@ -32,7 +32,7 @@ public enum TechStack {
     private final String displayName;
     private final String iconClass;
 
-    TechStack(String displayName, String iconClass) {
+    TechStack1(String displayName, String iconClass) {
         this.displayName = displayName;
         this.iconClass = iconClass;
     }

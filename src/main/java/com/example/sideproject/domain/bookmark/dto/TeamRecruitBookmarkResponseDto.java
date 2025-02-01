@@ -3,9 +3,9 @@ package com.example.sideproject.domain.bookmark.dto;
 
 import java.util.Set;
 
+import com.example.sideproject.domain.user.entity.TechStack1;
 import lombok.Getter;
 import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
-import com.example.sideproject.domain.user.entity.TechStack;
 import com.example.sideproject.domain.team.entity.TeamRecruit;
 
 @Getter
@@ -23,7 +23,7 @@ public class TeamRecruitBookmarkResponseDto {
     private final Long teamRecruitId;
     private final String title;
     private final String content;
-    private final Set<TechStack> techStacks;
+    private final Set<TechStack1> techStack1s;
     private final String expectedPeriod;
     private final String contact;
 
@@ -42,7 +42,7 @@ public class TeamRecruitBookmarkResponseDto {
         this.teamRecruitId = recruit.getId();
         this.title = recruit.getTitle();
         this.content = recruit.getContent();
-        this.techStacks = recruit.getTechStacks();
+        this.techStack1s = recruit.getTechStack1s();
         this.expectedPeriod = recruit.getExpectedPeriod();
         this.contact = recruit.getContact();
     }

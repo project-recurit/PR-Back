@@ -5,7 +5,7 @@ Authorization: Bearer {{accessToken}}
 
 {
   "title": "3년차 백엔드 개발자입니다",
-  "techStacks": ["JAVA", "SPRING", "AWS"],
+  "techStack1s": ["JAVA", "SPRING", "AWS"],
   "prDetails": [{
     "title": "경력",
     "description": "00서비스 개발 - 대규모 트래픽 처리 및 클라우드 아키텍처 설계"
@@ -30,7 +30,7 @@ Authorization: Bearer {{accessToken}}
 
 {
   "title": "AWS 경험이 풍부한 백엔드 개발자입니다",
-  "techStacks": ["JAVA", "SPRING", "MYSQL", "AWS"],
+  "techStack1s": ["JAVA", "SPRING", "MYSQL", "AWS"],
   "prDetails": [{
     "title": "포트폴리오-업데이트",
     "description": "https://github.com/myportfolio-updated"

@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.pr.dto.search;
 
-import com.example.sideproject.domain.user.entity.TechStack;
+import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.global.validation.techstack.TechStackSize;
 
 import java.util.Arrays;
@@ -10,10 +10,10 @@ public record SearchPublicRelationRequest(
         @TechStackSize String stacks
 ) {
 
-    public List<TechStack> toList() {
+    public List<TechStack1> toList() {
         String[] stackArr = stacks.split(",");
         return Arrays.stream(stackArr)
-                .map(TechStack::valueOf)
+                .map(TechStack1::valueOf)
                 .toList();
     }
 }

@@ -65,7 +65,7 @@ public class PublicRelationService {
 
         publicRelation.update(requestDto.title(),
                 details,
-                requestDto.techStacks()
+                requestDto.techStack1s()
         );
     }
 

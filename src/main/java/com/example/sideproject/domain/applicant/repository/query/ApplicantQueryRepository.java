@@ -4,7 +4,6 @@ import com.example.sideproject.domain.applicant.dto.ApplicantResponseDto;
 import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.entity.QApplicant;
-import com.example.sideproject.domain.user.entity.TechStack;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;

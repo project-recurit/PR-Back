@@ -3,11 +3,10 @@ package com.example.sideproject.domain.pr.repository.query;
 import com.example.sideproject.domain.pr.dto.read.PublicRelationListResponseDto;
 import com.example.sideproject.domain.pr.dto.read.PublicRelationReadDto;
 import com.example.sideproject.domain.pr.dto.search.SearchPublicRelationRequest;
-import com.example.sideproject.domain.pr.entity.PublicRelation;
 import com.example.sideproject.domain.pr.entity.PublicRelationTechStacks;
 import com.example.sideproject.domain.pr.entity.QPublicRelation;
 import com.example.sideproject.domain.pr.entity.QPublicRelationTechStacks;
-import com.example.sideproject.domain.user.entity.TechStack;
+import com.example.sideproject.domain.user.entity.TechStack1;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -54,16 +53,16 @@ public class PublicRelationQueryRepository {
                 .where(qPrTs.publicRelation.id.in(ids))
                 .fetch();
 
-        Map<Long, List<TechStack>> techStacksMap = techStacks.stream()
+        Map<Long, List<TechStack1>> techStacksMap = techStacks.stream()
                 .collect(Collectors.groupingBy(PublicRelationTechStacks::getPublicRelationId,
-                        Collectors.mapping(PublicRelationTechStacks::getTechStack, Collectors.toList())));
+                        Collectors.mapping(PublicRelationTechStacks::getTechStack1, Collectors.toList())));
 
         List<PublicRelationListResponseDto> result = publicRelations.stream()
                 .map(pr -> PublicRelationListResponseDto.builder()
                         .id(pr.id())
                         .title(pr.title())
                         .username(pr.username())
-                        .techStacks(techStacksMap.get(pr.id()))
+                        .techStack1s(techStacksMap.get(pr.id()))
                         .build()
                 ).toList();
 
@@ -86,11 +85,11 @@ public class PublicRelationQueryRepository {
                 .orElse(null);
     }
 
-    private BooleanExpression existsTechStack(TechStack techStack) {
+    private BooleanExpression existsTechStack(TechStack1 techStack1) {
         return JPAExpressions
                 .selectOne()
                 .from(qPrTs)
-                .where(qPrTs.techStack.eq(techStack)
+                .where(qPrTs.techStack1.eq(techStack1)
                         .and(qPrTs.publicRelation.id.eq(qPr.id)))
                 .exists();
     }
