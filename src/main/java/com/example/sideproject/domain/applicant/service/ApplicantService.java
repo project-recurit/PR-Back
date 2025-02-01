@@ -1,8 +1,11 @@
 package com.example.sideproject.domain.applicant.service;
 
+import com.example.sideproject.domain.applicant.dto.ApplicantResponseDto;
+import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
 import com.example.sideproject.domain.applicant.entity.Applicant;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.repository.ApplicantRepository;
+import com.example.sideproject.domain.applicant.repository.query.ApplicantQueryRepository;
 import com.example.sideproject.domain.team.entity.TeamRecruit;
 import com.example.sideproject.domain.team.service.TeamRecruitService;
 import com.example.sideproject.domain.user.entity.User;
@@ -12,11 +15,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final TeamRecruitService teamRecruitService;
+    private final ApplicantQueryRepository applicantQueryRepository;
 
     /**
      * 프로젝트 지원
@@ -59,5 +65,12 @@ public class ApplicantService {
         Applicant applicant = applicantRepository.findByIdAndProjectAndUser(applicantId, project, user)
                 .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
         applicantRepository.delete(applicant);
+    }
+
+    /**
+     * 해당 프로젝트의 지원자 목록 조회
+     */
+    public List<ApplicantResponseDto> getApplicants(User user, Long projectId, SearchApplicantDto searchDto) {
+        return applicantQueryRepository.findApplicants(user.getId(), projectId, searchDto);
     }
 }
