@@ -4,7 +4,7 @@ import com.example.sideproject.domain.user.dto.ProfileRequestDto;
 import com.example.sideproject.domain.user.dto.ProfileResponseDto;
 import com.example.sideproject.domain.user.dto.SignUpRequestDto;
 import com.example.sideproject.domain.user.dto.SignUpResponseDto;
-import com.example.sideproject.domain.user.entity.TechStack;
+import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.enums.ErrorType;
@@ -32,7 +32,7 @@ public class UserService {
             requestDto.getPassword(),
             requestDto.getEmail(),
             requestDto.getNickname(),
-            requestDto.getTechStacks(),
+            requestDto.getTechStack1s(),
             requestDto.getSocialId(),
             requestDto.getSocialProvider()
         );
@@ -65,12 +65,12 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserStack(String socialId, Set<TechStack> newTechStacks) {
+    public void updateUserStack(String socialId, Set<TechStack1> newTechStack1s) {
         User user = userRepository.findBySocialId(socialId)
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
         validateActiveUser(user);
         
-        user.updateTechStacks(newTechStacks);
+        user.updateTechStacks(newTechStack1s);
         userRepository.save(user);
     }
 

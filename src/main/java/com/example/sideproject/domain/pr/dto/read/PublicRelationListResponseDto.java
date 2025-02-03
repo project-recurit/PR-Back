@@ -1,8 +1,7 @@
 package com.example.sideproject.domain.pr.dto.read;
 
 import com.example.sideproject.domain.pr.entity.PublicRelation;
-import com.example.sideproject.domain.pr.entity.PublicRelationTechStacks;
-import com.example.sideproject.domain.user.entity.TechStack;
+import com.example.sideproject.domain.user.entity.TechStack1;
 import lombok.Builder;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public record PublicRelationListResponseDto(
         Long id,
         String title,
         String username,
-        List<TechStack> techStacks
+        List<TechStack1> techStack1s
 ) {
 
     public static PublicRelationListResponseDto of(PublicRelation pr) {
@@ -20,7 +19,7 @@ public record PublicRelationListResponseDto(
                 .id(pr.getId())
                 .title(pr.getTitle())
                 .username(pr.getUser().getUsername())
-                .techStacks(pr.getTechStackList())
+                .techStack1s(pr.getTechStackList())
                 .build();
     }
 

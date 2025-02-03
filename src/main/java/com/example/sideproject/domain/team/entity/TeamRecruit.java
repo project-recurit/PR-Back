@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import com.example.sideproject.domain.user.entity.TechStack;
+import com.example.sideproject.domain.user.entity.TechStack1;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import java.util.Set;
@@ -35,7 +35,7 @@ public class TeamRecruit extends Timestamped{
             name = "team_recruit_tech_stacks",
             joinColumns = @JoinColumn(name = "team_recruit_id")
     )
-    private Set<TechStack> techStacks = new HashSet<>();
+    private Set<TechStack1> techStack1s = new HashSet<>();
 
     private String expectedPeriod;
 
@@ -53,21 +53,22 @@ public class TeamRecruit extends Timestamped{
 
 
     @Builder
-    public TeamRecruit(String title, String content, Set<TechStack> techStacks, String expectedPeriod, String fileUrl, String contact, User user){
+    public TeamRecruit(Long id, String title, String content, Set<TechStack1> techStack1s, String expectedPeriod, String fileUrl, String contact, User user){
+        this.id = id;
         this.title = title;
         this.content = content;
-        this.techStacks = techStacks;
+        this.techStack1s = techStack1s;
         this.expectedPeriod = expectedPeriod;
         this.fileUrl = fileUrl;
         this.contact = contact;
         this.user = user;
     }
 
-    public void update(String title, String content, Set<TechStack> techStacks, 
+    public void update(String title, String content, Set<TechStack1> techStack1s,
                       String expectedPeriod, String fileUrl, String contact) {
         this.title = title;
         this.content = content;
-        this.techStacks = techStacks;
+        this.techStack1s = techStack1s;
         this.expectedPeriod = expectedPeriod;
         this.fileUrl = fileUrl;
         this.contact = contact;

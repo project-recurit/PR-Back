@@ -1,10 +1,8 @@
 package com.example.sideproject.domain.pr.entity;
 
-import com.example.sideproject.domain.user.entity.TechStack;
+import com.example.sideproject.domain.user.entity.TechStack1;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -20,7 +18,7 @@ public class PublicRelationTechStacks {
     @JoinColumn(name = "publicRelation_id")
     private PublicRelation publicRelation;
 
-    private TechStack techStack;
+    private TechStack1 techStack1;
 
     public void addPublicRelation(PublicRelation publicRelation) {
         this.publicRelation = publicRelation;

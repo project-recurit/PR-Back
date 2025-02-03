@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.sideproject.domain.pr.entity.PublicRelation;
-import com.example.sideproject.domain.user.entity.TechStack;
+import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
 import lombok.Builder;
 
@@ -12,14 +12,14 @@ import lombok.Builder;
 public record CreatePublicRelationRequestDto(
         String title,
         List<CreatePublicRelationDetailRequestDto> prDetails,
-        Set<TechStack> techStacks
+        Set<TechStack1> techStack1s
 ) {
     public PublicRelation toEntity(User user) {
         return PublicRelation.builder()
                 .user(user)
                 .title(title)
                 .prDetails(prDetails.stream().map(CreatePublicRelationDetailRequestDto::toEntity).toList())
-                .techStacks(techStacks)
+                .techStack1s(techStack1s)
                 .build();
     }
 }

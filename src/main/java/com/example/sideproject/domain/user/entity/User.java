@@ -45,7 +45,7 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     @Column(name = "tech_stack")
     // 순서 보장이 필요X, 중복 허용X -> Set 사용(List랑 반대)
-    private Set<TechStack> techStacks = new HashSet<>();
+    private Set<TechStack1> techStack1s = new HashSet<>();
 
     // 경력
     @ElementCollection
@@ -73,8 +73,8 @@ public class User extends Timestamped {
     private UUID uuid;
 
     
-    public void addTechStack(Set<TechStack> techStacks) {
-        this.techStacks.addAll(techStacks);
+    public void addTechStack(Set<TechStack1> techStack1s) {
+        this.techStack1s.addAll(techStack1s);
     }
 
     // 북마크 관련 필드 추가
@@ -82,7 +82,7 @@ public class User extends Timestamped {
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
     public User(String username, String password, String email, String nickname,
-                Set<TechStack> techStacks, String socialId, String socialProvider) {
+                Set<TechStack1> techStack1s, String socialId, String socialProvider) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -91,8 +91,8 @@ public class User extends Timestamped {
         this.userStatus = UserStatus.ACTIVE_USER;
         this.lastLoginTime = LocalDateTime.now();
         this.uuid = generateType4UUID();
-        if(techStacks != null) {
-            this.techStacks = techStacks;
+        if(techStack1s != null) {
+            this.techStack1s = techStack1s;
         }
         this.socialId = socialId;
         this.socialProvider = socialProvider;
@@ -144,9 +144,9 @@ public class User extends Timestamped {
         return this.userStatus == UserStatus.ACTIVE_USER;
     }
 
-    public void updateTechStacks(Set<TechStack> newTechStacks) {
-        this.techStacks.clear();
-        this.techStacks.addAll(newTechStacks);
+    public void updateTechStacks(Set<TechStack1> newTechStack1s) {
+        this.techStack1s.clear();
+        this.techStack1s.addAll(newTechStack1s);
     }
 
     public void updateProfile(String nickname) {

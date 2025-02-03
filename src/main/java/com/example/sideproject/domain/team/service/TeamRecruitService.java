@@ -3,9 +3,6 @@ package com.example.sideproject.domain.team.service;
 import com.example.sideproject.domain.team.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.team.dto.CreateTeamRecruitResponseDto;
 import com.example.sideproject.domain.team.dto.CreateTeamRecruitPageResponseDto;
-import com.example.sideproject.global.notification.aop.annotation.NotifyOn;
-import com.example.sideproject.global.notification.dto.EventDto;
-import com.example.sideproject.global.notification.entity.NotificationType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,9 +37,10 @@ public class TeamRecruitService {
         User foundUser = validateActiveUser(user);
 
         TeamRecruit teamRecruit = new TeamRecruit(
+                null,
             requestDto.getTitle(),
             requestDto.getContent(),
-            requestDto.getTechStacks(),
+            requestDto.getTechStack1s(),
             requestDto.getExpectedPeriod(),
             requestDto.getFileUrl(),
             requestDto.getContact(),
@@ -51,12 +49,12 @@ public class TeamRecruitService {
 
         teamRecruitRepository.save(teamRecruit);
 
-        List<User> users = findUserByTechStacks(teamRecruit.getTechStacks());
-        teamRecruitNoticeService.notice(teamRecruit, users, requestDto.getTechStacks());
+        List<User> users = findUserByTechStacks(teamRecruit.getTechStack1s());
+        teamRecruitNoticeService.notice(teamRecruit, users, requestDto.getTechStack1s());
     }
 
-    private List<User> findUserByTechStacks(Set<TechStack> techStacks) {
-        return userRepository.findByTechStacksIn(techStacks);
+    private List<User> findUserByTechStacks(Set<TechStack1> techStack1s) {
+        return userRepository.findByTechStack1sIn(techStack1s);
     }
 
 
@@ -74,7 +72,7 @@ public class TeamRecruitService {
         teamRecruit.update(
             requestDto.getTitle(),
             requestDto.getContent(),
-            requestDto.getTechStacks(),
+            requestDto.getTechStack1s(),
             requestDto.getExpectedPeriod(),
             requestDto.getFileUrl(),
             requestDto.getContact()

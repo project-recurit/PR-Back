@@ -1,13 +1,10 @@
 package com.example.sideproject.domain.pr.entity;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
-
-import com.example.sideproject.domain.user.entity.TechStack;
+import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 
@@ -22,7 +19,7 @@ import org.hibernate.annotations.BatchSize;
 public class PublicRelation extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String title;
 
@@ -42,11 +39,11 @@ public class PublicRelation extends Timestamped {
     private User user;
 
     @Builder
-    public PublicRelation(long id, String title, List<PublicRelationDetail> prDetails, Set<TechStack> techStacks, int viewCount, int likeCount, User user) {
+    public PublicRelation(long id, String title, List<PublicRelationDetail> prDetails, Set<TechStack1> techStack1s, int viewCount, int likeCount, User user) {
         this.id = id;
         this.title = title;
         this.prDetails = prDetails;
-        this.techStacks = toTechStacks(techStacks);
+        this.techStacks = toTechStacks(techStack1s);
         this.viewCount = viewCount;
         this.likeCount = likeCount;
         this.user = user;
@@ -63,24 +60,24 @@ public class PublicRelation extends Timestamped {
         }
     }
 
-    private List<PublicRelationTechStacks> toTechStacks(Set<TechStack> techStacks) {
+    private List<PublicRelationTechStacks> toTechStacks(Set<TechStack1> techStack1s) {
         List<PublicRelationTechStacks> result = new ArrayList<>();
-        for (TechStack techStack : techStacks) {
+        for (TechStack1 techStack1 : techStack1s) {
             result.add(
                     PublicRelationTechStacks.builder()
                             .publicRelation(this)
-                            .techStack(techStack)
+                            .techStack1(techStack1)
                             .build()
             );
         }
         return result;
     }
 
-    public void update(String title, List<PublicRelationDetail> prDetails, Set<TechStack> techStacks) {
+    public void update(String title, List<PublicRelationDetail> prDetails, Set<TechStack1> techStack1s) {
         this.title = title;
 
         this.techStacks.clear();
-        this.techStacks.addAll(toTechStacks(techStacks));
+        this.techStacks.addAll(toTechStacks(techStack1s));
 
         this.prDetails.clear();
         this.prDetails.addAll(prDetails);
@@ -91,8 +88,8 @@ public class PublicRelation extends Timestamped {
         this.viewCount++;
     }
 
-    public List<TechStack> getTechStackList() {
-        return techStacks.stream().map(PublicRelationTechStacks::getTechStack).toList();
+    public List<TechStack1> getTechStackList() {
+        return techStacks.stream().map(PublicRelationTechStacks::getTechStack1).toList();
     }
 }
 

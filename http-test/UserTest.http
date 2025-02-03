@@ -8,7 +8,7 @@ Content-Type: application/json
   "checkPassword": "password123",
   "nickname": "test1",
   "email": "test@example.com",
-  "techStacks": ["PYTHON", "DJANGO"]
+  "techStack1s": ["PYTHON", "DJANGO"]
 }
 
 ### 로그인 요청
@@ -42,7 +42,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "techStacks": ["JAVA", "SPRING", "REACT", "PYTHON"]
+  "techStack1s": ["JAVA", "SPRING", "REACT", "PYTHON"]
 }
 
 ### 회원 정보 업데이트 요청
