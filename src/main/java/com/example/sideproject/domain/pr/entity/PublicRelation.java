@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-
-import com.example.sideproject.domain.techstack.TechStackMappable;
 import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
@@ -18,7 +16,7 @@ import org.hibernate.annotations.BatchSize;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-public class PublicRelation extends Timestamped implements TechStackMappable {
+public class PublicRelation extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
