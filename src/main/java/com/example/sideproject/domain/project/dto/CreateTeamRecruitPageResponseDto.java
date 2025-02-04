@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.team.dto;
+package com.example.sideproject.domain.project.dto;
 
 import lombok.Getter;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.applicant.entity;
 
-import com.example.sideproject.domain.team.entity.TeamRecruit;
+import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -18,7 +18,7 @@ public class Applicant extends Timestamped {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private TeamRecruit project;
+    private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;

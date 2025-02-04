@@ -33,15 +33,15 @@ public class ApplicantController {
                                                        @PathVariable("projectId") Long projectId){
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, applicantService.apply(userDetails.getUser(), projectId)));
     }
-
-    @PutMapping("/{applicantId}")
-    public ResponseEntity<ResponseDataDto<Void>> updateStatus(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                              @PathVariable("projectId") Long projectId,
-                                                              @PathVariable("applicantId") Long applicantId,
-                                                              @RequestBody ApplicantRequestDto req){
-        applicantService.updateStatus(userDetails.getUser(), projectId, applicantId, req.status());
-        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, null));
-    }
+//
+//    @PutMapping("/{applicantId}")
+//    public ResponseEntity<ResponseDataDto<Void>> updateStatus(@AuthenticationPrincipal UserDetailsImpl userDetails,
+//                                                              @PathVariable("projectId") Long projectId,
+//                                                              @PathVariable("applicantId") Long applicantId,
+//                                                              @RequestBody ApplicantRequestDto req){
+//        applicantService.updateStatus(userDetails.getUser(), projectId, applicantId, req.status());
+//        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, null));
+//    }
 
     @DeleteMapping("/{applicantId}")
     public ResponseEntity<ResponseDataDto<Void>> cancel(@AuthenticationPrincipal UserDetailsImpl userDetails,

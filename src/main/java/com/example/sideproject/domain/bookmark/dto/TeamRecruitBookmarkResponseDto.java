@@ -6,7 +6,7 @@ import java.util.Set;
 import com.example.sideproject.domain.user.entity.TechStack1;
 import lombok.Getter;
 import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
-import com.example.sideproject.domain.team.entity.TeamRecruit;
+import com.example.sideproject.domain.project.entity.Project;
 
 @Getter
 public class TeamRecruitBookmarkResponseDto {
@@ -23,7 +23,7 @@ public class TeamRecruitBookmarkResponseDto {
     private final Long teamRecruitId;
     private final String title;
     private final String content;
-    private final Set<TechStack1> techStack1s;
+//    private final Set<TechStack1> techStack1s;
     private final String expectedPeriod;
     private final String contact;
 
@@ -38,11 +38,11 @@ public class TeamRecruitBookmarkResponseDto {
         this.username = bookmark.getUser().getUsername();
         
         // 팀 모집글 정보 매핑
-        TeamRecruit recruit = bookmark.getTeamRecruit();
+        Project recruit = bookmark.getProject();
         this.teamRecruitId = recruit.getId();
         this.title = recruit.getTitle();
         this.content = recruit.getContent();
-        this.techStack1s = recruit.getTechStack1s();
+//        this.techStack1s = recruit.getTechStack1s();
         this.expectedPeriod = recruit.getExpectedPeriod();
         this.contact = recruit.getContact();
     }
