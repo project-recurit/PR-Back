@@ -49,13 +49,13 @@ public class ApplicantService {
     /**
      * 프로젝트 지원 상태 변경
      */
-//    @Transactional
-//    public void updateStatus(User user, Long projectId, Long applicantId, ApplicationStatus status) {
-//        Project project = Project.builder().id(projectId).build();
-//        Applicant applicant = applicantRepository.findByIdAndProjectAndUser(applicantId, project, user)
-//                .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
-//        applicant.updateStatus(status);
-//    }
+    @Transactional
+    public void updateStatus(User user, Long projectId, Long applicantId, ApplicationStatus status) {
+        Project project = projectService.findProject(projectId);
+        Applicant applicant = applicantRepository.findByIdAndProjectAndUser(applicantId, project, user)
+                .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
+        applicant.updateStatus(status);
+    }
 
     /**
      * 프로젝트 지원 삭제
