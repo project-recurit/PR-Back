@@ -1,6 +1,6 @@
-package com.example.sideproject.domain.team.service;
+package com.example.sideproject.domain.project.service;
 
-import com.example.sideproject.domain.team.entity.TeamRecruit;
+import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.notification.aop.annotation.NotifyOn;
@@ -14,10 +14,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class TeamRecruitNoticeService {
+public class ProjectNoticeService {
 
     @NotifyOn
-    public EventListDto notice(TeamRecruit recruit, List<User> users, Set<TechStack1> techStack1s) {
+    public EventListDto notice(Project recruit, List<User> users, Set<TechStack1> techStack1s) {
         String msg = "\'" + recruit.getTitle() + "\' 가 등록되었습니다.";
         return new EventListDto(users.stream()
                 .map(user -> new EventDto(

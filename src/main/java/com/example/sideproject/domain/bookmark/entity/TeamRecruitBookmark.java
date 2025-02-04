@@ -2,7 +2,7 @@ package com.example.sideproject.domain.bookmark.entity;
 
 import com.example.sideproject.global.entity.Timestamped;
 import com.example.sideproject.domain.user.entity.User;
-import com.example.sideproject.domain.team.entity.TeamRecruit;
+import com.example.sideproject.domain.project.entity.Project;
     
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,11 +21,11 @@ public class TeamRecruitBookmark extends Timestamped {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_recruit_id")
-    private TeamRecruit teamRecruit;
+    @JoinColumn(name = "project_id")
+    private Project project;
 
-    public TeamRecruitBookmark(User user, TeamRecruit teamRecruit) {
+    public TeamRecruitBookmark(User user, Project project) {
         this.user = user;
-        this.teamRecruit = teamRecruit;
+        this.project = project;
     }
 } 
