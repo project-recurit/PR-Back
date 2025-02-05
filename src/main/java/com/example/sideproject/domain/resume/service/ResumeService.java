@@ -47,6 +47,9 @@ public class ResumeService {
     @Transactional
     public void publish(User user, Long resumeId) {
         Resume resume = getResumeByIdAndUser(resumeId, user);
+        if (!resume.canPublish()) {
+            throw new CustomException(ErrorType.PUBLISH_FAILED);
+        }
         resume.setPublished(true);
     }
 
