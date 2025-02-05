@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.techstack;
+package com.example.sideproject.domain.techstack.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

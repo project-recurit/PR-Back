@@ -34,10 +34,13 @@ public class UserService {
             requestDto.getNickname(),
             requestDto.getTechStack1s(),
             requestDto.getSocialId(),
-            requestDto.getSocialProvider()
+            requestDto.getSocialProvider(),
+            requestDto.getPosition()
         );
 
-        return new SignUpResponseDto(userRepository.save(user));
+        userRepository.save(user);
+
+        return new SignUpResponseDto(user);
     }
 
     private void validateSignUpRequest(SignUpRequestDto requestDto) {

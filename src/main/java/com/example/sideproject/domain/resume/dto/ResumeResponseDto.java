@@ -1,6 +1,7 @@
 package com.example.sideproject.domain.resume.dto;
 
 import com.example.sideproject.domain.resume.entity.Resume;
+import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.global.enums.WorkType;
 import lombok.Builder;
 

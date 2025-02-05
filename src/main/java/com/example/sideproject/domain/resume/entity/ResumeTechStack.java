@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.resume.entity;
 
-import com.example.sideproject.domain.techstack.TechStack;
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import jakarta.persistence.*;
 import lombok.*;
 
