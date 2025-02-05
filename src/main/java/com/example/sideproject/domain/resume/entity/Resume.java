@@ -88,6 +88,10 @@ public class Resume extends Timestamped {
         this.publishedAt = LocalDateTime.now();
     }
 
+    public boolean canPublish() {
+        return !title.isEmpty() && !introduce.isEmpty();
+    }
+
     public boolean checkPublishStatus() {
         return publishedAt != null;
     }
