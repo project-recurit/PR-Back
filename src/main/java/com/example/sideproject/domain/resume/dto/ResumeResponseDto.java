@@ -10,9 +10,11 @@ import java.util.List;
 public record ResumeResponseDto(
         Long resumeId,
         Long userId,
+        String position,
         String title,
         String introduce,
         List<String> documentUrl,
+        List<TechStackDto> techStacks,
         List<ExperienceResponseDto> experiences,
         LocalDateTime publishedAt,
         String createdAt,
@@ -22,9 +24,11 @@ public record ResumeResponseDto(
         return ResumeResponseDto.builder()
                 .resumeId(resume.getId())
                 .userId(resume.getUser().getId())
+                .position(resume.getPosition())
                 .title(resume.getTitle())
                 .introduce(resume.getIntroduce())
                 .documentUrl(resume.getDocumentUrl())
+                .techStacks(resume.getResumeTechStacks().stream().map(TechStackDto::of).toList())
                 .experiences(resume.getExperiences().stream().map(ExperienceResponseDto::of).toList())
                 .publishedAt(resume.getPublishedAt())
                 .createdAt(resume.getCreatedAt())

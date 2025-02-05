@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.resume.entity;
 
+import com.example.sideproject.domain.techstack.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -23,6 +24,8 @@ public class Resume extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String position;
+
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -35,22 +38,41 @@ public class Resume extends Timestamped {
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Experience> experiences;
 
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResumeTechStack> resumeTechStacks;
+
     @Builder
-    public Resume(Long id, User user, String title, String introduce, List<String> documentUrl, LocalDateTime publishedAt, List<Experience> experiences) {
+    public Resume(Long id, User user, String position, String title, String introduce, List<String> documentUrl, LocalDateTime publishedAt, List<Experience> experiences, List<TechStack> resumeTechStacks) {
         this.id = id;
         this.user = user;
+        this.position = position;
         this.title = title;
         this.introduce = introduce;
         this.documentUrl = String.join(",", documentUrl);
         this.publishedAt = publishedAt;
         this.experiences = addExperiences(experiences);
+        this.resumeTechStacks = addTechStack(resumeTechStacks);
+    }
+
+    public List<ResumeTechStack> addTechStack(List<TechStack> techStacks) {
+        List<ResumeTechStack> result = new ArrayList<>();
+        for (TechStack techStack : techStacks) {
+            ResumeTechStack resumeTechStack = ResumeTechStack.builder()
+                    .resume(this)
+                    .techStack(techStack)
+                    .build();
+            result.add(resumeTechStack);
+        }
+        return result;
     }
 
     public void update(Resume resume) {
+        this.position = resume.position;
         this.title = resume.title;
         this.introduce = resume.introduce;
         this.documentUrl = String.join(",", resume.documentUrl);
         updateExperience(resume.experiences);
+        updateTechStack(resume.resumeTechStacks);
     }
 
     public void setPublished(boolean published) {
@@ -59,6 +81,14 @@ public class Resume extends Timestamped {
             return;
         }
         this.publishedAt = LocalDateTime.now();
+    }
+
+    private void updateTechStack(List<ResumeTechStack> resumeTechStacks) {
+        this.resumeTechStacks.clear();
+        for (ResumeTechStack resumeTechStack : resumeTechStacks) {
+            resumeTechStack.setResume(this);
+        }
+        this.resumeTechStacks.addAll(resumeTechStacks);
     }
 
     /**
@@ -97,6 +127,10 @@ public class Resume extends Timestamped {
             result.add(experience);
         }
         return result;
+    }
+
+    public List<TechStack> getResumeTechStacks() {
+        return resumeTechStacks.stream().map(ResumeTechStack::getTechStack).toList();
     }
 
     public List<String> getDocumentUrl() {
