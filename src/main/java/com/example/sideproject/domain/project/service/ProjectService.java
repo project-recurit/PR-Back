@@ -3,9 +3,6 @@ package com.example.sideproject.domain.project.service;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitResponseDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
-import com.example.sideproject.domain.project.entity.ProjectUrl;
-import com.example.sideproject.domain.project.entity.RecruitStatus;
-import com.example.sideproject.domain.techstack.TechStack;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +14,6 @@ import com.example.sideproject.global.exception.CustomException;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.multipart.MultipartFile;
 
 
 @Service

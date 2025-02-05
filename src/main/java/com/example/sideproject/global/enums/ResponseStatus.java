@@ -120,6 +120,7 @@ public enum ResponseStatus {
     GET_BOOKMARKS_SUCCESS(HttpStatus.OK, "북마크 조회에 성공하였습니다."),
     BOOKMARK_SUCCESS(HttpStatus.OK, "북마크 상태가 변경되었습니다.");
 
+
     private final HttpStatus httpStatus;
     private final String message;
 }

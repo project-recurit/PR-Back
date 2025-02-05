@@ -1,11 +1,10 @@
 package com.example.sideproject.domain.resume.repository.query;
 
 import com.example.sideproject.domain.pr.dto.PrResponseDto;
-import com.example.sideproject.domain.resume.dto.TechStackDto;
+import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.resume.entity.QResume;
 import com.example.sideproject.domain.resume.entity.QResumeTechStack;
 import com.example.sideproject.domain.resume.entity.Resume;
-import com.example.sideproject.domain.resume.entity.ResumeTechStack;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;

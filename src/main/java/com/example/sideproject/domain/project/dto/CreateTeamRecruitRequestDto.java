@@ -1,9 +1,9 @@
 package com.example.sideproject.domain.project.dto;
 
-import com.example.sideproject.domain.pr.entity.PublicRelationDetail;
+
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.RecruitStatus;
-import com.example.sideproject.domain.user.entity.TechStack1;
+
 
 import com.example.sideproject.domain.user.entity.User;
 import lombok.Getter;
