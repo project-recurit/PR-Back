@@ -21,6 +21,9 @@ public class ResumeService {
     }
 
     public Long saveResume(User user, ResumeRequestDto req) {
+        if (resumeRepository.existsByUser(user)) {
+            throw new CustomException(ErrorType.DUPLICATE_RESUME);
+        }
         Resume resume = req.toEntity(user);
         return resumeRepository.save(resume).getId();
     }
