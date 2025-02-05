@@ -3,6 +3,7 @@ package com.example.sideproject.domain.resume.entity;
 import com.example.sideproject.domain.techstack.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
+import com.example.sideproject.global.enums.WorkType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +32,8 @@ public class Resume extends Timestamped {
     @Column(columnDefinition = "TEXT")
     private String introduce;
 
+    private WorkType workType;
+
     private String documentUrl;
 
     private LocalDateTime publishedAt;
@@ -42,12 +45,13 @@ public class Resume extends Timestamped {
     private List<ResumeTechStack> resumeTechStacks;
 
     @Builder
-    public Resume(Long id, User user, String position, String title, String introduce, List<String> documentUrl, LocalDateTime publishedAt, List<Experience> experiences, List<TechStack> resumeTechStacks) {
+    public Resume(Long id, User user, String position, String title, String introduce, WorkType workType, List<String> documentUrl, LocalDateTime publishedAt, List<Experience> experiences, List<TechStack> resumeTechStacks) {
         this.id = id;
         this.user = user;
         this.position = position;
         this.title = title;
         this.introduce = introduce;
+        this.workType = workType;
         this.documentUrl = String.join(",", documentUrl);
         this.publishedAt = publishedAt;
         this.experiences = addExperiences(experiences);
@@ -70,6 +74,7 @@ public class Resume extends Timestamped {
         this.position = resume.position;
         this.title = resume.title;
         this.introduce = resume.introduce;
+        this.workType = resume.workType;
         this.documentUrl = String.join(",", resume.documentUrl);
         updateExperience(resume.experiences);
         updateTechStack(resume.resumeTechStacks);

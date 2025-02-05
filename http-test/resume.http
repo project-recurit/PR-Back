@@ -6,6 +6,7 @@ Authorization: Bearer {{accessToken}}
 {
   "title": "00하는 000입니다.",
   "introduce": "안녕하세요 사이드 프로젝트하고 싶어요! 여기 제 이력 좀 보세요 개쩌는 프로젝트 엄청난 수상경력 간지나는 학력 첨부 이미지는 제 포트폴리오의 일부입니다! 관심있으시면 채팅주세요~",
+  "workType": "all",
   "documentUrl": ["https://document1", "https://document2", "https://document3"],
   "techStackIds": [99, 100, 101, 102, 101],
   "position": "프론트엔드",
@@ -24,13 +25,14 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 ### 이력 수정
-PUT {{host}}/api/v1/resume/1
+PUT {{host}}/api/v1/resume/5
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
   "title": "수정된 제목 000입니다.",
   "introduce": "안 데려가시면 후회할거에요. 여기 제 이력 좀 보세요 개쩌는 프로젝트 엄청난 수상경력 간지나는 학력 첨부 이미지는 제 포트폴리오의 일부입니다! 관심있으시면 채팅주세요~",
+  "workType": "offline",
   "documentUrl": ["https://document1update", "https://document2update", "https://document3update"],
   "position": "백엔드",
   "techStackIds": [102, 103, 104],

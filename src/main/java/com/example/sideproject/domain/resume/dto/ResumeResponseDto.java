@@ -1,6 +1,7 @@
 package com.example.sideproject.domain.resume.dto;
 
 import com.example.sideproject.domain.resume.entity.Resume;
+import com.example.sideproject.global.enums.WorkType;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public record ResumeResponseDto(
         String position,
         String title,
         String introduce,
+        WorkType workType,
         List<String> documentUrl,
         List<TechStackDto> techStacks,
         List<ExperienceResponseDto> experiences,
@@ -27,6 +29,7 @@ public record ResumeResponseDto(
                 .position(resume.getPosition())
                 .title(resume.getTitle())
                 .introduce(resume.getIntroduce())
+                .workType(resume.getWorkType())
                 .documentUrl(resume.getDocumentUrl())
                 .techStacks(resume.getResumeTechStacks().stream().map(TechStackDto::of).toList())
                 .experiences(resume.getExperiences().stream().map(ExperienceResponseDto::of).toList())
