@@ -129,6 +129,7 @@ public enum ErrorType implements ErrorCode {
 
     RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "이력서가 존재하지 않습니다. 먼저 이력서를 등록해주세요."),
     DUPLICATE_RESUME(HttpStatus.BAD_REQUEST, "이미 생성된 이력서가 있습니다."),
+    UNPUBLISHED_RESUME(HttpStatus.BAD_REQUEST, "게시되지 않은 이력서입니다."),
 
     APPLICANT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지원서입니다."),
     DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST, "이미 지원한 사용자입니다."),

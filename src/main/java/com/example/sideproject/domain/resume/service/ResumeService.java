@@ -1,20 +1,28 @@
 package com.example.sideproject.domain.resume.service;
 
+import com.example.sideproject.domain.pr.dto.PrResponseDto;
 import com.example.sideproject.domain.resume.dto.ResumeRequestDto;
 import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
 import com.example.sideproject.domain.resume.entity.Resume;
 import com.example.sideproject.domain.resume.repository.ResumeRepository;
+import com.example.sideproject.domain.resume.repository.query.ResumeQueryRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ResumeService {
     private final ResumeRepository resumeRepository;
+    private final ResumeQueryRepository resumeQueryRepository;
 
     public ResumeResponseDto getResume(User user) {
         return ResumeResponseDto.of(getResumeByUser(user));
@@ -48,6 +56,10 @@ public class ResumeService {
         resume.setPublished(false);
     }
 
+    public Page<PrResponseDto> getPublishedResumes(Pageable pageable) {
+        return resumeQueryRepository.getPublishedResumes(pageable);
+    }
+
     public Resume getResumeByUser(User user) {
         return resumeRepository.findResumeByUser(user).orElseThrow(
                 () -> new CustomException(ErrorType.RESUME_NOT_FOUND)
@@ -56,6 +68,12 @@ public class ResumeService {
 
     public Resume getResumeByIdAndUser(Long resumeId, User user) {
         return resumeRepository.findResumeByIdAndUser(resumeId, user).orElseThrow(
+                () -> new CustomException(ErrorType.RESUME_NOT_FOUND)
+        );
+    }
+
+    public Resume getResumeById(Long resumeId) {
+        return resumeRepository.findResumeById(resumeId).orElseThrow(
                 () -> new CustomException(ErrorType.RESUME_NOT_FOUND)
         );
     }

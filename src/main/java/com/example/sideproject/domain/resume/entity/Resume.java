@@ -88,6 +88,10 @@ public class Resume extends Timestamped {
         this.publishedAt = LocalDateTime.now();
     }
 
+    public boolean checkPublishStatus() {
+        return publishedAt != null;
+    }
+
     private void updateTechStack(List<ResumeTechStack> resumeTechStacks) {
         this.resumeTechStacks.clear();
         for (ResumeTechStack resumeTechStack : resumeTechStacks) {
