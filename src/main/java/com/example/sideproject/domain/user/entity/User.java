@@ -19,7 +19,7 @@ import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
-    private long id;
+    private Long id;
 
 //    @Column(unique = true)
     private String username;
