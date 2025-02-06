@@ -77,7 +77,7 @@ public class ProjectService {
 //            }
 //        }
 //        List<User> users = findUserByTechStacks(project.getTechStack1s());
-//        projectNoticeService.notice(project, users, requestDto.getTechStack1s());
+//        projectNoticeService.notice(project, users, techStackIds);
     }
 
     private List<User> findUserByTechStacks(Set<TechStack1> techStack1s) {
