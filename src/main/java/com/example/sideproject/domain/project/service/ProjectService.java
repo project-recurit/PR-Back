@@ -3,6 +3,7 @@ package com.example.sideproject.domain.project.service;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitResponseDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,12 +56,15 @@ public class ProjectService {
 //                projectUrlService.createProjectUrl(project, url);
 //            }
 //        }
-//        List<User> users = findUserByTechStacks(project.getTechStack1s());
-//        projectNoticeService.notice(project, users, requestDto.getTechStack1s());
+//        List<User> users = findUserByTechStacks(project.getTechStacks());
+
+        // 세번째 파라미터에 등록한 프로젝트의 기술 스택 정보를 넣는다.
+        // 타입은 List<TechStack>이고 techStack 객체에 name필드의 값이 있어야 함.
+//        projectNoticeService.notice(project, users, requestDto.getTechStacks());
     }
 
-    private List<User> findUserByTechStacks(List<UserTechStack> userTechStacks) {
-        return userRepository.findByTechStack1sIn(userTechStacks);
+    public List<User> findUserByTechStacks(List<TechStack> techStacks) {
+        return userRepository.findByUserTechStacks_TechStackIn(techStacks);
     }
 
 

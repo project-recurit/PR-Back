@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.user.repository;
 
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserTechStack;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByRefreshToken(String refreshToken);
 
-    List<User> findByTechStack1sIn(List<UserTechStack> userTechStacks);
+    List<User> findByUserTechStacks_TechStackIn(List<TechStack> techStacks);
 
     boolean existsBySocialId(String socialId);
 }

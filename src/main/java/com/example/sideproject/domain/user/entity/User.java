@@ -38,7 +38,7 @@ public class User extends Timestamped {
     private String profileUrl;
 
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTechStack> userTechStacks = new ArrayList<>();
 
     // 경력
