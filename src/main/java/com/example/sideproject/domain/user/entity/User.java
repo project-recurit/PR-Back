@@ -78,8 +78,9 @@ public class User extends Timestamped {
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
     @Builder
-    public User(String username, String password, String email, String nickname,
+    public User(Long userId,String username, String password, String email, String nickname,
                 List<UserTechStack> userTechStacks, String socialId, String socialProvider, String position) {
+        this.id = userId;
         this.username = username;
         this.password = password;
         this.email = email;

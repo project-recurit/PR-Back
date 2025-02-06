@@ -29,16 +29,17 @@ public class UserService {
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
         validateSignUpRequest(requestDto);
 
-        User user = new User(
-            requestDto.getUsername(),
-            requestDto.getPassword(),
-            requestDto.getEmail(),
-            requestDto.getNickname(),
-            requestDto.getUserTechStacks(),
-            requestDto.getSocialId(),
-            requestDto.getSocialProvider(),
-            requestDto.getPosition()
-        );
+        User user = User.builder()
+                .userId(requestDto.getUserId())
+                .username(requestDto.getUsername())
+                .password(requestDto.getPassword())
+                .email(requestDto.getEmail())
+                .nickname(requestDto.getNickname())
+                .userTechStacks(requestDto.getUserTechStacks())
+                .socialId(requestDto.getSocialId())
+                .socialProvider(requestDto.getSocialProvider())
+                .position(requestDto.getPosition())
+                .build();
 
         userRepository.save(user);
 

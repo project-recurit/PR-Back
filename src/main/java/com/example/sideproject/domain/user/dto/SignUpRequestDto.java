@@ -13,6 +13,8 @@ import java.util.List;
 @NoArgsConstructor  // 기본 생성자
 public class SignUpRequestDto {
 
+    private Long userId;
+
     @Size(min = 4, max = 20)
     private String username;
 
@@ -32,8 +34,9 @@ public class SignUpRequestDto {
     private String position;
 
     @Builder
-    public SignUpRequestDto(String username, String password,String email, String nickname, List<UserTechStack> userTechStacks,
+    public SignUpRequestDto(Long userId,String username, String password,String email, String nickname, List<UserTechStack> userTechStacks,
                             String socialId, String socialProvider, String position) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
