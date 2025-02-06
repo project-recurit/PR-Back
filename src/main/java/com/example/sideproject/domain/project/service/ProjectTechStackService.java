@@ -13,11 +13,14 @@ public class ProjectTechStackService {
 
     private final ProjectTechStackRepository projectTechStackRepository;
 
-    public void createProjectTechStack(TechStack techStack, Project project) {
-        ProjectTechStack projectTechStack = ProjectTechStack.builder()
-                .techStack(techStack)
-                .project(project)
-                .build();
-        projectTechStackRepository.save(projectTechStack);
+    public void createProjectTechStack(Long techStackId, Project project) {
+
+//        TechStack techStack = techStackService.findTechStack(techStackId);
+//
+//        ProjectTechStack projectTechStack = ProjectTechStack.builder()
+//                .techStack(techStack)
+//                .project(project)
+//                .build();
+//        projectTechStackRepository.save(projectTechStack);
     }
 }

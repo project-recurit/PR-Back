@@ -1,33 +1,28 @@
 package com.example.sideproject.domain.project.service;
 
+import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitResponseDto;
-import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
-import com.example.sideproject.domain.project.entity.ProjectUrl;
-import com.example.sideproject.domain.project.entity.RecruitStatus;
-import com.example.sideproject.domain.techstack.TechStack;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
 import com.example.sideproject.domain.project.entity.Project;
-import com.example.sideproject.domain.user.repository.UserRepository;
-import com.example.sideproject.domain.user.entity.*;
-import com.example.sideproject.global.exception.CustomException;
-import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
-
-import java.io.IOException;
-import java.util.Objects;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.example.sideproject.domain.user.entity.TechStack1;
+import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.domain.user.entity.UserStatus;
+import com.example.sideproject.domain.user.repository.UserRepository;
+import com.example.sideproject.global.enums.ErrorType;
+import com.example.sideproject.global.exception.CustomException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -48,13 +43,15 @@ public class ProjectService {
 
         final User foundUser = validateActiveUser(user);
         final Project project = requestDto.toEntity(foundUser);
+
+        final List<Long> techStacks = requestDto.projectTechStacks();
         projectRepository.save(project);
 
-//        if (!techStacks.isEmpty()) {
-//            for (TechStack tech : techStacks) { // 테크스택 유효성 검사 필요
-//                projectTechStackService.createProjectTechStack(tech, project);
-//            }
-//        }
+        if (!techStacks.isEmpty()) {
+            for (Long tech : techStacks) { // 테크스택 유효성 검사 필요
+                projectTechStackService.createProjectTechStack(tech, project);
+            }
+        }
 //        if(!projectUrls.isEmpty()) {
 //            for (MultipartFile url : projectUrls) {
 //                projectUrlService.createProjectUrl(project, url);

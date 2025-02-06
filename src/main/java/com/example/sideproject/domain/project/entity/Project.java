@@ -53,11 +53,14 @@ public class Project extends Timestamped {
     @Enumerated(EnumType.STRING)
     private RecruitStatus recruitStatus;
 
+    @Column(nullable = false, name = "team_size")
+    private String teamSize;
+
     @Builder
     public Project(String title, String content, List<ProjectTechStack> projectTechStacks,
                    String expectedPeriod, String contact, User user,
                    String recruitmentPeriod, RecruitStatus recruitStatus,
-                   int viewCount, int likeCount) {
+                   int viewCount, int likeCount,String teamSize) {
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
@@ -68,6 +71,7 @@ public class Project extends Timestamped {
         this.likeCount = likeCount;
         this.viewCount = viewCount;
         this.projectTechStacks = projectTechStacks;
+        this.teamSize = teamSize;
     }
 
     public void update(String title, String content,

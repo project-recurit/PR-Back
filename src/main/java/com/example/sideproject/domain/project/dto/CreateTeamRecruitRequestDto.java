@@ -1,16 +1,10 @@
 package com.example.sideproject.domain.project.dto;
 
-import com.example.sideproject.domain.pr.entity.PublicRelationDetail;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.RecruitStatus;
-import com.example.sideproject.domain.user.entity.TechStack1;
-
 import com.example.sideproject.domain.user.entity.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AccessLevel;
 
-import java.util.Set;
+import java.util.List;
 
 
 public record CreateTeamRecruitRequestDto (
@@ -19,7 +13,8 @@ public record CreateTeamRecruitRequestDto (
      String content,
      String expectedPeriod,
      String contact,
-     String recruitmentPeriod
+     String recruitmentPeriod,
+     List<Long> projectTechStacks
 ) {
     public Project toEntity(User user) {
         return Project.builder()

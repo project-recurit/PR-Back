@@ -14,6 +14,9 @@ import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @RestController
@@ -26,7 +29,8 @@ public class ProjectController {
     // 팀 모집 생성
     @PostMapping
     public ResponseEntity<ResponseMessageDto> createTeamRecruit(
-            @RequestBody CreateTeamRecruitRequestDto requestDto,
+            @ModelAttribute CreateTeamRecruitRequestDto requestDto,
+            @RequestPart List<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         projectService.createTeamRecruit(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_TEAM_RECRUIT_SUCCESS));
