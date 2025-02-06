@@ -1,11 +1,12 @@
 package com.example.sideproject.domain.user.service;
 
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.dto.ProfileRequestDto;
 import com.example.sideproject.domain.user.dto.ProfileResponseDto;
 import com.example.sideproject.domain.user.dto.SignUpRequestDto;
 import com.example.sideproject.domain.user.dto.SignUpResponseDto;
-import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.domain.user.entity.UserTechStack;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -27,16 +29,16 @@ public class UserService {
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
         validateSignUpRequest(requestDto);
 
-        User user = new User(
-            requestDto.getUsername(),
-            requestDto.getPassword(),
-            requestDto.getEmail(),
-            requestDto.getNickname(),
-            requestDto.getTechStack1s(),
-            requestDto.getSocialId(),
-            requestDto.getSocialProvider(),
-            requestDto.getPosition()
-        );
+        User user = User.builder()
+                .username(requestDto.getUsername())
+                .password(requestDto.getPassword())
+                .email(requestDto.getEmail())
+                .nickname(requestDto.getNickname())
+                .userTechStacks(requestDto.getUserTechStacks())
+                .socialId(requestDto.getSocialId())
+                .socialProvider(requestDto.getSocialProvider())
+                .position(requestDto.getPosition())
+                .build();
 
         userRepository.save(user);
 
@@ -68,12 +70,12 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserStack(String socialId, Set<TechStack1> newTechStack1s) {
+    public void updateUserStack(String socialId, List<UserTechStack> newTechStacks) {
         User user = userRepository.findBySocialId(socialId)
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
         validateActiveUser(user);
         
-        user.updateTechStacks(newTechStack1s);
+        user.updateTechStacks(newTechStacks);
         userRepository.save(user);
     }
 

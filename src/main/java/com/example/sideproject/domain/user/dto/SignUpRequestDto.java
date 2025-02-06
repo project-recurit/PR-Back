@@ -1,13 +1,13 @@
 package com.example.sideproject.domain.user.dto;
 
-import com.example.sideproject.domain.user.entity.TechStack1;
+import com.example.sideproject.domain.user.entity.UserTechStack;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor  // 기본 생성자
@@ -23,7 +23,7 @@ public class SignUpRequestDto {
 
     private String nickname;
 
-    private Set<TechStack1> techStack1s;
+    private List<UserTechStack> userTechStacks;
 
     private String socialId;
 
@@ -32,13 +32,13 @@ public class SignUpRequestDto {
     private String position;
 
     @Builder
-    public SignUpRequestDto(String username, String password,String email, String nickname, Set<TechStack1> techStack1s,
+    public SignUpRequestDto(String username, String password,String email, String nickname, List<UserTechStack> userTechStacks,
                             String socialId, String socialProvider, String position) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
-        this.techStack1s = techStack1s;
+        this.userTechStacks = userTechStacks;
         this.socialId = socialId;
         this.socialProvider = socialProvider;
         this.position = position;

@@ -49,7 +49,7 @@ public class AuthService  {
                     // 소셜 로그인의 경우 필요한 기본값 설정
                     .username(requestDto.getSocialId()) // 소셜 ID를 username으로 사용
                     .password(passwordEncoder.encode(requestDto.getSocialId())) // 임시 비밀번호
-                    .techStack1s(requestDto.getTechStack1s()) // 빈 기술 스택으로 시작
+                    .userTechStacks(requestDto.getUserTechStacks()) // 빈 기술 스택으로 시작
                     .build();
 
             SignUpResponseDto signUpResponse = userService.register(signUpRequestDto);

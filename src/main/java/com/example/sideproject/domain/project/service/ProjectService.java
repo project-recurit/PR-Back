@@ -3,6 +3,7 @@ package com.example.sideproject.domain.project.service;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitResponseDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,14 +56,17 @@ public class ProjectService {
 //                projectUrlService.createProjectUrl(project, url);
 //            }
 //        }
-//        List<User> users = findUserByTechStacks(project.getTechStack1s());
-//        projectNoticeService.notice(project, users, requestDto.getTechStack1s());
+
+        // 기술스택에 해당하는 유저를 조회
+        // List<User> users = findUserByTechStacks(project.getTechStacks());
+
+        // 세번째 파라미터에 등록한 프로젝트의 기술 스택 ID 리스트를 넣는다.
+        // projectNoticeService.notice(project, users, requestDto.getTechStackIds());
     }
 
-    private List<User> findUserByTechStacks(Set<TechStack1> techStack1s) {
-        return userRepository.findByTechStack1sIn(techStack1s);
+    public List<User> findUserByTechStacks(List<TechStack> techStacks) {
+        return userRepository.findByUserTechStacks_TechStackIn(techStacks);
     }
-
 
     public CreateTeamRecruitResponseDto getTeamRecruit(Long teamRecruitId) {
         Project project = findProject(teamRecruitId);
