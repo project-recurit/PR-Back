@@ -59,8 +59,8 @@ public class ProjectService {
 //        projectNoticeService.notice(project, users, requestDto.getTechStack1s());
     }
 
-    private List<User> findUserByTechStacks(Set<TechStack1> techStack1s) {
-        return userRepository.findByTechStack1sIn(techStack1s);
+    private List<User> findUserByTechStacks(List<UserTechStack> userTechStacks) {
+        return userRepository.findByTechStack1sIn(userTechStacks);
     }
 
 
