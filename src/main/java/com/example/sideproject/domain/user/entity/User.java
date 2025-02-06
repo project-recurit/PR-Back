@@ -2,6 +2,7 @@ package com.example.sideproject.domain.user.entity;
 
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -72,7 +73,9 @@ public class User extends Timestamped {
     @Column(unique = true, nullable = false)
     private UUID uuid;
 
-    
+    private String position;
+
+
     public void addTechStack(Set<TechStack1> techStack1s) {
         this.techStack1s.addAll(techStack1s);
     }
@@ -81,8 +84,9 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
+    @Builder
     public User(String username, String password, String email, String nickname,
-                Set<TechStack1> techStack1s, String socialId, String socialProvider) {
+                Set<TechStack1> techStack1s, String socialId, String socialProvider, String position) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -98,6 +102,7 @@ public class User extends Timestamped {
         this.socialProvider = socialProvider;
         this.userRole = UserRole.USER;
         this.userStatus = UserStatus.ACTIVE_USER;
+        this.position = position;
     }
 
     public User(Long id) {

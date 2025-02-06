@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.resume.entity;
 
-import com.example.sideproject.domain.techstack.TechStack;
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 import com.example.sideproject.global.enums.WorkType;
@@ -86,6 +86,10 @@ public class Resume extends Timestamped {
             return;
         }
         this.publishedAt = LocalDateTime.now();
+    }
+
+    public boolean canPublish() {
+        return !title.isEmpty() && !introduce.isEmpty();
     }
 
     public boolean checkPublishStatus() {

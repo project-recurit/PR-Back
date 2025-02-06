@@ -3,6 +3,11 @@ package com.example.sideproject.domain.project.service;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitResponseDto;
+import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.user.entity.TechStack1;
@@ -10,6 +15,13 @@ import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserStatus;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.enums.ErrorType;
+import com.example.sideproject.domain.project.repository.ProjectRepository;
+
+import java.util.Objects;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

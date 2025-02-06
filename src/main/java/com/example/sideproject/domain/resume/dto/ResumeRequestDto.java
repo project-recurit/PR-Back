@@ -1,7 +1,7 @@
 package com.example.sideproject.domain.resume.dto;
 
 import com.example.sideproject.domain.resume.entity.Resume;
-import com.example.sideproject.domain.techstack.TechStack;
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.enums.WorkType;
 

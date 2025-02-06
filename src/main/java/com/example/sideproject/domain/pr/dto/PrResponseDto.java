@@ -1,11 +1,8 @@
 package com.example.sideproject.domain.pr.dto;
 
-import com.example.sideproject.domain.resume.dto.TechStackDto;
-import com.example.sideproject.domain.resume.entity.Resume;
 import com.example.sideproject.global.enums.WorkType;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

@@ -29,9 +29,11 @@ public class SignUpRequestDto {
 
     private String socialProvider;
 
+    private String position;
+
     @Builder
     public SignUpRequestDto(String username, String password,String email, String nickname, Set<TechStack1> techStack1s,
-                            String socialId, String socialProvider) {
+                            String socialId, String socialProvider, String position) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -39,5 +41,6 @@ public class SignUpRequestDto {
         this.techStack1s = techStack1s;
         this.socialId = socialId;
         this.socialProvider = socialProvider;
+        this.position = position;
     }
 }

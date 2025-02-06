@@ -1,7 +1,10 @@
 package com.example.sideproject.domain.project.dto;
 
+
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.RecruitStatus;
+
+
 import com.example.sideproject.domain.user.entity.User;
 
 import java.util.List;
