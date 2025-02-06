@@ -30,7 +30,6 @@ public class UserService {
         validateSignUpRequest(requestDto);
 
         User user = User.builder()
-                .userId(requestDto.getUserId())
                 .username(requestDto.getUsername())
                 .password(requestDto.getPassword())
                 .email(requestDto.getEmail())
