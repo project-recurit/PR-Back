@@ -47,7 +47,7 @@ public class ProjectService {
         final List<Long> techStacks = requestDto.projectTechStacks();
         projectRepository.save(project);
 
-        if (!techStacks.isEmpty()) {
+        if (techStacks.size() > 0) {
             for (Long tech : techStacks) { // 테크스택 유효성 검사 필요
                 projectTechStackService.createProjectTechStack(tech, project);
             }

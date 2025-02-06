@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor    
-@RequestMapping("/api/v1/team-recruit")
+@RequestMapping("/api/v1/project")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -30,7 +30,7 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<ResponseMessageDto> createTeamRecruit(
             @ModelAttribute CreateTeamRecruitRequestDto requestDto,
-            @RequestPart List<MultipartFile> files,
+//            @RequestPart List<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         projectService.createTeamRecruit(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_TEAM_RECRUIT_SUCCESS));

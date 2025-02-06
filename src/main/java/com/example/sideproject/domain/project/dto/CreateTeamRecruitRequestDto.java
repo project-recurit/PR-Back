@@ -14,6 +14,7 @@ public record CreateTeamRecruitRequestDto (
      String expectedPeriod,
      String contact,
      String recruitmentPeriod,
+     String teamSize,
      List<Long> projectTechStacks
 ) {
     public Project toEntity(User user) {
@@ -24,6 +25,7 @@ public record CreateTeamRecruitRequestDto (
                 .expectedPeriod(expectedPeriod)
                 .recruitmentPeriod(recruitmentPeriod)
                 .user(user)
+                .teamSize(teamSize)
                 .viewCount(0)
                 .likeCount(0)
                 .recruitStatus(RecruitStatus.IN_PROGRESS)

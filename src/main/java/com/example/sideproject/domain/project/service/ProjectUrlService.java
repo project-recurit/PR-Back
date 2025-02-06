@@ -26,11 +26,11 @@ public class ProjectUrlService {
     private final ProjectUrlRepository projectUrlRepository;
 
     @Value("${UPLOAD_CARE_PUB}")
-    private final String publicKey;
+    private String publicKey;
     @Value("${UPLOAD_CARE_SEC}")
-    private final String secretKey;
+    private String secretKey;
 
-    public void createProjectUrl(Project project,MultipartFile multipartFile) throws IOException {
+    public void createProjectUrl(Project project, MultipartFile multipartFile) throws IOException {
 
         Client client = new Client(publicKey, secretKey);
 
@@ -58,7 +58,7 @@ public class ProjectUrlService {
         final long MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB 제한
 
         // 허용된 확장자 목록
-        List<String> allowedExtensions = Arrays.asList("png", "svg", "jpg","jpeg");
+        List<String> allowedExtensions = Arrays.asList("png", "svg", "jpg", "jpeg");
 
         // 파일 이름 가져오기
         String originalFilename = multipartFile.getOriginalFilename();
