@@ -7,20 +7,15 @@ import com.example.sideproject.domain.techstack.entity.TechStack;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProjectTechStackService {
 
     private final ProjectTechStackRepository projectTechStackRepository;
 
-    public void createProjectTechStack(Long techStackId, Project project) {
-
-        TechStack techStack = techStackService.findTechStack(techStackId);
-
-        ProjectTechStack projectTechStack = ProjectTechStack.builder()
-                .techStack(techStack)
-                .project(project)
-                .build();
-        projectTechStackRepository.save(projectTechStack);
+    public void createProjectTechStack(List<ProjectTechStack> projectTechStacks) {
+        projectTechStackRepository.saveAll(projectTechStacks);
     }
 }

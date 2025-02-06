@@ -60,7 +60,7 @@ public class Project extends Timestamped {
     public Project(String title, String content, List<ProjectTechStack> projectTechStacks,
                    String expectedPeriod, String contact, User user,
                    String recruitmentPeriod, RecruitStatus recruitStatus,
-                   int viewCount, int likeCount,String teamSize) {
+                   int viewCount, int likeCount,String teamSize, Long id) {
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
@@ -72,6 +72,7 @@ public class Project extends Timestamped {
         this.viewCount = viewCount;
         this.projectTechStacks = projectTechStacks;
         this.teamSize = teamSize;
+        this.id = id;
     }
 
     public void update(String title, String content,

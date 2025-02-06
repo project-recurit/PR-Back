@@ -3,25 +3,16 @@ package com.example.sideproject.domain.project.service;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitRequestDto;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitResponseDto;
-import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
 import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.project.entity.ProjectTechStack;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
+import com.example.sideproject.domain.techstack.entity.TechStack;
+import com.example.sideproject.domain.techstack.repository.TechStackRepository;
 import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserStatus;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.enums.ErrorType;
-import com.example.sideproject.domain.project.repository.ProjectRepository;
-
-import java.util.Objects;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -46,6 +38,7 @@ public class ProjectService {
     private final ProjectNoticeService projectNoticeService;
     private final ProjectTechStackService projectTechStackService;
     private final ProjectUrlService projectUrlService;
+    private final TechStackRepository techStackRepository; // 임시
 
     /**
      * 프로젝트 구인 글 생성
@@ -55,14 +48,28 @@ public class ProjectService {
 
         final User foundUser = validateActiveUser(user);
         final Project project = requestDto.toEntity(foundUser);
-
-        final List<Long> techStacks = requestDto.projectTechStacks();
         projectRepository.save(project);
 
-        if (techStacks.size() > 0) {
-            for (Long tech : techStacks) { // 테크스택 유효성 검사 필요
-                projectTechStackService.createProjectTechStack(tech, project);
+        if (!requestDto.projectTechStacks().isEmpty()) {
+
+            // 테크스텍 있는거만 검증 한 후 List 반환
+            // findAllById는 쿼리를 직접짠거랑 많이 다른게 없어서 적용
+            List<TechStack> techStacks = techStackRepository.findAllById(requestDto.projectTechStacks());
+            List<ProjectTechStack> projectTechStacks = new ArrayList<>();
+            List<Long> techStackIds = new ArrayList<>();
+
+            for (TechStack techStack : techStacks) {
+                // 배열에 미리 넣어두기
+                projectTechStacks.add(
+                        ProjectTechStack.builder()
+                                .techStack(techStack)
+                                .project(project)
+                                .build()
+                );
+                techStackIds.add(techStack.getId());
             }
+            // 이 메서드 안에 saveAll
+            projectTechStackService.createProjectTechStack(projectTechStacks);
         }
 //        if(!projectUrls.isEmpty()) {
 //            for (MultipartFile url : projectUrls) {
