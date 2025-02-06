@@ -56,17 +56,17 @@ public class ProjectService {
 //                projectUrlService.createProjectUrl(project, url);
 //            }
 //        }
-//        List<User> users = findUserByTechStacks(project.getTechStacks());
 
-        // 세번째 파라미터에 등록한 프로젝트의 기술 스택 정보를 넣는다.
-        // 타입은 List<TechStack>이고 techStack 객체에 name필드의 값이 있어야 함.
-//        projectNoticeService.notice(project, users, requestDto.getTechStacks());
+        // 기술스택에 해당하는 유저를 조회
+        // List<User> users = findUserByTechStacks(project.getTechStacks());
+
+        // 세번째 파라미터에 등록한 프로젝트의 기술 스택 ID 리스트를 넣는다.
+        // projectNoticeService.notice(project, users, requestDto.getTechStackIds());
     }
 
     public List<User> findUserByTechStacks(List<TechStack> techStacks) {
         return userRepository.findByUserTechStacks_TechStackIn(techStacks);
     }
-
 
     public CreateTeamRecruitResponseDto getTeamRecruit(Long teamRecruitId) {
         Project project = findProject(teamRecruitId);

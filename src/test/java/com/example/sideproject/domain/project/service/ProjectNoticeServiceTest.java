@@ -53,7 +53,8 @@
 //                .title("project1")
 //                .user(user1)
 //                .build();
-//        EventListDto notice = projectNoticeService.notice(project, users, techStacks);
+//        List<Long> techStackIds = techStacks.stream().map(TechStack::getId).toList();
+//        EventListDto notice = projectNoticeService.notice(project, users, techStackIds);
 //        System.out.println(notice);
 //    }
 //}
