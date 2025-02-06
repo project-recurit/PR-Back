@@ -43,7 +43,7 @@ public class UserController {
     public ResponseEntity<ResponseMessageDto> updateUserStack(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody UpdateTechStackRequest requestDto) {
-        userService.updateUserStack(userDetails.getUsername(), requestDto.getTechStack1s());
+        userService.updateUserStack(userDetails.getUsername(), requestDto.getUserTechStacks());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.PROFILE_UPDATE));
     }
 
