@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -28,18 +29,15 @@ public class ProjectController {
 
     // 팀 모집 생성
     @PostMapping
-    public ResponseEntity<ResponseMessageDto> createTeamRecruit(
-            @ModelAttribute CreateTeamRecruitRequestDto requestDto,
-//            @RequestPart List<MultipartFile> files,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseMessageDto> createTeamRecruit(@ModelAttribute CreateTeamRecruitRequestDto requestDto,
+                                                                @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         projectService.createTeamRecruit(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_TEAM_RECRUIT_SUCCESS));
     }
 
     // 팀 모집 상세 조회
     @GetMapping("/{teamRecruitId}")
-    public ResponseEntity<ResponseDataDto<CreateTeamRecruitResponseDto>> getTeamRecruit(
-            @PathVariable Long teamRecruitId) {
+    public ResponseEntity<ResponseDataDto<CreateTeamRecruitResponseDto>> getTeamRecruit(@PathVariable Long teamRecruitId) {
         CreateTeamRecruitResponseDto responseDto = projectService.getTeamRecruit(teamRecruitId);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.GET_TEAM_RECRUIT_SUCCESS, responseDto));
     }

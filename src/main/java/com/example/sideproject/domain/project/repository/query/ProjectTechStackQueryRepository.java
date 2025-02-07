@@ -13,16 +13,4 @@ public class ProjectTechStackQueryRepository {
     private final JPAQueryFactory queryFactory;
     private QProjectTechStack projectTechStack;
     private QTechStack techStack;
-
-//    public void createProjectTechStack(Long projectId, List<Long> techStacks) {
-//         insert = queryFactory.insert(projectTechStack)
-//                .columns(projectTechStack.project, projectTechStack.techStack)
-//                .select(
-//                        JPAExpressions
-//                                .select(techStack.id, Expressions.constant(projectId))
-//                                .from(techStack)
-//                                .where(techStack.id.in(techStacks))
-//                );
-//        insert.
-//    }
 }

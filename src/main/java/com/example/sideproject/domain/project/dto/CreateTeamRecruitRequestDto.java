@@ -3,9 +3,8 @@ package com.example.sideproject.domain.project.dto;
 
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.RecruitStatus;
-
-
 import com.example.sideproject.domain.user.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,7 +17,8 @@ public record CreateTeamRecruitRequestDto (
      String contact,
      String recruitmentPeriod,
      String teamSize,
-     List<Long> projectTechStacks
+     List<Long> projectTechStacks,
+     List<MultipartFile> files
 ) {
     public Project toEntity(User user) {
         return Project.builder()

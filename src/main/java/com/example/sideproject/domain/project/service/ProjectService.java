@@ -21,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +46,7 @@ public class ProjectService {
      * 프로젝트 구인 글 생성
      */
     @Transactional
-    public void createTeamRecruit(CreateTeamRecruitRequestDto requestDto, User user) {
+    public void createTeamRecruit(CreateTeamRecruitRequestDto requestDto, User user) throws IOException {
 
         final User foundUser = validateActiveUser(user);
         final Project project = requestDto.toEntity(foundUser);
@@ -71,11 +73,11 @@ public class ProjectService {
             // 이 메서드 안에 saveAll
             projectTechStackService.createProjectTechStack(projectTechStacks);
         }
-//        if(!projectUrls.isEmpty()) {
-//            for (MultipartFile url : projectUrls) {
-//                projectUrlService.createProjectUrl(project, url);
-//            }
-//        }
+        if(!requestDto.files().isEmpty()) {
+            for (MultipartFile url : requestDto.files()) {
+                projectUrlService.createProjectUrl(project, url);
+            }
+        }
 //        List<User> users = findUserByTechStacks(project.getTechStack1s());
 //        projectNoticeService.notice(project, users, techStackIds);
     }

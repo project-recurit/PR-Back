@@ -47,14 +47,13 @@ public class ProjectUrlService {
                     .imageUrl(stringUrl)
                     .build();
             projectUrlRepository.save(projectUrl);
-
         } catch (UploadFailureException e) {
             throw new RuntimeException(e);
         }
     }
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
-        // 허용된 파일 크기 (5MB)
+        // 허용된 파일 크기 (10MB)
         final long MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB 제한
 
         // 허용된 확장자 목록
