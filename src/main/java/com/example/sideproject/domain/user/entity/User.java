@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.user.entity;
 
+import com.example.sideproject.domain.resume.entity.ResumeTechStack;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -68,18 +69,13 @@ public class User extends Timestamped {
 
     private String position;
 
-
-    public void addTechStack(List<UserTechStack> userTechStacks) {
-        this.userTechStacks.addAll(userTechStacks);
-    }
-
     // 북마크 관련 필드 추가
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
     @Builder
     public User(Long userId,String username, String password, String email, String nickname,
-                List<UserTechStack> userTechStacks, String socialId, String socialProvider, String position) {
+                List<TechStack> userTechStacks, String socialId, String socialProvider, String position) {
         this.id = userId;
         this.username = username;
         this.password = password;
@@ -89,12 +85,22 @@ public class User extends Timestamped {
         this.userStatus = UserStatus.ACTIVE_USER;
         this.lastLoginTime = LocalDateTime.now();
         this.uuid = generateType4UUID();
-        if(userTechStacks != null) {
-            this.userTechStacks = userTechStacks;
-        }
+        this.userTechStacks = addTechStack(userTechStacks);
         this.socialId = socialId;
         this.socialProvider = socialProvider;
         this.position = position;
+    }
+
+    public List<UserTechStack> addTechStack(List<TechStack> techStacks) {
+        List<UserTechStack> result = new ArrayList<>();
+        for (TechStack techStack : techStacks) {
+            UserTechStack userTechStack = UserTechStack.builder()
+                    .user(this)
+                    .techStack(techStack)
+                    .build();
+            result.add(userTechStack);
+        }
+        return result;
     }
 
     public User(Long id) {

@@ -29,16 +29,7 @@ public class UserService {
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
         validateSignUpRequest(requestDto);
 
-        User user = User.builder()
-                .username(requestDto.getUsername())
-                .password(requestDto.getPassword())
-                .email(requestDto.getEmail())
-                .nickname(requestDto.getNickname())
-                .userTechStacks(requestDto.getUserTechStacks())
-                .socialId(requestDto.getSocialId())
-                .socialProvider(requestDto.getSocialProvider())
-                .position(requestDto.getPosition())
-                .build();
+       User user = requestDto.toEntity();
 
         userRepository.save(user);
 
@@ -46,15 +37,10 @@ public class UserService {
     }
 
     private void validateSignUpRequest(SignUpRequestDto requestDto) {
-        // 아이디 중복 검사
-        if (userRepository.existsBySocialId(requestDto.getSocialId())) {
-            throw new CustomException(ErrorType.DUPLICATE_ID);
+        // 닉네임 중복 검사
+        if (userRepository.existsByNickname(requestDto.nickname())) {
+            throw new CustomException(ErrorType.DUPLICATE_NICKNAME);
         }
-
-//        // 닉네임 중복 검사
-//        if (userRepository.existsByNickname(requestDto.getNickname())) {
-//            throw new CustomException(ErrorType.DUPLICATE_NICKNAME);
-//        }
     }
 
     @Transactional

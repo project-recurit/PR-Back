@@ -2,13 +2,11 @@ package com.example.sideproject.domain.user.entity;
 
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class UserTechStack {

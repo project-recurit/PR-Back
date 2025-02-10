@@ -1,46 +1,33 @@
 package com.example.sideproject.domain.user.dto;
 
+import com.example.sideproject.domain.techstack.entity.TechStack;
+import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserTechStack;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
-@NoArgsConstructor  // 기본 생성자
-public class SignUpRequestDto {
-
-    @Size(min = 4, max = 20)
-    private String username;
-
-    private String password;
-
-    @Email
-    private String email;
-
-    private String nickname;
-
-    private List<UserTechStack> userTechStacks;
-
-    private String socialId;
-
-    private String socialProvider;
-
-    private String position;
-
-    @Builder
-    public SignUpRequestDto(String username, String password,String email, String nickname, List<UserTechStack> userTechStacks,
-                            String socialId, String socialProvider, String position) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.nickname = nickname;
-        this.userTechStacks = userTechStacks;
-        this.socialId = socialId;
-        this.socialProvider = socialProvider;
-        this.position = position;
+public record SignUpRequestDto(
+        String username,
+        @Email
+        String email,
+        String nickname,
+        String socialId,
+        String socialProvider,
+        String position,
+        List<Long> techStackIds
+) {
+    // Entity 변환 메서드
+    public User toEntity() {
+        return User.builder()
+                .username(username)
+                .email(email)
+                .nickname(nickname)
+                .userTechStacks(techStackIds.stream().map(id -> TechStack.builder().id(id).build()).toList())
+                .socialId(socialId)
+                .socialProvider(socialProvider)
+                .position(position)
+                .build();
     }
 }

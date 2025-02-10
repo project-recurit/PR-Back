@@ -24,7 +24,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<ResponseDataDto<String>> register(@RequestBody SignUpRequestDto requestDto) {
         userService.register(requestDto);
-        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SIGNUP_SUCCESS, requestDto.getUsername()));
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SIGNUP_SUCCESS, requestDto.username()));
     }
 
     @DeleteMapping("/withdraw")
