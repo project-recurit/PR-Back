@@ -31,6 +31,7 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class AuthService  {
+
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
@@ -39,28 +40,23 @@ public class AuthService  {
     public LoginResponseDto login(LoginRequestDto requestDto) {
         Optional<User> optionalUser = userRepository.findBySocialId(requestDto.getSocialId());
 
-        User user;
         if (optionalUser.isEmpty()) {
-            SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
-                    .socialId(requestDto.getSocialId())
-                    .socialProvider(requestDto.getProvider())
-                    .email(requestDto.getEmail())
-                    .nickname(requestDto.getNickname())
-                    // 소셜 로그인의 경우 필요한 기본값 설정
-                    .username(requestDto.getSocialId()) // 소셜 ID를 username으로 사용
-                    .password(passwordEncoder.encode(requestDto.getSocialId())) // 임시 비밀번호
-                    .userTechStacks(requestDto.getUserTechStacks()) // 빈 기술 스택으로 시작
-                    .build();
+            SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
+                    requestDto.getSocialId(),
+                    requestDto.getEmail(),
+                    null,
+                    null,
+                    requestDto.getSocialId(),
+                    requestDto.getProvider(),
+                    null
+            );
 
-            SignUpResponseDto signUpResponse = userService.register(signUpRequestDto);
-            user = userRepository.findBySocialId(signUpResponse.getUsername())
-                    .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
+            userService.register(signUpRequestDto);
+            return LoginResponseDto.ofSignUp(requestDto.getSocialId());
         }
 
-        else {
-            user = optionalUser.get();
-            validateUserStatus(user);
-        }
+        User user = optionalUser.get();
+        validateUserStatus(user);
 
         String accessToken = tokenService.createAccessToken(
                 user.getSocialId(),
@@ -73,13 +69,13 @@ public class AuthService  {
 
         log.info("User logged in successfully: {}", user.getSocialId());
 
-        return LoginResponseDto.builder()
-                .loginId(user.getSocialId())
-                .userRole(user.getUserRole())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return LoginResponseDto.ofLogin(
+                user.getSocialId(),
+                accessToken,
+                refreshToken
+        );
     }
+
 
     public void logout(String token) {
         try {
