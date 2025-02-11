@@ -73,23 +73,17 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
-//    @Builder
-//    public updateUser(Long userId,String username, String password, String email, String nickname,
-//                List<TechStack> userTechStacks, String socialId, String socialProvider, String position) {
-//        this.id = userId;
-//        this.username = username;
-//        this.password = password;
-//        this.email = email;
-//        this.nickname = nickname;
-//        this.userRole = UserRole.USER;
-//        this.userStatus = UserStatus.ACTIVE_USER;
-//        this.lastLoginTime = LocalDateTime.now();
-//        this.uuid = generateType4UUID();
-//        this.userTechStacks = addTechStack(userTechStacks);
-//        this.socialId = socialId;
-//        this.socialProvider = socialProvider;
-//        this.position = position;
-//    }
+    public void updateRegisterInfo(String position, String nickname, List<TechStack> techStacks) {
+        this.position = position;
+        this.nickname = nickname;
+
+        this.userTechStacks.clear();
+
+        if (techStacks != null && !techStacks.isEmpty()) {
+            List<UserTechStack> newTechStacks = addTechStack(techStacks);
+            this.userTechStacks.addAll(newTechStacks);
+        }
+    }
 
     @Builder
     public User(Long userId,String username, String password, String email, String nickname,

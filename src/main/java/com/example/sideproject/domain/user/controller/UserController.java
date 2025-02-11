@@ -1,9 +1,6 @@
 package com.example.sideproject.domain.user.controller;
 
-import com.example.sideproject.domain.user.dto.ProfileRequestDto;
-import com.example.sideproject.domain.user.dto.ProfileResponseDto;
-import com.example.sideproject.domain.user.dto.SignUpRequestDto;
-import com.example.sideproject.domain.user.dto.UpdateTechStackRequest;
+import com.example.sideproject.domain.user.dto.*;
 import com.example.sideproject.domain.user.service.UserService;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
@@ -22,9 +19,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseDataDto<String>> register(@RequestBody SignUpRequestDto requestDto) {
-        userService.register(requestDto);
-        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SIGNUP_SUCCESS, requestDto.username()));
+    public ResponseEntity<ResponseDataDto<UpdateRegisterResponseDto>> register(@RequestBody UpdateRegisterRequestDto requestDto) {
+        UpdateRegisterResponseDto responseDto = userService.updateRegister(requestDto);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SIGNUP_SUCCESS, responseDto));
     }
 
     @DeleteMapping("/withdraw")

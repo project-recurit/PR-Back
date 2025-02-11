@@ -16,8 +16,8 @@ public record LoginResponseDto(
     public static LoginResponseDto ofSignUp(String loginId) {
         return new LoginResponseDto(
                 loginId,
-                null,    // accessToken
-                null,    // refreshToken
+                null,
+                null,
                 true   // isFirstLogin
         );
     }

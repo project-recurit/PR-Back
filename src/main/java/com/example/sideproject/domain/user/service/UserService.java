@@ -1,13 +1,11 @@
 package com.example.sideproject.domain.user.service;
 
 import com.example.sideproject.domain.techstack.entity.TechStack;
-import com.example.sideproject.domain.user.dto.ProfileRequestDto;
-import com.example.sideproject.domain.user.dto.ProfileResponseDto;
-import com.example.sideproject.domain.user.dto.SignUpRequestDto;
-import com.example.sideproject.domain.user.dto.SignUpResponseDto;
+import com.example.sideproject.domain.user.dto.*;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserTechStack;
 import com.example.sideproject.domain.user.repository.UserRepository;
+import com.example.sideproject.global.auth.service.TokenService;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,7 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     @Transactional
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
@@ -34,9 +32,44 @@ public class UserService {
         return new SignUpResponseDto(user);
     }
 
-    private void validateSignUpRequest(SignUpRequestDto requestDto) {
+    @Transactional
+    public UpdateRegisterResponseDto updateRegister(UpdateRegisterRequestDto requestDto) {
+        // 소셜 ID로 유저 찾기
+        User user = userRepository.findBySocialId(requestDto.socialId())
+                .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
+
+        validateSignUpRequest(requestDto.nickname());
+
+        // 기술 스택 엔티티 조회
+        List<TechStack> techStacks = requestDto.techStackIds().stream()
+                .map(id -> TechStack.builder()
+                        .id(id)
+                        .build())
+                .toList();
+
+        // 유저 정보 업데이트
+        user.updateRegisterInfo(
+                requestDto.position(),
+                requestDto.nickname(),
+                techStacks
+        );
+
+        User savedUser = userRepository.save(user);
+        String accessToken = tokenService.createAccessToken(
+                savedUser.getSocialId(),
+                savedUser.getUserStatus(),
+                savedUser.getUserRole()
+        );
+        String refreshToken = tokenService.createRefreshToken();
+
+        // 리프레시 토큰 저장
+        savedUser.updateRefreshToken(refreshToken);
+        return UpdateRegisterResponseDto.ofUpdateRegister(savedUser,accessToken,refreshToken);
+    }
+
+    private void validateSignUpRequest(String nickname) {
         // 닉네임 중복 검사
-        if (userRepository.existsByNickname(requestDto.nickname())) {
+        if (userRepository.existsByNickname(nickname)) {
             throw new CustomException(ErrorType.DUPLICATE_NICKNAME);
         }
     }
