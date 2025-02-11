@@ -139,6 +139,16 @@ public class ProjectService {
         }
     }
 
+    public void validateProject(Long projectId, User user) {
+        // NOTE 0209: 팀원 구인 글이 존재하는지 확인 -> 예외처리
+        Project project = findProject(projectId);
+
+        // NOTE 0209: 자신이 작성한 글이 아닌지 확인 -> 예외처리
+        if (Objects.equals(project.getUser().getId(), user.getId())) {
+            throw new CustomException(ErrorType.NOT_MODIFY_OWN_PROJECT);
+        }
+    }
+
 }
 
 
