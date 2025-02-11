@@ -14,20 +14,28 @@ public record SignUpRequestDto(
         String email,
         String nickname,
         String socialId,
-        String socialProvider,
-        String position,
-        List<Long> techStackIds
+        String socialProvider
 ) {
     // Entity 변환 메서드
+//    public User toEntity() {
+//        return User.builder()
+//                .username(username)
+//                .email(email)
+//                .nickname(nickname)
+//                .userTechStacks(techStackIds.stream().map(id -> TechStack.builder().id(id).build()).toList())
+//                .socialId(socialId)
+//                .socialProvider(socialProvider)
+//                .position(position)
+//                .build();
+//    }
+
     public User toEntity() {
         return User.builder()
                 .username(username)
                 .email(email)
                 .nickname(nickname)
-                .userTechStacks(techStackIds.stream().map(id -> TechStack.builder().id(id).build()).toList())
                 .socialId(socialId)
                 .socialProvider(socialProvider)
-                .position(position)
                 .build();
     }
 }

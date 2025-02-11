@@ -44,11 +44,9 @@ public class AuthService  {
             SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
                     requestDto.getSocialId(),
                     requestDto.getEmail(),
-                    null,
-                    null,
+                    requestDto.getNickname(),
                     requestDto.getSocialId(),
-                    requestDto.getProvider(),
-                    null
+                    requestDto.getProvider()
             );
 
             userService.register(signUpRequestDto);

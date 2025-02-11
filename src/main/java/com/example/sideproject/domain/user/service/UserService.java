@@ -27,9 +27,7 @@ public class UserService {
 
     @Transactional
     public SignUpResponseDto register(SignUpRequestDto requestDto) {
-        validateSignUpRequest(requestDto);
-
-       User user = requestDto.toEntity();
+        User user = requestDto.toEntity();
 
         userRepository.save(user);
 

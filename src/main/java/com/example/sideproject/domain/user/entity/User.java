@@ -73,9 +73,27 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
+//    @Builder
+//    public updateUser(Long userId,String username, String password, String email, String nickname,
+//                List<TechStack> userTechStacks, String socialId, String socialProvider, String position) {
+//        this.id = userId;
+//        this.username = username;
+//        this.password = password;
+//        this.email = email;
+//        this.nickname = nickname;
+//        this.userRole = UserRole.USER;
+//        this.userStatus = UserStatus.ACTIVE_USER;
+//        this.lastLoginTime = LocalDateTime.now();
+//        this.uuid = generateType4UUID();
+//        this.userTechStacks = addTechStack(userTechStacks);
+//        this.socialId = socialId;
+//        this.socialProvider = socialProvider;
+//        this.position = position;
+//    }
+
     @Builder
     public User(Long userId,String username, String password, String email, String nickname,
-                List<TechStack> userTechStacks, String socialId, String socialProvider, String position) {
+                String socialId, String socialProvider) {
         this.id = userId;
         this.username = username;
         this.password = password;
@@ -85,10 +103,8 @@ public class User extends Timestamped {
         this.userStatus = UserStatus.ACTIVE_USER;
         this.lastLoginTime = LocalDateTime.now();
         this.uuid = generateType4UUID();
-        this.userTechStacks = addTechStack(userTechStacks);
         this.socialId = socialId;
         this.socialProvider = socialProvider;
-        this.position = position;
     }
 
     public List<UserTechStack> addTechStack(List<TechStack> techStacks) {
@@ -135,8 +151,7 @@ public class User extends Timestamped {
     }
 
     private UUID generateType4UUID(){
-        UUID userUuid = UUID.randomUUID();
-        return userUuid;
+        return UUID.randomUUID();
     }
 
     public void setLogin(){

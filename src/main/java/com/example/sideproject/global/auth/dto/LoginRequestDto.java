@@ -13,4 +13,5 @@ public class LoginRequestDto {
     private String email;
     private String socialId;
     private String provider;
+    private String nickname;
 }
