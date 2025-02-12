@@ -3,6 +3,7 @@ package com.example.sideproject.domain.user.service;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.dto.*;
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.domain.user.entity.UserStatus;
 import com.example.sideproject.domain.user.entity.UserTechStack;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.auth.service.TokenService;
@@ -24,12 +25,10 @@ public class UserService {
     private final TokenService tokenService;
 
     @Transactional
-    public SignUpResponseDto register(SignUpRequestDto requestDto) {
-        User user = requestDto.toEntity();
+    public void register(SignUpRequestDto requestDto) {
+        User user = requestDto.toEntity(UserStatus.INACTIVE_USER);
 
         userRepository.save(user);
-
-        return new SignUpResponseDto(user);
     }
 
     @Transactional

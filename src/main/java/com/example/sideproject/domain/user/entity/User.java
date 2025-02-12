@@ -76,7 +76,8 @@ public class User extends Timestamped {
     public void updateRegisterInfo(String position, String nickname, List<TechStack> techStacks) {
         this.position = position;
         this.nickname = nickname;
-
+        this.lastLoginTime = LocalDateTime.now();
+        this.userStatus = UserStatus.ACTIVE_USER;
         this.userTechStacks.clear();
 
         if (techStacks != null && !techStacks.isEmpty()) {
@@ -87,15 +88,14 @@ public class User extends Timestamped {
 
     @Builder
     public User(Long userId,String username, String password, String email, String nickname,
-                String socialId, String socialProvider) {
+                String socialId, String socialProvider, UserStatus userStatus) {
         this.id = userId;
         this.username = username;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
         this.userRole = UserRole.USER;
-        this.userStatus = UserStatus.ACTIVE_USER;
-        this.lastLoginTime = LocalDateTime.now();
+        this.userStatus = userStatus;
         this.uuid = generateType4UUID();
         this.socialId = socialId;
         this.socialProvider = socialProvider;

@@ -1,12 +1,9 @@
 package com.example.sideproject.domain.user.dto;
 
-import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
-import com.example.sideproject.domain.user.entity.UserTechStack;
+import com.example.sideproject.domain.user.entity.UserStatus;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 
-import java.util.List;
 
 public record SignUpRequestDto(
         String username,
@@ -16,26 +13,15 @@ public record SignUpRequestDto(
         String socialId,
         String socialProvider
 ) {
-    // Entity 변환 메서드
-//    public User toEntity() {
-//        return User.builder()
-//                .username(username)
-//                .email(email)
-//                .nickname(nickname)
-//                .userTechStacks(techStackIds.stream().map(id -> TechStack.builder().id(id).build()).toList())
-//                .socialId(socialId)
-//                .socialProvider(socialProvider)
-//                .position(position)
-//                .build();
-//    }
 
-    public User toEntity() {
+    public User toEntity(UserStatus userStatus) {
         return User.builder()
                 .username(username)
                 .email(email)
                 .nickname(nickname)
                 .socialId(socialId)
                 .socialProvider(socialProvider)
+                .userStatus(userStatus)
                 .build();
     }
 }
