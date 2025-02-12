@@ -14,5 +14,4 @@ public class LoginRequestDto {
     private String socialId;
     private String provider;
     private String nickname;
-    private List<UserTechStack> userTechStacks;
 }

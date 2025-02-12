@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.user.entity;
 
+import com.example.sideproject.domain.resume.entity.ResumeTechStack;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -68,33 +69,48 @@ public class User extends Timestamped {
 
     private String position;
 
-
-    public void addTechStack(List<UserTechStack> userTechStacks) {
-        this.userTechStacks.addAll(userTechStacks);
-    }
-
     // 북마크 관련 필드 추가
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
+    public void updateRegisterInfo(String position, String nickname, List<TechStack> techStacks) {
+        this.position = position;
+        this.nickname = nickname;
+        this.lastLoginTime = LocalDateTime.now();
+        this.userStatus = UserStatus.ACTIVE_USER;
+        this.userTechStacks.clear();
+
+        if (techStacks != null && !techStacks.isEmpty()) {
+            List<UserTechStack> newTechStacks = addTechStack(techStacks);
+            this.userTechStacks.addAll(newTechStacks);
+        }
+    }
+
     @Builder
     public User(Long userId,String username, String password, String email, String nickname,
-                List<UserTechStack> userTechStacks, String socialId, String socialProvider, String position) {
+                String socialId, String socialProvider, UserStatus userStatus) {
         this.id = userId;
         this.username = username;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
         this.userRole = UserRole.USER;
-        this.userStatus = UserStatus.ACTIVE_USER;
-        this.lastLoginTime = LocalDateTime.now();
+        this.userStatus = userStatus;
         this.uuid = generateType4UUID();
-        if(userTechStacks != null) {
-            this.userTechStacks = userTechStacks;
-        }
         this.socialId = socialId;
         this.socialProvider = socialProvider;
-        this.position = position;
+    }
+
+    public List<UserTechStack> addTechStack(List<TechStack> techStacks) {
+        List<UserTechStack> result = new ArrayList<>();
+        for (TechStack techStack : techStacks) {
+            UserTechStack userTechStack = UserTechStack.builder()
+                    .user(this)
+                    .techStack(techStack)
+                    .build();
+            result.add(userTechStack);
+        }
+        return result;
     }
 
     public User(Long id) {
@@ -129,8 +145,7 @@ public class User extends Timestamped {
     }
 
     private UUID generateType4UUID(){
-        UUID userUuid = UUID.randomUUID();
-        return userUuid;
+        return UUID.randomUUID();
     }
 
     public void setLogin(){
