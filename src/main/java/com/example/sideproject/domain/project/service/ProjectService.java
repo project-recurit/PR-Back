@@ -7,7 +7,6 @@ import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.project.repository.query.ProjectQueryRepository;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.techstack.repository.TechStackRepository;
-import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserStatus;
 import com.example.sideproject.domain.user.repository.UserRepository;
@@ -17,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,8 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -46,7 +42,7 @@ public class ProjectService {
      * 프로젝트 구인 글 생성
      */
     @Transactional
-    public void createTeamRecruit(ProjectRequestDto requestDto, User user) throws IOException {
+    public void createTeamRecruit(ProjectRequestDto requestDto, User user) throws IOException, IOException {
 
         final User foundUser = validateActiveUser(user);
         final Project project = requestDto.toEntity(foundUser);
@@ -80,10 +76,26 @@ public class ProjectService {
         }
 //        List<User> users = findUserByTechStacks(project.getTechStack1s());
 //        projectNoticeService.notice(project, users, techStackIds);
+//        if (!techStacks.isEmpty()) {
+//            for (TechStack tech : techStacks) { // 테크스택 유효성 검사 필요
+//                projectTechStackService.createProjectTechStack(tech, project);
+//            }
+//        }
+//        if(!projectUrls.isEmpty()) {
+//            for (MultipartFile url : projectUrls) {
+//                projectUrlService.createProjectUrl(project, url);
+//            }
+//        }
+
+        // 기술스택에 해당하는 유저를 조회
+        // List<User> users = findUserByTechStacks(project.getTechStacks());
+
+        // 세번째 파라미터에 등록한 프로젝트의 기술 스택 ID 리스트를 넣는다.
+        // projectNoticeService.notice(project, users, requestDto.getTechStackIds());
     }
 
-    private List<User> findUserByTechStacks(Set<TechStack1> techStack1s) {
-        return userRepository.findByTechStack1sIn(techStack1s);
+    public List<User> findUserByTechStacks(List<TechStack> techStacks) {
+        return userRepository.findByUserTechStacks_TechStackIn(techStacks);
     }
 
     /**

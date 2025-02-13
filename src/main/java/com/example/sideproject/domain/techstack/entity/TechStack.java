@@ -15,4 +15,11 @@ public class TechStack {
     private Long id;
 
     private String name;
+
+    public String getName() {
+        if (name.isEmpty()) {
+            return "";
+        }
+        return name;
+    }
 }

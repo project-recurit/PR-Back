@@ -1,9 +1,10 @@
 package com.example.sideproject.global.auth.dto;
 
-import com.example.sideproject.domain.user.entity.TechStack1;
+import com.example.sideproject.domain.user.entity.UserTechStack;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -13,5 +14,4 @@ public class LoginRequestDto {
     private String socialId;
     private String provider;
     private String nickname;
-    private Set<TechStack1> techStack1s;
 }

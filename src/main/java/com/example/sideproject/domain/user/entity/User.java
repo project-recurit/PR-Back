@@ -1,5 +1,7 @@
 package com.example.sideproject.domain.user.entity;
 
+import com.example.sideproject.domain.resume.entity.ResumeTechStack;
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -7,9 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 
@@ -20,7 +20,7 @@ import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
-    private long id;
+    private Long id;
 
 //    @Column(unique = true)
     private String username;
@@ -38,15 +38,9 @@ public class User extends Timestamped {
 
     private String profileUrl;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "user_tech_stacks",
-            joinColumns = @JoinColumn(name = "users_id")
-    )
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tech_stack")
-    // 순서 보장이 필요X, 중복 허용X -> Set 사용(List랑 반대)
-    private Set<TechStack1> techStack1s = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTechStack> userTechStacks = new ArrayList<>();
 
     // 경력
     @ElementCollection
@@ -75,34 +69,48 @@ public class User extends Timestamped {
 
     private String position;
 
-
-    public void addTechStack(Set<TechStack1> techStack1s) {
-        this.techStack1s.addAll(techStack1s);
-    }
-
     // 북마크 관련 필드 추가
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
+    public void updateRegisterInfo(String position, String nickname, List<TechStack> techStacks) {
+        this.position = position;
+        this.nickname = nickname;
+        this.lastLoginTime = LocalDateTime.now();
+        this.userStatus = UserStatus.ACTIVE_USER;
+        this.userTechStacks.clear();
+
+        if (techStacks != null && !techStacks.isEmpty()) {
+            List<UserTechStack> newTechStacks = addTechStack(techStacks);
+            this.userTechStacks.addAll(newTechStacks);
+        }
+    }
+
     @Builder
-    public User(String username, String password, String email, String nickname,
-                Set<TechStack1> techStack1s, String socialId, String socialProvider, String position) {
+    public User(Long userId,String username, String password, String email, String nickname,
+                String socialId, String socialProvider, UserStatus userStatus) {
+        this.id = userId;
         this.username = username;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
         this.userRole = UserRole.USER;
-        this.userStatus = UserStatus.ACTIVE_USER;
-        this.lastLoginTime = LocalDateTime.now();
+        this.userStatus = userStatus;
         this.uuid = generateType4UUID();
-        if(techStack1s != null) {
-            this.techStack1s = techStack1s;
-        }
         this.socialId = socialId;
         this.socialProvider = socialProvider;
-        this.userRole = UserRole.USER;
-        this.userStatus = UserStatus.ACTIVE_USER;
-        this.position = position;
+    }
+
+    public List<UserTechStack> addTechStack(List<TechStack> techStacks) {
+        List<UserTechStack> result = new ArrayList<>();
+        for (TechStack techStack : techStacks) {
+            UserTechStack userTechStack = UserTechStack.builder()
+                    .user(this)
+                    .techStack(techStack)
+                    .build();
+            result.add(userTechStack);
+        }
+        return result;
     }
 
     public User(Long id) {
@@ -137,8 +145,7 @@ public class User extends Timestamped {
     }
 
     private UUID generateType4UUID(){
-        UUID userUuid = UUID.randomUUID();
-        return userUuid;
+        return UUID.randomUUID();
     }
 
     public void setLogin(){
@@ -149,9 +156,11 @@ public class User extends Timestamped {
         return this.userStatus == UserStatus.ACTIVE_USER;
     }
 
-    public void updateTechStacks(Set<TechStack1> newTechStack1s) {
-        this.techStack1s.clear();
-        this.techStack1s.addAll(newTechStack1s);
+    public void updateTechStacks(List<UserTechStack> newUserTechStacks) {
+        this.userTechStacks.clear();
+        this.userTechStacks.addAll(newUserTechStacks);
+        // UserTechStack의 user 필드도 업데이트
+        newUserTechStacks.forEach(techStack -> techStack.setUser(this));
     }
 
     public void updateProfile(String nickname) {
