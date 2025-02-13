@@ -74,18 +74,6 @@ public class ProjectService {
                 projectUrlService.createProjectUrl(project, url);
             }
         }
-//        List<User> users = findUserByTechStacks(project.getTechStack1s());
-//        projectNoticeService.notice(project, users, techStackIds);
-//        if (!techStacks.isEmpty()) {
-//            for (TechStack tech : techStacks) { // 테크스택 유효성 검사 필요
-//                projectTechStackService.createProjectTechStack(tech, project);
-//            }
-//        }
-//        if(!projectUrls.isEmpty()) {
-//            for (MultipartFile url : projectUrls) {
-//                projectUrlService.createProjectUrl(project, url);
-//            }
-//        }
 
         // 기술스택에 해당하는 유저를 조회
         // List<User> users = findUserByTechStacks(project.getTechStacks());
