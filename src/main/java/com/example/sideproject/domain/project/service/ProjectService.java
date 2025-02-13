@@ -1,11 +1,10 @@
 package com.example.sideproject.domain.project.service;
 
-import com.example.sideproject.domain.project.dto.CreateTeamRecruitPageResponseDto;
-import com.example.sideproject.domain.project.dto.CreateTeamRecruitRequestDto;
-import com.example.sideproject.domain.project.dto.CreateTeamRecruitResponseDto;
+import com.example.sideproject.domain.project.dto.*;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.ProjectTechStack;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
+import com.example.sideproject.domain.project.repository.query.ProjectQueryRepository;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.techstack.repository.TechStackRepository;
 import com.example.sideproject.domain.user.entity.TechStack1;
@@ -41,12 +40,13 @@ public class ProjectService {
     private final ProjectTechStackService projectTechStackService;
     private final ProjectUrlService projectUrlService;
     private final TechStackRepository techStackRepository; // 임시
+    private final ProjectQueryRepository projectQueryRepository;
 
     /**
      * 프로젝트 구인 글 생성
      */
     @Transactional
-    public void createTeamRecruit(CreateTeamRecruitRequestDto requestDto, User user) throws IOException {
+    public void createTeamRecruit(ProjectRequestDto requestDto, User user) throws IOException {
 
         final User foundUser = validateActiveUser(user);
         final Project project = requestDto.toEntity(foundUser);
@@ -86,14 +86,31 @@ public class ProjectService {
         return userRepository.findByTechStack1sIn(techStack1s);
     }
 
+    /**
+     * 게시글 상세 조회
+     */
+    public ProjectDetailResponseDto getProject(Long projectId) {
 
-    public CreateTeamRecruitResponseDto getTeamRecruit(Long teamRecruitId) {
-        Project project = findProject(teamRecruitId);
-        return new CreateTeamRecruitResponseDto(project);
+        final ProjectResponseDto project = projectQueryRepository.getProject(projectId);
+        final List<ProjectTechStackResponseDto> projectTech = projectTechStackService.getProjectTechStacks(projectId);
+        final List<ProjectUrlResponseDto> url = projectUrlService.getUrls(projectId);
+
+        return ProjectDetailResponseDto.builder()
+                .response(project)
+                .techStacks(projectTech)
+                .urls(url)
+                .build();
+    }
+
+    public Page<ProjectsResponseDto> getProjects(int page) {
+
+        final Pageable pageable = PageRequest.of(page - 1, 20);
+
+        return projectQueryRepository.getProjects(pageable);
     }
 
     @Transactional
-    public void updateTeamRecruit(Long teamRecruitId, CreateTeamRecruitRequestDto requestDto, User user) {
+    public void updateTeamRecruit(Long teamRecruitId, ProjectRequestDto requestDto, User user) {
 
         User foundUser = validateActiveUser(user);
         Project project = findProject(teamRecruitId);
@@ -104,31 +121,7 @@ public class ProjectService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public CreateTeamRecruitPageResponseDto getTeamRecruits(String page) {
 
-        // 기본값: 페이지 0, 사이즈 10
-        int pageNumber = (page != null) ? Integer.parseInt(page) : 0;
-        int pageSize = 10;
-
-        // 기본 정렬: 생성일 기준 내림차순
-        Sort sorting = Sort.by(Sort.Direction.DESC, "createdAt");
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sorting);
-
-        Page<Project> teamRecruitPage = projectRepository.findAll(pageable);
-
-        List<CreateTeamRecruitResponseDto> teamRecruits = teamRecruitPage.getContent()
-                .stream()
-                .map(CreateTeamRecruitResponseDto::new)
-                .collect(Collectors.toList());
-
-        return new CreateTeamRecruitPageResponseDto(
-                teamRecruits,
-                teamRecruitPage.getNumber(),
-                teamRecruitPage.getTotalPages(),
-                teamRecruitPage.getTotalElements()
-        );
-    }
 
     @Transactional
     public void deleteTeamRecruit(Long teamRecruitId, User user) {
@@ -151,8 +144,8 @@ public class ProjectService {
         return foundUser;
     }
 
-    public Project findProject(Long teamRecruitId) {
-        return projectRepository.findById(teamRecruitId)
+    public Project findProject(Long projectId) {
+        return projectRepository.findById(projectId)
                 .orElseThrow(() -> new CustomException(ErrorType.TEAM_RECRUIT_NOT_FOUND));
     }
 

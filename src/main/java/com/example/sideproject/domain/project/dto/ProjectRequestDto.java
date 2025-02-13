@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 
-public record CreateTeamRecruitRequestDto (
+public record ProjectRequestDto(
 
      String title,
      String content,

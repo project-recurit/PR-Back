@@ -1,8 +1,10 @@
 package com.example.sideproject.domain.project.service;
 
+import com.example.sideproject.domain.project.dto.ProjectUrlResponseDto;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.ProjectUrl;
 import com.example.sideproject.domain.project.repository.ProjectUrlRepository;
+import com.example.sideproject.domain.project.repository.query.ProjectUrlQueryRepository;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import com.uploadcare.api.Client;
@@ -24,6 +26,7 @@ import java.util.List;
 public class ProjectUrlService {
 
     private final ProjectUrlRepository projectUrlRepository;
+    private final ProjectUrlQueryRepository projectUrlQueryRepository;
 
     @Value("${UPLOAD_CARE_PUB}")
     private String publicKey;
@@ -50,6 +53,10 @@ public class ProjectUrlService {
         } catch (UploadFailureException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<ProjectUrlResponseDto> getUrls(Long projectId) {
+        return projectUrlQueryRepository.getUrls(projectId);
     }
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
