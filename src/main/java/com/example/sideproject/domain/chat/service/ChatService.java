@@ -1,9 +1,6 @@
 package com.example.sideproject.domain.chat.service;
 
-import com.example.sideproject.domain.chat.dto.ChatMessageRequest;
-import com.example.sideproject.domain.chat.dto.ChatMessageResponse;
-import com.example.sideproject.domain.chat.dto.ChatRoomDetailResponse;
-import com.example.sideproject.domain.chat.dto.ChatRoomMemberResponse;
+import com.example.sideproject.domain.chat.dto.*;
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.chat.entity.ChatRoomMember;
@@ -16,6 +13,10 @@ import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.config.WebSocketEventHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,9 +111,19 @@ public class ChatService {
      * @param userId
      * @return
      */
-    @Transactional
-    public List<ChatRoom> getRooms(Long userId) {
-        return chatRoomRepository.findByUserId(userId);
+    @Transactional(readOnly = true)
+    public Page<ChatRoomListResponse> getRooms(Long userId, int page, int size) {
+        Page<ChatRoom> chatRooms = chatRoomRepository.findByUserId(
+                userId,
+                PageRequest.of(page, size, Sort.by("lastMessage.sentAt").descending())
+        );
+
+        return chatRooms.map(chatRoom ->
+                ChatRoomListResponse.from(
+                        chatRoom,
+                        getUnreadCount(chatRoom.getId(), userId)
+                )
+        );
     }
 
     /**
@@ -180,15 +191,18 @@ public class ChatService {
      * @return
      */
     @Transactional(readOnly = true)
-    public ChatRoomDetailResponse getChatRoomDetail(Long roomId) {
+    public ChatRoomDetailResponse getChatRoomDetail(Long roomId, int page, int size) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
-        List<ChatMessage> messages = chatMessageRepository.findAllByChatRoomIdOrderBySentAtAsc(roomId);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("sentAt").ascending());
+        Page<ChatMessage> messages = chatMessageRepository
+                .findAllByChatRoomIdOrderBySentAtAsc(roomId, pageable);
 
         return ChatRoomDetailResponse.builder()
                 .roomId(chatRoom.getId())
-                .messages(messages.stream()
+                .messages(messages.getContent().stream()
                         .map(this::convertToChatMessageResponse)
                         .collect(Collectors.toList()))
                 .lastMessage(chatRoom.getLastMessage() != null ?
@@ -196,6 +210,10 @@ public class ChatService {
                 .members(chatRoom.getMembers().stream()
                         .map(this::convertToChatRoomMemberResponse)
                         .collect(Collectors.toList()))
+                .currentPage(messages.getNumber())
+                .totalPages(messages.getTotalPages())
+                .totalElements(messages.getTotalElements())
+                .hasNext(messages.hasNext())
                 .createdAt(chatRoom.getCreatedAt())
                 .build();
     }

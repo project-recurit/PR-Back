@@ -14,4 +14,9 @@ public class ChatRoomDetailResponse {
     private ChatMessageResponse lastMessage;
     private List<ChatRoomMemberResponse> members;
     private LocalDateTime createdAt;
+
+    private int currentPage;
+    private int totalPages;
+    private long totalElements;
+    private boolean hasNext;
 }
