@@ -16,6 +16,6 @@ public record ProjectResponseDto(
         String recruitmentPeriod,
         String recruitStatus,
         String teamSize,
-        Date modifiedAt
+        String modifiedAt
 ) {
 }

@@ -26,7 +26,7 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<ResponseMessageDto> createProject(@ModelAttribute ProjectRequestDto requestDto,
                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        projectService.createTeamRecruit(requestDto, userDetails.getUser());
+        projectService.createProject(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_TEAM_RECRUIT_SUCCESS));
     }
 

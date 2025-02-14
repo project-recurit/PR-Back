@@ -1,14 +1,11 @@
 package com.example.sideproject.domain.project.dto;
 
-import java.util.List;
-
-public record ProjectsResponseDto(
+public record ProjectsQueryDto(
         Long id,
         String title,
         String userNickname,
         int viewCount,
         int likeCount,
-        String modifiedAt,
-        List<ProjectsTechStackResponseDto> techStacks
+        String modifiedAt
 ) {
 }

@@ -42,7 +42,7 @@ public class ProjectService {
      * 프로젝트 구인 글 생성
      */
     @Transactional
-    public void createTeamRecruit(ProjectRequestDto requestDto, User user) throws IOException, IOException {
+    public void createProject(ProjectRequestDto requestDto, User user) throws IOException {
 
         final User foundUser = validateActiveUser(user);
         final Project project = requestDto.toEntity(foundUser);
@@ -91,15 +91,8 @@ public class ProjectService {
      */
     public ProjectDetailResponseDto getProject(Long projectId) {
 
-        final ProjectResponseDto project = projectQueryRepository.getProject(projectId);
-        final List<ProjectTechStackResponseDto> projectTech = projectTechStackService.getProjectTechStacks(projectId);
-        final List<ProjectUrlResponseDto> url = projectUrlService.getUrls(projectId);
 
-        return ProjectDetailResponseDto.builder()
-                .response(project)
-                .techStacks(projectTech)
-                .urls(url)
-                .build();
+        return projectQueryRepository.getProject(projectId);
     }
 
     public Page<ProjectsResponseDto> getProjects(int page) {
