@@ -3,6 +3,8 @@ package com.example.sideproject.domain.favorite.controller;
 import com.example.sideproject.domain.favorite.service.FavoriteService;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.service.ProjectService;
+import com.example.sideproject.domain.resume.entity.Resume;
+import com.example.sideproject.domain.resume.service.ResumeService;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.enums.ResponseStatus;
 import com.example.sideproject.global.security.UserDetailsImpl;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FavoriteController {
     private final FavoriteService favoriteService;
     private final ProjectService projectService;
+    private final ResumeService resumeService;
 
     @PostMapping("/projects/{projectId}/favorite")
     public ResponseEntity<ResponseMessageDto> saveFavoritesProject(
@@ -28,6 +31,17 @@ public class FavoriteController {
     ) {
         Project project = projectService.validateProject(projectId, userDetails.getUser());
         favoriteService.saveProjectToFavorites(project, userDetails.getUser());
+
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITES_CREATE_SUCCESS));
+    }
+
+    @PostMapping("/resumes/{resumeId}/favorite")
+    public ResponseEntity<ResponseMessageDto> saveFavoritesResume(
+            @PathVariable("resumeId") Long resumeId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        Resume resume = resumeService.validateResume(resumeId, userDetails.getUser());
+        favoriteService.saveResumeToFavorites(resume, userDetails.getUser());
 
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITES_CREATE_SUCCESS));
     }

@@ -91,8 +91,9 @@ public enum ErrorType implements ErrorCode {
     NOT_FOUND_LIKE_USER(HttpStatus.NOT_FOUND, "좋아요를 누른 유저가 없습니다."),
 
     // 관심목록
-    NOT_MODIFY_OWN_PROJECT(HttpStatus.BAD_REQUEST, "자신의 피드는 추가할 수 없습니다."),
+    NOT_MODIFY_OWN(HttpStatus.BAD_REQUEST, "자신의 피드는 추가할 수 없습니다."),
     DUPLICATE_FAVORITE(HttpStatus.BAD_REQUEST, "이미 관심 목록에 추가된 항목입니다."),
+    NOT_PUBLISH_RESUME(HttpStatus.NOT_ACCEPTABLE, "공개되지 않은 이력서는 추가할 수 없습니다."),
 
     //아티스트그룹
     NOT_FOUND_ARTISTGROUP(HttpStatus.NOT_FOUND, "아티스트그룹을 찾지 못했습니다."),

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -79,5 +80,20 @@ public class ResumeService {
         return resumeRepository.findResumeById(resumeId).orElseThrow(
                 () -> new CustomException(ErrorType.RESUME_NOT_FOUND)
         );
+    }
+
+    public Resume validateResume(Long resumeId, User user) {
+        // NOTE 0215: 이력서 존재 여부 확인
+        Resume resume = getResumeById(resumeId);
+
+        // NOTE 0215: 이력서 공개 여부 확인
+        if (resume.getPublishedAt() == null)
+            throw new CustomException(ErrorType.NOT_PUBLISH_RESUME);
+
+        // NOTE 0215: 자신의 이력서는 관심목록 추가 제외
+        if (resume.getUser().equals(user))
+            throw new CustomException(ErrorType.NOT_MODIFY_OWN);
+
+        return resume;
     }
 }
