@@ -26,6 +26,8 @@ public class Applicant extends Timestamped {
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
+    private String position;
+
     public void updateStatus(ApplicationStatus status) {
         this.status = status;
     }
