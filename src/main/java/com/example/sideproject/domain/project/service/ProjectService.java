@@ -139,7 +139,7 @@ public class ProjectService {
         }
     }
 
-    public void validateProject(Long projectId, User user) {
+    public Project validateProject(Long projectId, User user) {
         // NOTE 0209: 팀원 구인 글이 존재하는지 확인 -> 예외처리
         Project project = findProject(projectId);
 
@@ -147,6 +147,8 @@ public class ProjectService {
         if (Objects.equals(project.getUser().getId(), user.getId())) {
             throw new CustomException(ErrorType.NOT_MODIFY_OWN_PROJECT);
         }
+
+        return project;
     }
 
 }

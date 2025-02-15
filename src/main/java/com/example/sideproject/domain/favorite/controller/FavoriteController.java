@@ -1,7 +1,7 @@
 package com.example.sideproject.domain.favorite.controller;
 
-import com.example.sideproject.domain.bookmark.service.TeamRecruitBookmarkService;
 import com.example.sideproject.domain.favorite.service.FavoriteService;
+import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.service.ProjectService;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.enums.ResponseStatus;
@@ -22,11 +22,13 @@ public class FavoriteController {
     private final ProjectService projectService;
 
     @PostMapping("/projects/{projectId}/favorite")
-    public ResponseEntity<ResponseMessageDto> saveFavoritesProject( // TODO: 로직 작성
-            @PathVariable Long projectId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        projectService.validateProject(projectId, userDetails.getUser());
-        favoriteService.saveProjectToFavorites(userDetails.getUser());
+    public ResponseEntity<ResponseMessageDto> saveFavoritesProject(
+            @PathVariable("projectId") Long projectId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        Project project = projectService.validateProject(projectId, userDetails.getUser());
+        favoriteService.saveProjectToFavorites(project, userDetails.getUser());
+
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITES_CREATE_SUCCESS));
     }
 }
