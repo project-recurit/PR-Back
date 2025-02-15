@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -91,7 +92,7 @@ public class ResumeService {
             throw new CustomException(ErrorType.UNPUBLISHED_RESUME);
 
         // NOTE 0215: 자신의 이력서는 관심목록 추가 제외
-        if (resume.getUser().equals(user))
+        if (Objects.equals(resume.getUser().getId(), user.getId()))
             throw new CustomException(ErrorType.NOT_MODIFY_OWN);
 
         return resume;
