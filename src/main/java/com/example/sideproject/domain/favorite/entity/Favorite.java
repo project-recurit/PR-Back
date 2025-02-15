@@ -1,8 +1,10 @@
 package com.example.sideproject.domain.favorite.entity;
 
 import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.resume.entity.Resume;
 import com.example.sideproject.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,8 +24,14 @@ public class Favorite {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public Favorite(User user, Project project) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id")
+    private Resume resume;
+
+    @Builder
+    public Favorite(User user, Project project, Resume resume) {
         this.user = user;
         this.project = project;
+        this.resume = resume;
     }
 }
