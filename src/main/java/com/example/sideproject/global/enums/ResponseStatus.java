@@ -33,7 +33,8 @@ public enum ResponseStatus {
     DELETE_COMMENT_LIKE(HttpStatus.OK, "댓글의 좋아요를 취소합니다."),
 
     // 관심 목록
-    FAVORITES_CREATE_SUCCESS(HttpStatus.CREATED, "관심목록 추가에 성공하였습니다"),
+    FAVORITE_CREATE_SUCCESS(HttpStatus.CREATED, "관심목록 추가에 성공하였습니다."),
+    FAVORITE_DELETE_SUCCESS(HttpStatus.OK, "괌심목록 삭제에 성공하였습니다."),
 
     //프로필
     WITHDRAW_SUCCESS(HttpStatus.OK, "회원탈퇴에 성공하였습니다."),

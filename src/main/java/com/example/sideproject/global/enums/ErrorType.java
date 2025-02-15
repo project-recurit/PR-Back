@@ -93,7 +93,8 @@ public enum ErrorType implements ErrorCode {
     // 관심목록
     NOT_MODIFY_OWN(HttpStatus.BAD_REQUEST, "자신의 피드는 추가할 수 없습니다."),
     DUPLICATE_FAVORITE(HttpStatus.BAD_REQUEST, "이미 관심 목록에 추가된 항목입니다."),
-    NOT_PUBLISH_RESUME(HttpStatus.NOT_ACCEPTABLE, "공개되지 않은 이력서는 추가할 수 없습니다."),
+    NOT_FOUND_FAVORITE(HttpStatus.NOT_FOUND, "관심목록에서 이미 삭제되었습니다."),
+    FAVORITE_ACCESS_DENIED(HttpStatus.NOT_ACCEPTABLE, "자신의 관심목록만 접근 가능합니다."),
 
     //아티스트그룹
     NOT_FOUND_ARTISTGROUP(HttpStatus.NOT_FOUND, "아티스트그룹을 찾지 못했습니다."),

@@ -88,7 +88,7 @@ public class ResumeService {
 
         // NOTE 0215: 이력서 공개 여부 확인
         if (resume.getPublishedAt() == null)
-            throw new CustomException(ErrorType.NOT_PUBLISH_RESUME);
+            throw new CustomException(ErrorType.UNPUBLISHED_RESUME);
 
         // NOTE 0215: 자신의 이력서는 관심목록 추가 제외
         if (resume.getUser().equals(user))

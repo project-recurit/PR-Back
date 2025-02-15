@@ -11,10 +11,7 @@ import com.example.sideproject.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +29,7 @@ public class FavoriteController {
         Project project = projectService.validateProject(projectId, userDetails.getUser());
         favoriteService.saveProjectToFavorites(project, userDetails.getUser());
 
-        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITES_CREATE_SUCCESS));
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITE_CREATE_SUCCESS));
     }
 
     @PostMapping("/resumes/{resumeId}/favorite")
@@ -43,6 +40,17 @@ public class FavoriteController {
         Resume resume = resumeService.validateResume(resumeId, userDetails.getUser());
         favoriteService.saveResumeToFavorites(resume, userDetails.getUser());
 
-        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITES_CREATE_SUCCESS));
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITE_CREATE_SUCCESS));
     }
+
+    @DeleteMapping("/favorites/{favoriteId}")
+    public ResponseEntity<ResponseMessageDto> deleteFavorite(
+            @PathVariable("favoriteId") Long favoriteId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        favoriteService.deleteFavorite(favoriteId, userDetails.getUser());
+
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITE_DELETE_SUCCESS));
+    }
+
 }

@@ -34,4 +34,5 @@ public class Favorite {
         this.project = project;
         this.resume = resume;
     }
+
 }
