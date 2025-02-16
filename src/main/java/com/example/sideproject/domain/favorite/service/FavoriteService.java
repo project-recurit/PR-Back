@@ -1,7 +1,7 @@
 package com.example.sideproject.domain.favorite.service;
 
-import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 import com.example.sideproject.domain.favorite.entity.Favorite;
+import com.example.sideproject.domain.favorite.entity.FavoriteType;
 import com.example.sideproject.domain.favorite.repository.FavoriteRepository;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.resume.entity.Resume;
@@ -21,17 +21,21 @@ public class FavoriteService {
 
     @Transactional
     public void saveProjectToFavorites(Project project, User user) {
-        // NOTE 0207: 관심목록에 이미 저장된 중복데이터가 없는지 확인 -> 예외처리
-        validateDulicateProjectFavorite(project, user);
+        // 중복된 데이터가 있는지 확인 후 예외 처리
+        validateDuplicateProjectFavorite(project, user);
 
-        // NOTE 0207: 팀원 구인 글을 관심목록에 저장
-        favoriteRepository.save(Favorite.builder()
+        // 관심 목록에 프로젝트 저장
+        Favorite favorite = Favorite.builder()
                 .user(user)
                 .project(project)
-                .build());
+                .type(FavoriteType.PROJECT) // Type.PROJECT → FavoriteType.PROJECT로 변경
+                .build();
+
+        favoriteRepository.save(favorite);
     }
 
-    private void validateDulicateProjectFavorite(Project project, User user) {
+
+    private void validateDuplicateProjectFavorite(Project project, User user) {
         if (favoriteRepository.existsByProjectAndUser(project, user)) {
             throw new CustomException(ErrorType.DUPLICATE_FAVORITE);
         }
@@ -39,17 +43,21 @@ public class FavoriteService {
 
     @Transactional
     public void saveResumeToFavorites(Resume resume, User user) {
-        // NOTE 0215: 관심목록에 이미 저장된 중복데이터가 없는지 확인 -> 예외처리
-        validateDulicateResumeFavorite(resume, user);
+        // 중복된 데이터가 있는지 확인 후 예외 처리
+        validateDuplicateResumeFavorite(resume, user);
 
-        // NOTE 0215: 공개 이력서 관심목록에 저장
-        favoriteRepository.save(Favorite.builder()
+        // 관심 목록에 이력서 저장
+        Favorite favorite = Favorite.builder()
                 .user(user)
                 .resume(resume)
-                .build());
+                .type(FavoriteType.RESUME)
+                .build();
+
+        favoriteRepository.save(favorite);
     }
 
-    private void validateDulicateResumeFavorite(Resume resume, User user) {
+
+    private void validateDuplicateResumeFavorite(Resume resume, User user) {
         if (favoriteRepository.existsByResumeAndUser(resume, user)) {
             throw new CustomException(ErrorType.DUPLICATE_FAVORITE);
         }
@@ -57,22 +65,24 @@ public class FavoriteService {
 
     @Transactional
     public void deleteFavorite(Long favoriteId, User user) {
-        // NOTE 0215: 관심목록 존재여부 확인 -> 예외처리
+        // 관심 목록 존재 여부 확인
         Favorite favorite = findFavorite(favoriteId);
 
-        // NOTE 0215: 자신의 관심목록인지 확인 -> 예외처리
-        if(NotFavoriteOwner(favorite, user))
+        // 본인의 관심 목록인지 확인 후 예외 처리
+        if (isNotFavoriteOwner(favorite, user)) {
             throw new CustomException(ErrorType.FAVORITE_ACCESS_DENIED);
+        }
 
         favoriteRepository.delete(favorite);
     }
+
 
     private Favorite findFavorite(Long favoriteId) {
         return favoriteRepository.findById(favoriteId)
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_FAVORITE));
     }
 
-    private boolean NotFavoriteOwner(Favorite favorite, User user) {
+    private boolean isNotFavoriteOwner(Favorite favorite, User user) {
         return !Objects.equals(favorite.getUser().getId(), user.getId());
     }
 }
