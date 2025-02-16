@@ -29,11 +29,14 @@ public class Favorite extends Timestamped {
     @JoinColumn(name = "resume_id")
     private Resume resume;
 
+    private FavoriteType type;
+
     @Builder
-    public Favorite(User user, Project project, Resume resume) {
+    public Favorite(User user, Project project, Resume resume, FavoriteType type) {
         this.user = user;
         this.project = project;
         this.resume = resume;
+        this.type = type;
     }
 
 }
