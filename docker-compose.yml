@@ -1,0 +1,14 @@
+services:
+  app:
+    container_name: app
+    image: damo:latest
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Seoul
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_URL: ${DB_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      UPLOAD_CARE_PUB: ${UPLOAD_CARE_PUB}
+      UPLOAD_CARE_SEC: ${UPLOAD_CARE_SEC}
