@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.project.entity;
 
+import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -37,8 +38,6 @@ public class Project extends Timestamped {
     @Column(nullable = false, name = "view_count")
     private int viewCount;
 
-    private String contact;
-
     @Column(nullable = false, name = "like_count")
     private int likeCount;
 
@@ -56,15 +55,17 @@ public class Project extends Timestamped {
     @Column(nullable = false, name = "team_size")
     private String teamSize;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ChatRoom> chatRooms = new ArrayList<>();
+
     @Builder
     public Project(String title, String content, List<ProjectTechStack> projectTechStacks,
-                   String expectedPeriod, String contact, User user,
+                   String expectedPeriod, User user,
                    String recruitmentPeriod, RecruitStatus recruitStatus,
                    int viewCount, int likeCount,String teamSize, Long id) {
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
-        this.contact = contact;
         this.user = user;
         this.recruitmentPeriod = recruitmentPeriod;
         this.recruitStatus = recruitStatus;
@@ -76,10 +77,9 @@ public class Project extends Timestamped {
     }
 
     public void update(String title, String content,
-                       String expectedPeriod, String contact) {
+                       String expectedPeriod) {
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
-        this.contact = contact;
     }
 }

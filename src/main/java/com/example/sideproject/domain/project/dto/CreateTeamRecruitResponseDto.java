@@ -13,7 +13,6 @@ public class CreateTeamRecruitResponseDto {
     private final String content;
 //    private final Set<TechStack1> techStack1s;
     private final String expectedPeriod;
-    private final String contact;
 
     public CreateTeamRecruitResponseDto(Project project) {
         this.id = project.getId();
@@ -21,6 +20,5 @@ public class CreateTeamRecruitResponseDto {
         this.content = project.getContent();
 //        this.techStack1s = project.getTechStack1s();
         this.expectedPeriod = project.getExpectedPeriod();
-        this.contact = project.getContact();
     }
 }

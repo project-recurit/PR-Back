@@ -14,7 +14,6 @@ public record ProjectRequestDto(
      String title,
      String content,
      String expectedPeriod,
-     String contact,
      String recruitmentPeriod,
      String teamSize,
      List<Long> projectTechStacks,
@@ -23,7 +22,6 @@ public record ProjectRequestDto(
     public Project toEntity(User user) {
         return Project.builder()
                 .title(title)
-                .contact(contact)
                 .content(content)
                 .expectedPeriod(expectedPeriod)
                 .recruitmentPeriod(recruitmentPeriod)

@@ -32,6 +32,7 @@ public class UserService {
     }
 
     @Transactional
+    //todo 업데이트 한번에
     public UpdateRegisterResponseDto updateRegister(UpdateRegisterRequestDto requestDto) {
         // 소셜 ID로 유저 찾기
         User user = userRepository.findBySocialId(requestDto.socialId())

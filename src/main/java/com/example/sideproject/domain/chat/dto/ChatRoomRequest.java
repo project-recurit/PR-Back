@@ -8,4 +8,5 @@ import lombok.NoArgsConstructor;
 public class ChatRoomRequest {
     private Long senderId;
     private Long receiverId;
+    private Long projectId;
 }

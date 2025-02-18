@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.chat.entity;
 
+import com.example.sideproject.domain.project.entity.Project;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,9 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class ChatRoom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -27,6 +30,10 @@ public class ChatRoom {
     @JoinColumn(name = "last_message_id")
     private ChatMessage lastMessage;
 
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
+
     private LocalDateTime createdAt;
 
     public void addMember(ChatRoomMember member) {
@@ -39,8 +46,8 @@ public class ChatRoom {
     }
 
     @Builder
-    public ChatRoom() {
-
+    public ChatRoom(Project project) {
+        this.project = project;
         this.createdAt = LocalDateTime.now();
     }
 }

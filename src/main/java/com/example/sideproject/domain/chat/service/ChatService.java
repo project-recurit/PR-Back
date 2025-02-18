@@ -8,6 +8,8 @@ import com.example.sideproject.domain.chat.entity.MessageType;
 import com.example.sideproject.domain.chat.repository.ChatMessageRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
+import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.config.WebSocketEventHandler;
@@ -35,6 +37,7 @@ public class ChatService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final UserRepository userRepository;
     private final WebSocketEventHandler webSocketEventHandler;
+    private final ProjectRepository projectRepository;
 
     /**
      * 채팅방 생성
@@ -42,14 +45,16 @@ public class ChatService {
      * @param receiverId
      * @return
      */
-    @Transactional(readOnly = true)
-    public ChatRoom createRoom(Long senderId, Long receiverId) {
+    @Transactional()
+    public ChatRoom createRoom(Long senderId, Long receiverId, Long projectId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
         User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found"));
 
-        ChatRoom chatRoom = new ChatRoom();
+        ChatRoom chatRoom = new ChatRoom(project);
         chatRoom.addMember(new ChatRoomMember(sender));
         chatRoom.addMember(new ChatRoomMember(receiver));
 
@@ -84,16 +89,7 @@ public class ChatService {
 
         Map<Long, Long> unreadCounts = getUnreadCountsForMembers(chatRoom);
         log.info("{} unread messages have been sent", unreadCounts.size());
-        return ChatMessageResponse.builder()
-                .messageId(savedMessage.getId())
-                .roomId(savedMessage.getChatRoom().getId())
-                .senderId(savedMessage.getSender().getId())
-                .senderNickname(savedMessage.getSender().getNickname())
-                .content(savedMessage.getContent())
-                .sentAt(savedMessage.getSentAt())
-                .type(savedMessage.getType())
-                .unreadCounts(unreadCounts)  // 읽지 않은 메시지 수 추가
-                .build();
+        return ChatMessageResponse.from(savedMessage);
     }
 
     /**
@@ -200,51 +196,13 @@ public class ChatService {
         Page<ChatMessage> messages = chatMessageRepository
                 .findAllByChatRoomIdOrderBySentAtAsc(roomId, pageable);
 
-        return ChatRoomDetailResponse.builder()
-                .roomId(chatRoom.getId())
-                .messages(messages.getContent().stream()
-                        .map(this::convertToChatMessageResponse)
-                        .collect(Collectors.toList()))
-                .lastMessage(chatRoom.getLastMessage() != null ?
-                        convertToChatMessageResponse(chatRoom.getLastMessage()) : null)
-                .members(chatRoom.getMembers().stream()
-                        .map(this::convertToChatRoomMemberResponse)
-                        .collect(Collectors.toList()))
-                .currentPage(messages.getNumber())
-                .totalPages(messages.getTotalPages())
-                .totalElements(messages.getTotalElements())
-                .hasNext(messages.hasNext())
-                .createdAt(chatRoom.getCreatedAt())
-                .build();
+        List<ChatMessageResponse> messageResponses = messages.getContent().stream()
+                .map(ChatMessageResponse::from)  // convertToChatMessageResponse 대신 from 메서드 사용
+                .collect(Collectors.toList());
+
+
+        return ChatRoomDetailResponse.of(chatRoom,messageResponses, messages);
     }
-
-
-
-
-
-    private ChatMessageResponse convertToChatMessageResponse(ChatMessage message) {
-        return ChatMessageResponse.builder()
-                .messageId(message.getId())
-                .roomId(message.getChatRoom().getId())
-                .senderId(message.getSender().getId())
-                .senderNickname(message.getSender().getNickname())
-                .content(message.getContent())
-                .type(message.getType())
-                .sentAt(message.getSentAt())
-                .read(message.isRead())
-                .build();
-    }
-
-    private ChatRoomMemberResponse convertToChatRoomMemberResponse(ChatRoomMember member) {
-        return ChatRoomMemberResponse.builder()
-                .userId(member.getMember().getId())
-                .nickname(member.getMember().getNickname())
-                .lastReadAt(member.getLastReadAt())
-                .isLeft(member.isLeft())
-                .leftAt(member.getLeftAt())
-                .build();
-    }
-
 
     /**
      * 메시지 읽음처리
@@ -288,6 +246,7 @@ public class ChatService {
      * @param chatRoom
      * @return
      */
+    //필드로 빼자
     private Map<Long, Long> getUnreadCountsForMembers(ChatRoom chatRoom) {
         return chatRoom.getMembers().stream()
                 .collect(Collectors.toMap(
