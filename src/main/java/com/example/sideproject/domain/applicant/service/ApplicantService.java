@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.applicant.service;
 
+import com.example.sideproject.domain.applicant.dto.ApplicantApplyDto;
 import com.example.sideproject.domain.applicant.dto.ApplicantResponseDto;
 import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
 import com.example.sideproject.domain.applicant.entity.Applicant;
@@ -27,9 +28,8 @@ public class ApplicantService {
     /**
      * 프로젝트 지원
      */
-    public Long apply(User user, Long projectId) {
+    public Long apply(User user, Long projectId, ApplicantApplyDto req) {
         // 프로젝트가 있는지 확인
-
         Project project = projectService.findProject(projectId);
 
         // 지원 내역 확인
@@ -40,6 +40,7 @@ public class ApplicantService {
         Applicant applicant = Applicant.builder()
                 .project(project)
                 .user(user)
+                .position(req.position())
                 .status(ApplicationStatus.unviewed)
                 .build();
 
@@ -49,13 +50,13 @@ public class ApplicantService {
     /**
      * 프로젝트 지원 상태 변경
      */
-//    @Transactional
-//    public void updateStatus(User user, Long projectId, Long applicantId, ApplicationStatus status) {
-//        Project project = Project.builder().id(projectId).build();
-//        Applicant applicant = applicantRepository.findByIdAndProjectAndUser(applicantId, project, user)
-//                .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
-//        applicant.updateStatus(status);
-//    }
+    @Transactional
+    public void updateStatus(User user, Long projectId, Long applicantId, ApplicationStatus status) {
+        Project project = projectService.findProject(projectId);
+        Applicant applicant = applicantRepository.findByIdAndProjectAndUser(applicantId, project, user)
+                .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
+        applicant.updateStatus(status);
+    }
 
     /**
      * 프로젝트 지원 삭제

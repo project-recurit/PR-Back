@@ -3,6 +3,10 @@ POST http://localhost:8080/api/v1/project/18/applicant
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
+{
+  "position": "backend"
+}
+
 > {%
     if (response.body.data) {
         client.global.set("applicantId", response.body.data)
@@ -24,6 +28,6 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 ### 지원자 목록 조회
-GET localhost:8080/api/v1/project/18/applicant?status=viewed&nickname=test1
+GET localhost:8080/api/v1/project/18/applicant?status=unviewed&position=backend
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
