@@ -57,6 +57,7 @@ public class ApplicantController {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, applicantService.apply(userDetails.getUser(), projectId, req)));
     }
 
+
     @Operation(summary = "프로젝트 지원 상태 변경", description = "지원한 사람의 지원 상태를 변경한다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공"),
