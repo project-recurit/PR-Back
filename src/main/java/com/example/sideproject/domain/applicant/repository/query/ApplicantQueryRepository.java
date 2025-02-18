@@ -25,6 +25,7 @@ public class ApplicantQueryRepository {
                         qApplicant.id,
                         qApplicant.project.id,
                         qApplicant.user.nickname,
+                        qApplicant.position,
                         qApplicant.status,
                         qApplicant.createdAt,
                         qApplicant.modifiedAt
@@ -52,11 +53,10 @@ public class ApplicantQueryRepository {
         }
 
         if (position != null) {
-            // position 관련 쿼리 추가
+            result = result.and(qApplicant.position.eq(searchDto.position()));
         }
 
         if (status != null) {
-            // techStack 관련 쿼리 추가
             result = result.and(qApplicant.status.eq(status));
         }
 
