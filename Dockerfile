@@ -14,5 +14,10 @@ RUN mkdir -p /logs
 # 애플리케이션이 사용할 포트 노출
 EXPOSE 8080
 
+ENV JAVA_OPTS="-XX:+UseContainerSupport \
+               -XX:MaxRAMPercentage=75.0 \
+               -Djava.security.egd=file:/dev/./urandom \
+               -Duser.timezone=Asia/Seoul"
+
 # 애플리케이션을 실행하기 위한 엔트리포인트 정의
 ENTRYPOINT ["java", "-jar", "/apps/app.jar"]
