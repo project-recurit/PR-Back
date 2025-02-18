@@ -1,11 +1,15 @@
 package com.example.sideproject.domain.project.repository.query;
 
+import com.example.sideproject.domain.pr.dto.PrResponseDto;
 import com.example.sideproject.domain.project.dto.*;
 import com.example.sideproject.domain.project.entity.QProject;
 import com.example.sideproject.domain.project.entity.QProjectTechStack;
 import com.example.sideproject.domain.project.entity.QProjectUrl;
+import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.techstack.entity.QTechStack;
 import com.example.sideproject.domain.user.entity.QUser;
+import com.example.sideproject.global.enums.ErrorType;
+import com.example.sideproject.global.exception.CustomException;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,6 +20,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,9 +39,9 @@ public class ProjectQueryRepository {
 
     public ProjectDetailResponseDto getProject(Long projectId) {
 
-        JPAQuery<ProjectResponseDto> query = queryFactory
+        ProjectDetailResponseDto detail = queryFactory
                 .select(Projections.constructor(
-                        ProjectResponseDto.class,
+                        ProjectDetailResponseDto.class,
                         project.id.as("id"),
                         project.title.as("title"),
                         project.content.as("content"),
@@ -51,13 +56,16 @@ public class ProjectQueryRepository {
                 ))
                 .from(project)
                 .join(project.user, user)
-                .where(project.id.eq(projectId));
+                .where(project.id.eq(projectId))
+                .fetchOne();
 
-        ProjectResponseDto projectResponseDto = query.fetchOne();
+        if (detail == null) {
+            throw new CustomException(ErrorType.PROJECT_RECRUIT_NOT_FOUND);
+        }
 
-        List<ProjectTechStackResponseDto> techStacks = queryFactory
+        List<TechStackDto> techStacks = queryFactory
                 .select(Projections.constructor(
-                        ProjectTechStackResponseDto.class,
+                        TechStackDto.class,
                         techStack.id.as("id"),
                         techStack.name.as("name")
                 ))
@@ -76,19 +84,17 @@ public class ProjectQueryRepository {
                 .where(projectUrl.project.id.eq(projectId))
                 .fetch();
 
+        detail.setFileUrls(projectUrls);
+        detail.setTechStacks(techStacks);
 
-        return new ProjectDetailResponseDto(
-                projectResponseDto,
-                projectUrls,
-                techStacks
-        );
+        return detail;
     }
 
     public Page<ProjectsResponseDto> getProjects(Pageable pageable) {
 
-        List<ProjectsQueryDto> projects = queryFactory
+        List<ProjectsResponseDto> projects = queryFactory
                 .select(Projections.constructor(
-                        ProjectsQueryDto.class,
+                        ProjectsResponseDto.class,
                                 project.id.as("id"),
                                 project.title.as("title"),
                                 user.nickname.as("userNickname"),
@@ -103,34 +109,41 @@ public class ProjectQueryRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        List<Long> projectIds = projects.stream().map(ProjectsQueryDto::id).toList();
+        List<Long> projectIds = projects.stream().map(ProjectsResponseDto::getId).toList();
 
-        List<ProjectsTechStackResponseDto> techStacks = queryFactory
+        List<ProjectTechStackDto> techStacks = queryFactory
                 .select(Projections.constructor(
-                        ProjectsTechStackResponseDto.class,
-                        projectTechStack.project.id.as("projectId"),
-                        projectTechStack.techStack.id.as("id"),
-                        projectTechStack.techStack.name.as("name")
+                        ProjectTechStackDto.class,
+                        projectTechStack.project.id,
+                        projectTechStack.techStack.id,
+                        projectTechStack.techStack.name
                 ))
                 .from(projectTechStack)
                 .join(projectTechStack.techStack)
                 .where(projectTechStack.project.id.in(projectIds))
                 .fetch();
 
-        Map<Long, List<ProjectsTechStackResponseDto>> techStackMap = techStacks.stream()
-                .collect(Collectors.groupingBy(ProjectsTechStackResponseDto::projectId));
+        Map<Long, List<Map.Entry<Long, String>>> techStackMap = techStacks.stream()
+                .collect(Collectors.groupingBy(
+                        ProjectTechStackDto::getProjectId,
+                        Collectors.mapping(dto -> Map.entry(dto.getTechStackId(), dto.getName()), Collectors.toList())
+                ));
 
         List<ProjectsResponseDto> result = projects.stream()
                 .map(project -> new ProjectsResponseDto(
-                        project.id(),
-                        project.title(),
-                        project.userNickname(),
-                        project.viewCount(),
-                        project.likeCount(),
-                        project.modifiedAt(),
-                        techStackMap.getOrDefault(project.id(), new ArrayList<>())
+                        project.getId(),
+                        project.getTitle(),
+                        project.getUserNickname(),
+                        project.getViewCount(),
+                        project.getLikeCount(),
+                        project.getModifiedAt(),
+                        techStackMap.getOrDefault(project.getId(), Collections.emptyList())
+                                .stream()
+                                .map(entry -> new TechStackDto(entry.getKey(), entry.getValue())) // DTO 변환
+                                .toList()
                 ))
                 .toList();
+
 
         return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());
     }
