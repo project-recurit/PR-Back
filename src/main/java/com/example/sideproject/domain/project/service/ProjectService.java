@@ -40,6 +40,7 @@ public class ProjectService {
 
     /**
      * 프로젝트 구인 글 생성
+     * todo IOException 없에기
      */
     @Transactional
     public void createProject(ProjectRequestDto requestDto, User user) throws IOException {
@@ -69,7 +70,7 @@ public class ProjectService {
             // 이 메서드 안에 saveAll
             projectTechStackService.createProjectTechStack(projectTechStacks);
         }
-        if(!requestDto.files().isEmpty()) {
+        if (!requestDto.files().isEmpty()) {
             for (MultipartFile url : requestDto.files()) {
                 projectUrlService.createProjectUrl(project, url);
             }
@@ -88,13 +89,16 @@ public class ProjectService {
 
     /**
      * 게시글 상세 조회
+     * 조회 시 viewCount + 1
      */
     public ProjectDetailResponseDto getProject(Long projectId) {
-
 
         return projectQueryRepository.getProject(projectId);
     }
 
+    /**
+     * 게시글 전체 조회
+     */
     public Page<ProjectsResponseDto> getProjects(int page) {
 
         final Pageable pageable = PageRequest.of(page - 1, 20);
@@ -102,19 +106,44 @@ public class ProjectService {
         return projectQueryRepository.getProjects(pageable);
     }
 
+    /**
+     * 게시글 수정
+     */
     @Transactional
-    public void updateTeamRecruit(Long teamRecruitId, ProjectRequestDto requestDto, User user) {
+    public void updateProject(Long projectId, ProjectUpdateDto requestDto, User user) throws IOException {
 
         User foundUser = validateActiveUser(user);
-        Project project = findProject(teamRecruitId);
+        Project project = findProject(projectId);
         validateTeamRecruitOwner(project, foundUser);
 
-        if (foundUser.getNickname().equals(project.getUser().getNickname())) {
-            requestDto.toEntity(user);
+        List<Long> existUrls = projectUrlService.existUrls(projectId);
+        System.out.println("********************기존 url******************************* \n" + existUrls);
+
+        // 기존 URL 중 삭제할 것 찾기
+        List<Long> urlsToDelete = findUrlsToDelete(existUrls, requestDto.existFiles());
+        if (!urlsToDelete.isEmpty()) {
+            projectUrlService.deleteUrls(urlsToDelete); // 삭제
         }
+
+        // 새로운 파일이 존재하면 추가
+        if (requestDto.newFiles() != null && !requestDto.newFiles().isEmpty()) {
+            for (MultipartFile file : requestDto.newFiles()) {
+                projectUrlService.createProjectUrl(project, file);
+            }
+        }
+
+        Project updateProject = requestDto.update(user, projectId);
+        project.updateTechStacks(requestDto.projectTechStacks());
+        projectRepository.save(updateProject);
     }
 
-
+    // 기존 URL에서 삭제해야 할 URL을 찾는 메서드
+    private List<Long> findUrlsToDelete(List<Long> existUrls, List<Long> requestUrls) {
+        for (Long requestUrl : requestUrls) {
+            existUrls.remove(requestUrl); // 삭제 리스트에서 이미 요청한 URL 제거
+        }
+        return existUrls;
+    }
 
     @Transactional
     public void deleteTeamRecruit(Long teamRecruitId, User user) {
@@ -147,7 +176,6 @@ public class ProjectService {
             throw new CustomException(ErrorType.NOT_YOUR_POST);
         }
     }
-
 }
 
 

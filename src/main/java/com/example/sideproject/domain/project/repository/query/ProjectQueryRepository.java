@@ -39,7 +39,13 @@ public class ProjectQueryRepository {
 
     public ProjectDetailResponseDto getProject(Long projectId) {
 
-        ProjectDetailResponseDto detail = queryFactory
+        queryFactory // 조회수 + 1
+                .update(project)
+                .set(project.viewCount, project.viewCount.add(1))
+                .where(project.id.eq(projectId))
+                .execute();
+
+        ProjectDetailResponseDto detail = queryFactory // 구인 글 정보 조회
                 .select(Projections.constructor(
                         ProjectDetailResponseDto.class,
                         project.id.as("id"),
@@ -47,7 +53,7 @@ public class ProjectQueryRepository {
                         project.content.as("content"),
                         project.expectedPeriod.as("expectedPeriod"),
                         project.viewCount.as("viewCount"),
-                        project.likeCount.as("likeCount"),
+                        project.commentCount.as("commentCount"),
                         user.nickname.as("userNickname"),
                         project.recruitmentPeriod.as("recruitmentPeriod"),
                         project.recruitStatus.stringValue().as("recruitStatus"),
@@ -63,7 +69,7 @@ public class ProjectQueryRepository {
             throw new CustomException(ErrorType.PROJECT_RECRUIT_NOT_FOUND);
         }
 
-        List<TechStackDto> techStacks = queryFactory
+        List<TechStackDto> techStacks = queryFactory // 구인 글 기술 스택 조회
                 .select(Projections.constructor(
                         TechStackDto.class,
                         techStack.id.as("id"),
@@ -74,7 +80,7 @@ public class ProjectQueryRepository {
                 .where(projectTechStack.project.id.eq(projectId))
                 .fetch();
 
-        List<ProjectUrlResponseDto> projectUrls = queryFactory
+        List<ProjectUrlResponseDto> projectUrls = queryFactory // 구인 글 이미지 url 조회
                 .select(Projections.constructor(
                         ProjectUrlResponseDto.class,
                         projectUrl.id.as("id"),
@@ -84,7 +90,7 @@ public class ProjectQueryRepository {
                 .where(projectUrl.project.id.eq(projectId))
                 .fetch();
 
-        detail.setFileUrls(projectUrls);
+        detail.setFileUrls(projectUrls); // dto 합치기
         detail.setTechStacks(techStacks);
 
         return detail;
@@ -99,7 +105,7 @@ public class ProjectQueryRepository {
                                 project.title.as("title"),
                                 user.nickname.as("userNickname"),
                                 project.viewCount.as("viewCount"),
-                                project.likeCount.as("likeCount"),
+                                project.commentCount.as("commentCount"),
                                 project.modifiedAt.as("modifiedAt")
                         )
                 ).from(project)
@@ -135,7 +141,7 @@ public class ProjectQueryRepository {
                         project.getTitle(),
                         project.getUserNickname(),
                         project.getViewCount(),
-                        project.getLikeCount(),
+                        project.getCommentCount(),
                         project.getModifiedAt(),
                         techStackMap.getOrDefault(project.getId(), Collections.emptyList())
                                 .stream()

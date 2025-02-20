@@ -1,6 +1,8 @@
 package com.example.sideproject.domain.project.entity;
 
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.domain.user.entity.UserTechStack;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -28,10 +30,10 @@ public class Project extends Timestamped {
     @Column(nullable = true, name = "expected_period")
     private String expectedPeriod;
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectUrl> fileUrls = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectTechStack> projectTechStacks = new ArrayList<>();
 
     @Column(nullable = false, name = "view_count")
@@ -39,8 +41,11 @@ public class Project extends Timestamped {
 
     private String contact;
 
-    @Column(nullable = false, name = "like_count")
-    private int likeCount;
+    @Column(nullable = false, name = "comment_count")
+    private int commentCount;
+
+    @Column(nullable = false, name = "favorite_count")
+    private int favoriteCount;
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
@@ -60,7 +65,7 @@ public class Project extends Timestamped {
     public Project(String title, String content, List<ProjectTechStack> projectTechStacks,
                    String expectedPeriod, String contact, User user,
                    String recruitmentPeriod, RecruitStatus recruitStatus,
-                   int viewCount, int likeCount,String teamSize, Long id) {
+                   int viewCount, int commentCount, int favoriteCount, String teamSize, Long id) {
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
@@ -68,18 +73,30 @@ public class Project extends Timestamped {
         this.user = user;
         this.recruitmentPeriod = recruitmentPeriod;
         this.recruitStatus = recruitStatus;
-        this.likeCount = likeCount;
+        this.commentCount = commentCount;
         this.viewCount = viewCount;
+        this.favoriteCount = favoriteCount;
         this.projectTechStacks = projectTechStacks;
         this.teamSize = teamSize;
         this.id = id;
     }
 
-    public void update(String title, String content,
-                       String expectedPeriod, String contact) {
-        this.title = title;
-        this.content = content;
-        this.expectedPeriod = expectedPeriod;
-        this.contact = contact;
+    public void updateTechStacks(List<ProjectTechStack> newTechStacks) {
+        this.projectTechStacks.clear();
+        this.projectTechStacks.addAll(newTechStacks);
+        newTechStacks.forEach(techStack -> techStack.setProject(this));
+    }
+
+    public List<ProjectTechStack> addTechStack(List<TechStack> techStacks) {
+        List<ProjectTechStack> result = new ArrayList<>();
+
+        for (TechStack techStack : techStacks) {
+            ProjectTechStack projectTechStack = ProjectTechStack.builder()
+                    .project(this)
+                    .techStack(techStack)
+                    .build();
+            result.add(projectTechStack);
+        }
+        return result;
     }
 }

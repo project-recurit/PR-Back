@@ -13,7 +13,7 @@ public class ProjectDetailResponseDto{
     private final String content;
     private final String expectedPeriod;
     private final int viewCount;
-    private final int likeCount;
+    private final int commentCount;
     private final String userNickname;
     private final String recruitmentPeriod;
     private final String recruitStatus;
@@ -24,14 +24,14 @@ public class ProjectDetailResponseDto{
 
     @QueryProjection
     public ProjectDetailResponseDto(Long id, String title, String content, String expectedPeriod, int viewCount,
-                                    int likeCount, String userNickname, String recruitmentPeriod, String recruitStatus,
+                                    int commentCount, String userNickname, String recruitmentPeriod, String recruitStatus,
                                     String teamSize, String modifiedAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
         this.viewCount = viewCount;
-        this.likeCount = likeCount;
+        this.commentCount = commentCount;
         this.userNickname = userNickname;
         this.recruitmentPeriod = recruitmentPeriod;
         this.recruitStatus = recruitStatus;

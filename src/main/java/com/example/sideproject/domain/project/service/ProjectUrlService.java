@@ -53,6 +53,16 @@ public class ProjectUrlService {
         }
     }
 
+    // 기존 구인 글에 있던 url들 조회
+    public List<Long> existUrls(Long projectId) {
+        return projectUrlRepository.getProjectUrls(projectId);
+    }
+
+    // 기존 구인 글에 있던 url 삭제
+    public void deleteUrls(List<Long> urlIds) {
+        projectUrlRepository.deleteAllById(urlIds);
+    }
+
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
         // 허용된 파일 크기 (10MB)
         final long MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB 제한
