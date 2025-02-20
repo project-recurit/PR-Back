@@ -15,26 +15,26 @@ public class ProjectsResponseDto {
     private final String title;
     private final String userNickname;
     private final int viewCount;
-    private final int likeCount;
+    private final int commentCount;
     private final String modifiedAt;
     private final List<TechStackDto> techStacks;
 
     @QueryProjection
-    public ProjectsResponseDto(Long id, String title, String userNickname, int viewCount, int likeCount, String modifiedAt) {
+    public ProjectsResponseDto(Long id, String title, String userNickname, int viewCount, int commentCount, String modifiedAt) {
         this.id = id;
         this.title = title;
         this.userNickname = userNickname;
         this.viewCount = viewCount;
-        this.likeCount = likeCount;
+        this.commentCount = commentCount;
         this.modifiedAt = modifiedAt;
         this.techStacks = Collections.emptyList();
     }
-    public ProjectsResponseDto(Long id, String title, String userNickname, int viewCount, int likeCount, String modifiedAt, List<TechStackDto> techStacks) {
+    public ProjectsResponseDto(Long id, String title, String userNickname, int viewCount, int commentCount, String modifiedAt, List<TechStackDto> techStacks) {
         this.id = id;
         this.title = title;
         this.userNickname = userNickname;
         this.viewCount = viewCount;
-        this.likeCount = likeCount;
+        this.commentCount = commentCount;
         this.modifiedAt = modifiedAt;
         this.techStacks = techStacks;
     }

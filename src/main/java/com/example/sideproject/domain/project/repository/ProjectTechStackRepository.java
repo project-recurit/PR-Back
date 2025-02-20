@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProjectTechStackRepository extends JpaRepository<ProjectTechStack, Long> {
+    void deleteAllByProjectId(Long projectId);
 }

@@ -25,4 +25,8 @@ public class ProjectTechStack {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 }
