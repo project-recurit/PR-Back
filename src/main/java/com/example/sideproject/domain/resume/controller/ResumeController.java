@@ -9,6 +9,7 @@ import com.example.sideproject.global.enums.ResponseStatus;
 import com.example.sideproject.global.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +31,7 @@ public class ResumeController {
     @Operation(summary = "이력서 저장", description = "이력서를 저장한다.")
     @PostMapping
     public ResponseEntity<ResponseDataDto<Long>> saveResume(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                            @RequestBody ResumeRequestDto req) {
+                                                            @RequestBody @Valid ResumeRequestDto req) {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, resumeService.saveResume(userDetails.getUser(), req)));
     }
 
@@ -38,7 +39,7 @@ public class ResumeController {
     @PutMapping("/{resumeId}")
     public ResponseEntity<ResponseMessageDto> updateResume(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                            @PathVariable("resumeId") Long resumeId,
-                                                           @RequestBody ResumeRequestDto req) {
+                                                           @RequestBody @Valid ResumeRequestDto req) {
         resumeService.updateResume(userDetails.getUser(), resumeId, req);
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.SUCCESS));
     }
