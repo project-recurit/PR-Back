@@ -1,6 +1,5 @@
 package com.example.sideproject.domain.project.service;
 
-import com.example.sideproject.domain.project.dto.ProjectUrlResponseDto;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.ProjectUrl;
 import com.example.sideproject.domain.project.repository.ProjectUrlRepository;
@@ -31,7 +30,7 @@ public class ProjectUrlService {
     @Value("${UPLOAD_CARE_SEC}")
     private String secretKey;
 
-    public void createProjectUrl(Project project, MultipartFile multipartFile) throws IOException {
+    public ProjectUrl createProjectUrl(Project project, MultipartFile multipartFile) throws IOException {
 
         Client client = new Client(publicKey, secretKey);
 
@@ -48,14 +47,16 @@ public class ProjectUrlService {
                     .imageUrl(stringUrl)
                     .build();
             projectUrlRepository.save(projectUrl);
+
+            return projectUrl;
         } catch (UploadFailureException e) {
             throw new RuntimeException(e);
         }
     }
 
     // 기존 구인 글에 있던 url들 조회
-    public List<Long> existUrls(Long projectId) {
-        return projectUrlRepository.getProjectUrls(projectId);
+    public List<ProjectUrl> existImageUrls(Long projectId) {
+        return projectUrlRepository.findAllByProjectId(projectId);
     }
 
     // 기존 구인 글에 있던 url 삭제
@@ -103,6 +104,4 @@ public class ProjectUrlService {
         }
         return filename.substring(lastIndexOfDot + 1);
     }
-
-
 }

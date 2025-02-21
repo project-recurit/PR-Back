@@ -3,6 +3,7 @@ package com.example.sideproject.domain.project.service;
 import com.example.sideproject.domain.project.dto.*;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.ProjectTechStack;
+import com.example.sideproject.domain.project.entity.ProjectUrl;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.project.repository.query.ProjectQueryRepository;
 import com.example.sideproject.domain.techstack.entity.TechStack;
@@ -116,39 +117,46 @@ public class ProjectService {
         Project project = findProject(projectId);
         validateTeamRecruitOwner(project, foundUser);
 
-        List<Long> existUrls = projectUrlService.existUrls(projectId);
-        System.out.println("********************기존 url******************************* \n" + existUrls);
+        // ----------------------------------- image Url -------------------------------------------
+        // 기존 이미지 URL
+        List<ProjectUrl> existImageUrls = projectUrlService.existImageUrls(projectId);
 
-        // 기존 URL 중 삭제할 것 찾기
-        List<Long> urlsToDelete = findUrlsToDelete(existUrls, requestDto.existFiles());
-        if (!urlsToDelete.isEmpty()) {
-            projectUrlService.deleteUrls(urlsToDelete); // 삭제
+        // 기존 이미지중 삭제된거 있는 지 확인 후 삭제하기
+        if(!existImageUrls.isEmpty() && existImageUrls.size() != requestDto.existFiles().size()) {
+            existImageUrls.removeIf(projectUrl -> !requestDto.existFiles().contains(projectUrl.getId()));
         }
 
         // 새로운 파일이 존재하면 추가
         if (requestDto.newFiles() != null && !requestDto.newFiles().isEmpty()) {
             for (MultipartFile file : requestDto.newFiles()) {
-                projectUrlService.createProjectUrl(project, file);
+                ProjectUrl projectUrl = projectUrlService.createProjectUrl(project, file);
+                existImageUrls.add(projectUrl);
             }
         }
 
-        Project updateProject = requestDto.update(user, projectId);
-        project.updateTechStacks(requestDto.projectTechStacks());
+        // ---------------------------------------- techStack --------------------------------------
+        List<ProjectTechStack> projectTechStacks = new ArrayList<>();
+        List<TechStack> techStacks = techStackRepository.findAllById(requestDto.projectTechStacks());
+
+        // 모듈화 필요해보임
+        for (TechStack techStack : techStacks) {
+            // 배열에 미리 넣어두기
+            projectTechStacks.add(
+                    ProjectTechStack.builder()
+                            .techStack(techStack)
+                            .project(project)
+                            .build()
+            );
+        }
+
+        Project updateProject = requestDto.update(user, projectId, projectTechStacks, existImageUrls);
         projectRepository.save(updateProject);
     }
 
-    // 기존 URL에서 삭제해야 할 URL을 찾는 메서드
-    private List<Long> findUrlsToDelete(List<Long> existUrls, List<Long> requestUrls) {
-        for (Long requestUrl : requestUrls) {
-            existUrls.remove(requestUrl); // 삭제 리스트에서 이미 요청한 URL 제거
-        }
-        return existUrls;
-    }
-
     @Transactional
-    public void deleteTeamRecruit(Long teamRecruitId, User user) {
+    public void deleteProject(Long projectId, User user) {
         User foundUser = validateActiveUser(user);
-        Project project = findProject(teamRecruitId);
+        Project project = findProject(projectId);
         validateTeamRecruitOwner(project, foundUser);
 
         projectRepository.delete(project);

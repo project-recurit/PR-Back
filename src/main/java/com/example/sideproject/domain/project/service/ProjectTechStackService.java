@@ -16,6 +16,10 @@ public class ProjectTechStackService {
         projectTechStackRepository.saveAll(projectTechStacks);
     }
 
+    public List<ProjectTechStack> getProjectTechStacks (Long projectId) {
+        return projectTechStackRepository.findAllByProjectId(projectId);
+    }
+
     public void deleteProjectTechStacks(Long projectId) {
         projectTechStackRepository.deleteAllByProjectId(projectId);
     }

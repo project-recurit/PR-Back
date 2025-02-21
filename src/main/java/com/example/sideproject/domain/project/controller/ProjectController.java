@@ -52,8 +52,9 @@ public class ProjectController {
     }
 
     // 팀 모집 수정
-    @PatchMapping("/{projectId}")
-    public ResponseEntity<ResponseMessageDto> updateTeamRecruit(@PathVariable("projectId") Long projectId,
+    @Operation(summary = "프로젝트 구인 글 수정", description = "contact와 existFiles를 제외한 모든 필드 넣어야함, 다른 유저가 시도할 시 에러")
+    @PutMapping("/{projectId}")
+    public ResponseEntity<ResponseMessageDto> updateProject(@PathVariable("projectId") Long projectId,
                                                                 @ModelAttribute ProjectUpdateDto requestDto,
                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         projectService.updateProject(projectId, requestDto, userDetails.getUser());
@@ -61,10 +62,11 @@ public class ProjectController {
     }
 
     // 팀 모집 삭제
-    @DeleteMapping("/{teamRecruitId}")
-    public ResponseEntity<ResponseMessageDto> deleteTeamRecruit(@PathVariable Long teamRecruitId,
+    @Operation(summary = "프로젝트 구인 글 삭제", description = "다른 유저가 시도할 시 에러, 없는 id값 넣으면 에러")
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<ResponseMessageDto> deleteProject(@PathVariable("projectId") Long projectId,
                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        projectService.deleteTeamRecruit(teamRecruitId, userDetails.getUser());
+        projectService.deleteProject(projectId, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.DELETE_TEAM_RECRUIT_SUCCESS));
     }
 }
