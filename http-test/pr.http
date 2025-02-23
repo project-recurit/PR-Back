@@ -2,6 +2,6 @@
 GET {{host}}/api/v1/post/pr?page=0&size=20
 Content-Type: application/json
 
-### PR 게시글 리스트 조회
+### PR 게시글 조회
 GET {{host}}/api/v1/post/pr/1
 Content-Type: application/json
