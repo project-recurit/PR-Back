@@ -21,7 +21,7 @@ public class Resume extends Timestamped {
     @Column(name = "resume_id")
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
