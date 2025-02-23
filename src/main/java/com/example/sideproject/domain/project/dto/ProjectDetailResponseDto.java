@@ -17,7 +17,7 @@ public class ProjectDetailResponseDto{
     private final String userNickname;
     private final String recruitmentPeriod;
     private final String recruitStatus;
-    private final String teamSize;
+    private final int teamSize;
     private final String modifiedAt;
     private List<ProjectUrlResponseDto> fileUrls; // 변경 해야하는 값이어서 final x
     private List<TechStackDto> techStacks;
@@ -25,7 +25,7 @@ public class ProjectDetailResponseDto{
     @QueryProjection
     public ProjectDetailResponseDto(Long id, String title, String content, String expectedPeriod, int viewCount,
                                     int commentCount, String userNickname, String recruitmentPeriod, String recruitStatus,
-                                    String teamSize, String modifiedAt) {
+                                    int teamSize, String modifiedAt) {
         this.id = id;
         this.title = title;
         this.content = content;

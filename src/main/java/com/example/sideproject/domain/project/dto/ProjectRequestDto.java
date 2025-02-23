@@ -16,7 +16,7 @@ public record ProjectRequestDto(
      String expectedPeriod,
      String contact,
      String recruitmentPeriod,
-     String teamSize,
+     int teamSize,
      List<Long> projectTechStacks,
      List<MultipartFile> files
 ) {

@@ -10,8 +10,5 @@ import java.util.List;
 
 @Repository
 public interface ProjectUrlRepository extends JpaRepository<ProjectUrl, Long> {
-    @Query("SELECT pu.id " +
-            "FROM ProjectUrl pu " +
-            "WHERE pu.project.id = :projectId")
-    List<Long> getProjectUrls(@Param("projectId") Long projectId);
+    List<ProjectUrl> findAllByProjectId(Long projectId);
 }

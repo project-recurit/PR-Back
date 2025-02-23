@@ -59,13 +59,13 @@ public class Project extends Timestamped {
     private RecruitStatus recruitStatus;
 
     @Column(nullable = false, name = "team_size")
-    private String teamSize;
+    private int teamSize;
 
     @Builder
-    public Project(String title, String content, List<ProjectTechStack> projectTechStacks,
+    public Project(String title, String content, List<ProjectTechStack> projectTechStacks, List<ProjectUrl> projectUrls,
                    String expectedPeriod, String contact, User user,
                    String recruitmentPeriod, RecruitStatus recruitStatus,
-                   int viewCount, int commentCount, int favoriteCount, String teamSize, Long id) {
+                   int viewCount, int commentCount, int favoriteCount, int teamSize, Long id) {
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
@@ -79,24 +79,6 @@ public class Project extends Timestamped {
         this.projectTechStacks = projectTechStacks;
         this.teamSize = teamSize;
         this.id = id;
-    }
-
-    public void updateTechStacks(List<ProjectTechStack> newTechStacks) {
-        this.projectTechStacks.clear();
-        this.projectTechStacks.addAll(newTechStacks);
-        newTechStacks.forEach(techStack -> techStack.setProject(this));
-    }
-
-    public List<ProjectTechStack> addTechStack(List<TechStack> techStacks) {
-        List<ProjectTechStack> result = new ArrayList<>();
-
-        for (TechStack techStack : techStacks) {
-            ProjectTechStack projectTechStack = ProjectTechStack.builder()
-                    .project(this)
-                    .techStack(techStack)
-                    .build();
-            result.add(projectTechStack);
-        }
-        return result;
+        this.fileUrls = projectUrls;
     }
 }
