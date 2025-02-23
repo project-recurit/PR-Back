@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class PrResponseDto {
+public class PublicResumesResponseDto {
     @Schema(description = "prId == resumeId")
     private Long prId;
     private String nickname;
@@ -21,7 +21,7 @@ public class PrResponseDto {
     LocalDateTime publishedAt;
 
     @QueryProjection
-    public PrResponseDto(Long resumeId, String nickname, String position, String title, String introduce, WorkType workType, LocalDateTime publishedAt) {
+    public PublicResumesResponseDto(Long resumeId, String nickname, String position, String title, String introduce, WorkType workType, LocalDateTime publishedAt) {
         this.prId = resumeId;
         this.nickname = nickname;
         this.position = position;
@@ -31,7 +31,7 @@ public class PrResponseDto {
         this.publishedAt = publishedAt;
     }
 
-    public PrResponseDto setTechStacks(List<String> techStacks) {
+    public PublicResumesResponseDto setTechStacks(List<String> techStacks) {
         this.techStacks = techStacks;
         return this;
     }

@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.resume.service;
 
-import com.example.sideproject.domain.pr.dto.PrResponseDto;
+import com.example.sideproject.domain.pr.dto.PublicResumesResponseDto;
 import com.example.sideproject.domain.resume.dto.ResumeListResponseDto;
 import com.example.sideproject.domain.resume.dto.ResumeRequestDto;
 import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
@@ -13,7 +13,6 @@ import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +41,19 @@ public class ResumeService {
      */
     public ResumeResponseDto getResume(User user, Long resumeId) {
         Resume resume = getResumeByIdAndUser(resumeId, user);
+        return ResumeResponseDto.of(resume);
+    }
+
+    /**
+     * 게시된 이력 단건 조회
+     * @param resumeId 이력 고유번호
+     * @return 게시된 이력 단건 조회
+     */
+    public ResumeResponseDto getResume(Long resumeId) {
+        Resume resume = getResumeById(resumeId);
+        if (!resume.checkPublishStatus()) {
+            throw new CustomException(ErrorType.UNPUBLISHED_RESUME);
+        }
         return ResumeResponseDto.of(resume);
     }
 
@@ -103,10 +115,6 @@ public class ResumeService {
     public void unPublish(User user, Long resumeId) {
         Resume resume = getResumeByIdAndUser(resumeId, user);
         resume.setPublished(false);
-    }
-
-    public Page<PrResponseDto> getPublishedResumes(Pageable pageable) {
-        return resumeQueryRepository.getPublishedResumes(pageable);
     }
 
     public Resume getResumeByUser(User user) {
