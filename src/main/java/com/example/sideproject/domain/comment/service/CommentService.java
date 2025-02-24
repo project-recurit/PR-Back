@@ -1,12 +1,18 @@
 package com.example.sideproject.domain.comment.service;
 
 import com.example.sideproject.domain.comment.dto.CommentRequestDto;
+import com.example.sideproject.domain.comment.dto.CommentResponseDto;
+import com.example.sideproject.domain.comment.dto.NestedCommentDto;
 import com.example.sideproject.domain.comment.entity.Comment;
 import com.example.sideproject.domain.comment.repository.CommentRepository;
+import com.example.sideproject.domain.comment.repository.query.CommentQueryRepository;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.service.ProjectService;
 import com.example.sideproject.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +21,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ProjectService projectService;
+    private final CommentQueryRepository commentQueryRepository;
 
     /**
      * 댓글 생성
@@ -26,5 +33,14 @@ public class CommentService {
         final Project project = projectService.findProject(projectId);
         final Comment comment = requestDto.toEntity(user, project);
         commentRepository.save(comment);
+    }
+
+    /**
+     * 댓글 조회
+     * 상세조회는 필요 없어서 바로 전체 조회
+     */
+    public Page<NestedCommentDto> getComments(Long projectId, int page) {
+        final Pageable pageable = PageRequest.of(page - 1, 20);
+        return commentQueryRepository.getComments(projectId, pageable);
     }
 }

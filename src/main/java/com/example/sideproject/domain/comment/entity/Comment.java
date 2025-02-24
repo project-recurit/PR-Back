@@ -16,16 +16,18 @@ public class Comment extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String content;
 
+    @Column(nullable = true, name = "parent_id")
     private Long parentId;
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name = "users_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "teamRecruit_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @Builder
