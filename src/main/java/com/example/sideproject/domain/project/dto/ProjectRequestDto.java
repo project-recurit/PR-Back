@@ -15,7 +15,7 @@ public record ProjectRequestDto(
      String content,
      String expectedPeriod,
      String recruitmentPeriod,
-     String teamSize,
+     int teamSize,
      List<Long> projectTechStacks,
      List<MultipartFile> files
 ) {
@@ -28,7 +28,8 @@ public record ProjectRequestDto(
                 .user(user)
                 .teamSize(teamSize)
                 .viewCount(0)
-                .likeCount(0)
+                .commentCount(0)
+                .favoriteCount(0)
                 .recruitStatus(RecruitStatus.IN_PROGRESS)
                 .build();
     }

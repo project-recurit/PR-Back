@@ -3,11 +3,14 @@ package com.example.sideproject.domain.resume.dto;
 import com.example.sideproject.domain.resume.entity.Experience;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
+
 @Builder
 public record ExperienceResponseDto(
         Long experienceId,
         String title,
-        String period,
+        LocalDateTime startDate,
+        LocalDateTime endDate,
         int teamSize,
         String achievement,
         String documentUrl
@@ -16,7 +19,8 @@ public record ExperienceResponseDto(
         return ExperienceResponseDto.builder()
                 .experienceId(experience.getId())
                 .title(experience.getTitle())
-                .period(experience.getPeriod())
+                .startDate(experience.getStartDate())
+                .endDate(experience.getEndDate())
                 .teamSize(experience.getTeamSize())
                 .achievement(experience.getAchievement())
                 .documentUrl(experience.getDocumentUrl())

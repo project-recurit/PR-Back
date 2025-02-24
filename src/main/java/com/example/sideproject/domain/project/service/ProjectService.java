@@ -3,6 +3,7 @@ package com.example.sideproject.domain.project.service;
 import com.example.sideproject.domain.project.dto.*;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.ProjectTechStack;
+import com.example.sideproject.domain.project.entity.ProjectUrl;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.project.repository.query.ProjectQueryRepository;
 import com.example.sideproject.domain.techstack.entity.TechStack;
@@ -40,6 +41,7 @@ public class ProjectService {
 
     /**
      * 프로젝트 구인 글 생성
+     * todo IOException 없에기
      */
     @Transactional
     public void createProject(ProjectRequestDto requestDto, User user) throws IOException {
@@ -69,7 +71,7 @@ public class ProjectService {
             // 이 메서드 안에 saveAll
             projectTechStackService.createProjectTechStack(projectTechStacks);
         }
-        if(!requestDto.files().isEmpty()) {
+        if (!requestDto.files().isEmpty()) {
             for (MultipartFile url : requestDto.files()) {
                 projectUrlService.createProjectUrl(project, url);
             }
@@ -88,13 +90,16 @@ public class ProjectService {
 
     /**
      * 게시글 상세 조회
+     * 조회 시 viewCount + 1
      */
     public ProjectDetailResponseDto getProject(Long projectId) {
-
 
         return projectQueryRepository.getProject(projectId);
     }
 
+    /**
+     * 게시글 전체 조회
+     */
     public Page<ProjectsResponseDto> getProjects(int page) {
 
         final Pageable pageable = PageRequest.of(page - 1, 20);
@@ -102,24 +107,56 @@ public class ProjectService {
         return projectQueryRepository.getProjects(pageable);
     }
 
+    /**
+     * 게시글 수정
+     */
     @Transactional
-    public void updateTeamRecruit(Long teamRecruitId, ProjectRequestDto requestDto, User user) {
+    public void updateProject(Long projectId, ProjectUpdateDto requestDto, User user) throws IOException {
 
         User foundUser = validateActiveUser(user);
-        Project project = findProject(teamRecruitId);
+        Project project = findProject(projectId);
         validateTeamRecruitOwner(project, foundUser);
 
-        if (foundUser.getNickname().equals(project.getUser().getNickname())) {
-            requestDto.toEntity(user);
+        // ----------------------------------- image Url -------------------------------------------
+        // 기존 이미지 URL
+        List<ProjectUrl> existImageUrls = projectUrlService.existImageUrls(projectId);
+
+        // 기존 이미지중 삭제된거 있는 지 확인 후 삭제하기
+        if(!existImageUrls.isEmpty() && existImageUrls.size() != requestDto.existFiles().size()) {
+            existImageUrls.removeIf(projectUrl -> !requestDto.existFiles().contains(projectUrl.getId()));
         }
+
+        // 새로운 파일이 존재하면 추가
+        if (requestDto.newFiles() != null && !requestDto.newFiles().isEmpty()) {
+            for (MultipartFile file : requestDto.newFiles()) {
+                ProjectUrl projectUrl = projectUrlService.createProjectUrl(project, file);
+                existImageUrls.add(projectUrl);
+            }
+        }
+
+        // ---------------------------------------- techStack --------------------------------------
+        List<ProjectTechStack> projectTechStacks = new ArrayList<>();
+        List<TechStack> techStacks = techStackRepository.findAllById(requestDto.projectTechStacks());
+
+        // 모듈화 필요해보임
+        for (TechStack techStack : techStacks) {
+            // 배열에 미리 넣어두기
+            projectTechStacks.add(
+                    ProjectTechStack.builder()
+                            .techStack(techStack)
+                            .project(project)
+                            .build()
+            );
+        }
+
+        Project updateProject = requestDto.update(user, projectId, projectTechStacks, existImageUrls);
+        projectRepository.save(updateProject);
     }
 
-
-
     @Transactional
-    public void deleteTeamRecruit(Long teamRecruitId, User user) {
+    public void deleteProject(Long projectId, User user) {
         User foundUser = validateActiveUser(user);
-        Project project = findProject(teamRecruitId);
+        Project project = findProject(projectId);
         validateTeamRecruitOwner(project, foundUser);
 
         projectRepository.delete(project);
@@ -147,7 +184,6 @@ public class ProjectService {
             throw new CustomException(ErrorType.NOT_YOUR_POST);
         }
     }
-
 }
 
 
