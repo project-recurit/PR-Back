@@ -34,8 +34,8 @@ public class CommentQueryRepository {
                         CommentResponseDto.class,
                         comment.id,
                         comment.content,
-                        comment.modifiedAt,
-                        comment.user.nickname
+                        comment.user.nickname,
+                        comment.modifiedAt
                 ))
                 .from(comment)
                 .where(comment.project.id.eq(projectId).and(comment.parentId.isNull())) // 부모 댓글만 가져오기
@@ -59,8 +59,8 @@ public class CommentQueryRepository {
                         CommentResponseDto.class,
                         comment.id,
                         comment.content,
-                        comment.modifiedAt,
                         comment.user.nickname,
+                        comment.modifiedAt,
                         comment.parentId
                 ))
                 .from(comment)

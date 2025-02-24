@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/project")
+@RequestMapping("/api/v1")
 @Tag(name = "구인 글 댓글 api")
 public class CommentController {
 
     private final CommentService commentService;
 
     @Operation(summary = "구인 글 댓글 작성", description = "대댓글 작성시 parentId 항목에 부모댓글 Id 기입")
-    @PostMapping("/{projectId}/comment")
+    @PostMapping("/project/{projectId}/comment")
     public ResponseEntity<ResponseMessageDto> createComment(@PathVariable("projectId") Long projectId,
                                                             @RequestBody @Valid CommentRequestDto requestDto,
                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -34,10 +34,27 @@ public class CommentController {
     }
 
     @Operation(summary = "구인 글 댓글 조회", description = "부모 댓글 밑에 자식 댓글배열")
-    @GetMapping("/{projectId}/comments")
+    @GetMapping("/project/{projectId}/comments")
     public ResponseEntity<ResponseDataDto<Page<NestedCommentDto>>> getComments(@PathVariable("projectId") Long projectId,
                                                                                @RequestParam(value = "page", defaultValue = "1") int page) {
         Page<NestedCommentDto> result = commentService.getComments(projectId, page);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.READ_SUCCESS_COMMENT, result));
+    }
+
+    @Operation(summary = "구인 글 댓글 수정", description = "없는 id 값 넣으면 404, 다른 유저가 수정하면 406에러")
+    @PatchMapping("/comment/{commentId}")
+    public ResponseEntity<ResponseMessageDto> updateComment(@PathVariable("commentId") Long commentId,
+                                                            @RequestBody @Valid CommentRequestDto requestDto,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.updateComment(commentId, userDetails.getUser(), requestDto);
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.UPDATE_SUCCESS_COMMENT));
+    }
+
+    @Operation(summary = "구인 글 댓글 삭제", description = "없는 id 값 넣으면 404, 다른 유저가 수정하면 406에러")
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<ResponseMessageDto> deleteComment(@PathVariable("commentId") Long commentId,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.deleteComment(commentId, userDetails.getUser());
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.DELETE_SUCCESS_COMMENT));
     }
 }
