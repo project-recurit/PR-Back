@@ -66,7 +66,6 @@ public class ChatService {
      * @param request
      * @return
      */
-    // TODO 이미지도 넣게할 것인가?
     @Transactional
     public ChatMessageResponse sendMessage(ChatMessageRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId())

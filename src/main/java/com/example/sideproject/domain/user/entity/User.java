@@ -42,16 +42,6 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTechStack> userTechStacks = new ArrayList<>();
 
-    // 경력
-    @ElementCollection
-    @CollectionTable(
-            name = "users_history",
-            joinColumns = @JoinColumn(name = "users_id")
-    )
-    @Enumerated(EnumType.STRING)
-    @Column(name = "users_history")
-    private Set<String> usersHistory = new HashSet<>();
-
     private LocalDateTime lastLoginTime;
 
     @Enumerated(EnumType.STRING)
@@ -79,7 +69,7 @@ public class User extends Timestamped {
         this.lastLoginTime = LocalDateTime.now();
         this.userStatus = UserStatus.ACTIVE_USER;
         this.userTechStacks.clear();
-
+        
         if (techStacks != null && !techStacks.isEmpty()) {
             List<UserTechStack> newTechStacks = addTechStack(techStacks);
             this.userTechStacks.addAll(newTechStacks);
