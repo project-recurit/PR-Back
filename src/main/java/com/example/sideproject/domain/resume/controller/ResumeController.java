@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.resume.controller;
 
+import com.example.sideproject.domain.pr.service.PublicResumesService;
 import com.example.sideproject.domain.resume.dto.ResumeListResponseDto;
 import com.example.sideproject.domain.resume.dto.ResumeRequestDto;
 import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
@@ -24,6 +25,7 @@ import java.util.List;
 @RequestMapping("/api/v1/resume")
 public class ResumeController {
     private final ResumeService resumeService;
+    private final PublicResumesService publicResumesService;
 
     @Operation(summary = "이력서 단건 조회", description = "토큰에 해당하는 유저의 이력서 조회, 이력서가 없으면 404에러 발생")
     @GetMapping("/{resumeId}")
@@ -67,6 +69,7 @@ public class ResumeController {
     public ResponseEntity<ResponseMessageDto> publish(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                       @PathVariable("resumeId") Long resumeId) {
         resumeService.publish(userDetails.getUser(), resumeId);
+        publicResumesService.publish(userDetails.getUser(), resumeId);
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.SUCCESS));
     }
 
@@ -75,6 +78,7 @@ public class ResumeController {
     public ResponseEntity<ResponseMessageDto> unPublish(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                         @PathVariable("resumeId") Long resumeId) {
         resumeService.unPublish(userDetails.getUser(), resumeId);
+        publicResumesService.unPublish(userDetails.getUser(), resumeId);
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.SUCCESS));
     }
 }

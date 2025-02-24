@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -52,10 +53,16 @@ public class Resume extends Timestamped {
         this.title = title;
         this.introduce = introduce;
         this.workType = workType;
-        this.documentUrl = String.join(",", documentUrl);
+        if (Objects.nonNull(documentUrl)) {
+            this.documentUrl = String.join(",", documentUrl);
+        }
         this.publishedAt = publishedAt;
         this.experiences = addExperiences(experiences);
         this.resumeTechStacks = addTechStack(resumeTechStacks);
+    }
+
+    public Resume(Long id) {
+        this.id = id;
     }
 
     public List<ResumeTechStack> addTechStack(List<TechStack> techStacks) {
@@ -135,6 +142,10 @@ public class Resume extends Timestamped {
 
     private List<Experience> addExperiences(List<Experience> experiences) {
         List<Experience> result = new ArrayList<>();
+        if (experiences.isEmpty()) {
+            return result;
+        }
+
         for (Experience experience : experiences) {
             experience.addResume(this);
             result.add(experience);

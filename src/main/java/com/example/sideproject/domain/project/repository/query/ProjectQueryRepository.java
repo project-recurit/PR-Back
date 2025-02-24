@@ -1,6 +1,5 @@
 package com.example.sideproject.domain.project.repository.query;
 
-import com.example.sideproject.domain.pr.dto.PrResponseDto;
 import com.example.sideproject.domain.project.dto.*;
 import com.example.sideproject.domain.project.entity.QProject;
 import com.example.sideproject.domain.project.entity.QProjectTechStack;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
