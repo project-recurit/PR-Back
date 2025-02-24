@@ -1,10 +1,11 @@
 package com.example.sideproject.domain.resume.repository.query;
 
-import com.example.sideproject.domain.pr.dto.PrResponseDto;
-import com.example.sideproject.domain.techstack.dto.TechStackDto;
+import com.example.sideproject.domain.pr.dto.PublicResumesResponseDto;
+import com.example.sideproject.domain.resume.dto.ResumeListResponseDto;
 import com.example.sideproject.domain.resume.entity.QResume;
 import com.example.sideproject.domain.resume.entity.QResumeTechStack;
 import com.example.sideproject.domain.resume.entity.Resume;
+import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -29,31 +30,39 @@ public class ResumeQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private QResume qResume = QResume.resume;
 
-    public Page<PrResponseDto> getPublishedResumes(Pageable pageable) {
-        List<PrResponseDto> resumes = jpaQueryFactory.select(Projections.constructor(
-                        PrResponseDto.class,
+    public List<ResumeListResponseDto> getResumes(Long userId) {
+        List<ResumeListResponseDto> resumes = jpaQueryFactory.select(Projections.constructor(
+                        ResumeListResponseDto.class,
                         qResume.id,
-                        qResume.user.nickname,
-                        qResume.position,
                         qResume.title,
-                        qResume.introduce,
+                        qResume.position,
                         qResume.workType,
-                        qResume.publishedAt
+                        qResume.publishedAt,
+                        qResume.modifiedAt
                 )).from(qResume)
-                .where(
-                        qResume.publishedAt.isNotNull()
-                )
-                .orderBy(getOrderSpecifier(pageable.getSort()))
-                .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
+                .where(qResume.user.id.eq(userId))
+                .orderBy(qResume.modifiedAt.desc())
                 .fetch();
 
-        List<Long> resumeIds = resumes.stream().map(PrResponseDto::getPrId).toList();
+        List<Long> resumeIds = resumes.stream()
+                .map(ResumeListResponseDto::getResumeId)
+                .toList();
 
+        List<TechStackMappingDto> techStacks = getTechStacks(resumeIds);
+
+        Map<Long, List<TechStackMappingDto>> techStackMap = techStacks.stream()
+                .collect(Collectors.groupingBy(TechStackMappingDto::id));
+
+        List<ResumeListResponseDto> result = resumes.stream().map(resume -> resume.addTechStack(techStackMap.get(resume.getResumeId()))).toList();
+        return result;
+    }
+
+    private List<TechStackMappingDto> getTechStacks(List<Long> resumeIds) {
         QResumeTechStack qResumeTechStack = QResumeTechStack.resumeTechStack;
 
-        List<TechStackDto> techStacks = jpaQueryFactory.select(Projections.constructor(
-                        TechStackDto.class,
+        List<TechStackMappingDto> techStacks = jpaQueryFactory.select(Projections.constructor(
+                        TechStackMappingDto.class,
+                        qResumeTechStack.resume.id,
                         qResumeTechStack.techStack.id,
                         qResumeTechStack.techStack.name
                 ))
@@ -63,30 +72,7 @@ public class ResumeQueryRepository {
                         qResumeTechStack.resume.id.in(resumeIds)
                 )
                 .fetch();
-
-        Map<Long, List<String>> techStackMap = techStacks.stream().collect(Collectors.groupingBy(TechStackDto::techStackId,
-                Collectors.mapping(TechStackDto::name, Collectors.toList())));
-
-        List<PrResponseDto> result = resumes.stream().map(resume -> resume.setTechStacks(techStackMap.get(resume.getPrId()))).toList();
-
-        return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());
+        return techStacks;
     }
 
-    private JPAQuery<Long> countQuery() {
-        return jpaQueryFactory.select(qResume.count())
-                .from(qResume)
-                .where(
-                        qResume.publishedAt.isNotNull()
-                );
-    }
-
-    private OrderSpecifier[] getOrderSpecifier(Sort sort) {
-        List<OrderSpecifier> orders = new ArrayList<>();
-        sort.stream().forEach(order -> {
-            Order direction = order.isAscending()? Order.ASC : Order.DESC;
-            PathBuilder<Resume> expression = new PathBuilder<>(Resume.class, "resume");
-            orders.add(new OrderSpecifier(direction, expression.get(order.getProperty())));
-        });
-        return orders.toArray(OrderSpecifier[]::new);
-    }
 }

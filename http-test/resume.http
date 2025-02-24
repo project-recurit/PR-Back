@@ -21,6 +21,11 @@ Authorization: Bearer {{accessToken}}
 }
 
 ### 이력 조회
+GET {{host}}/api/v1/resume/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### 이력 리스트 조회
 GET {{host}}/api/v1/resume
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
@@ -55,8 +60,13 @@ Authorization: Bearer {{accessToken}}
     }]
 }
 
+### 이력 삭제
+DELETE {{host}}/api/v1/resume/2
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
 ### 이력 게시
-POST {{host}}/api/v1/resume/publish/1
+POST {{host}}/api/v1/resume/publish/3
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
