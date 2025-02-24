@@ -28,7 +28,7 @@ public class CommentQueryRepository {
     QProject project = QProject.project;
 
     public Page<NestedCommentDto> getComments(Long projectId, Pageable pageable) {
-        // 부모 댓글 목록 조회 (페이징 적용)
+        // 부모 댓글 목록 조회
         List<CommentResponseDto> parentComments = queryFactory
                 .select(Projections.constructor(
                         CommentResponseDto.class,
@@ -39,7 +39,7 @@ public class CommentQueryRepository {
                 ))
                 .from(comment)
                 .where(comment.project.id.eq(projectId).and(comment.parentId.isNull())) // 부모 댓글만 가져오기
-                .offset(pageable.getOffset()) // 페이징 적용
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
@@ -64,7 +64,7 @@ public class CommentQueryRepository {
                         comment.parentId
                 ))
                 .from(comment)
-                .where(comment.parentId.in(parentIds)) // 부모 댓글 ID에 속한 대댓글 가져오기
+                .where(comment.parentId.in(parentIds))
                 .fetch()
                 .stream()
                 .collect(Collectors.groupingBy(CommentResponseDto::getParentId));

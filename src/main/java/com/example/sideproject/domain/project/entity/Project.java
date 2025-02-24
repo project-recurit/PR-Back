@@ -81,4 +81,8 @@ public class Project extends Timestamped {
         this.id = id;
         this.fileUrls = projectUrls;
     }
+
+    public void addCommentCount() {
+        this.commentCount = this.commentCount + 1;
+    }
 }

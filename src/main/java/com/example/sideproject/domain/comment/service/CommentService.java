@@ -32,6 +32,7 @@ public class CommentService {
 
         final Project project = projectService.findProject(projectId);
         final Comment comment = requestDto.toEntity(user, project);
+        project.addCommentCount();
         commentRepository.save(comment);
     }
 
