@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.project.entity;
 
+import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserTechStack;
@@ -39,8 +40,6 @@ public class Project extends Timestamped {
     @Column(nullable = false, name = "view_count")
     private int viewCount;
 
-    private String contact;
-
     @Column(nullable = false, name = "comment_count")
     private int commentCount;
 
@@ -61,6 +60,9 @@ public class Project extends Timestamped {
     @Column(nullable = false, name = "team_size")
     private int teamSize;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ChatRoom> chatRooms = new ArrayList<>();
+
     @Builder
     public Project(String title, String content, List<ProjectTechStack> projectTechStacks, List<ProjectUrl> projectUrls,
                    String expectedPeriod, String contact, User user,
@@ -69,7 +71,6 @@ public class Project extends Timestamped {
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
-        this.contact = contact;
         this.user = user;
         this.recruitmentPeriod = recruitmentPeriod;
         this.recruitStatus = recruitStatus;
