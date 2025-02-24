@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.chat.entity;
 
+import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
