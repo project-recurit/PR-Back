@@ -35,6 +35,7 @@ public enum ResponseStatus {
     // 관심 목록
     FAVORITE_CREATE_SUCCESS(HttpStatus.CREATED, "관심목록 추가에 성공하였습니다."),
     FAVORITE_DELETE_SUCCESS(HttpStatus.OK, "괌심목록 삭제에 성공하였습니다."),
+    FAVORITE_READ_SUCCESS(HttpStatus.OK, "관심목록 조회에 성공하였습니다."),
 
     //프로필
     WITHDRAW_SUCCESS(HttpStatus.OK, "회원탈퇴에 성공하였습니다."),
