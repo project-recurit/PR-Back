@@ -1,6 +1,7 @@
 package com.example.sideproject.domain.comment.controller;
 
 import com.example.sideproject.domain.comment.dto.CommentRequestDto;
+import com.example.sideproject.domain.comment.dto.CommentResponseDto;
 import com.example.sideproject.domain.comment.dto.NestedCommentDto;
 import com.example.sideproject.domain.comment.service.CommentService;
 import com.example.sideproject.global.dto.ResponseDataDto;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,12 +36,19 @@ public class CommentController {
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_SUCCESS_COMMENT));
     }
 
-    @Operation(summary = "구인 글 댓글 조회", description = "부모 댓글 밑에 자식 댓글배열")
+    @Operation(summary = "구인 글 댓글 조회", description = "사이즈 20개 제한")
     @GetMapping("/project/{projectId}/comments")
-    public ResponseEntity<ResponseDataDto<Page<NestedCommentDto>>> getComments(@PathVariable("projectId") Long projectId,
-                                                                               @RequestParam(value = "page", defaultValue = "1") int page) {
-        Page<NestedCommentDto> result = commentService.getComments(projectId, page);
-        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.READ_SUCCESS_COMMENT, result));
+    public ResponseEntity<ResponseDataDto<Page<CommentResponseDto>>> getComments(@PathVariable("projectId") Long projectId,
+                                                                                 @RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<CommentResponseDto> comments = commentService.getComments(projectId, page);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.READ_SUCCESS_COMMENT, comments));
+    }
+
+    @Operation(summary = "구인 글 대댓글 조회", description = "parentId 없을 시 404에러 반환")
+    @GetMapping("/comment/{parentId}/reply")
+    public ResponseEntity<ResponseDataDto<List<CommentResponseDto>>> getReply(@PathVariable("parentId") Long parentId) {
+        List<CommentResponseDto> reply = commentService.getReply(parentId);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.READ_SUCCESS_COMMENT, reply));
     }
 
     @Operation(summary = "구인 글 댓글 수정", description = "없는 id 값 넣으면 404, 다른 유저가 수정하면 406에러")

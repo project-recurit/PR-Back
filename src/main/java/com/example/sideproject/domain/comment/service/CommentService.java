@@ -1,6 +1,7 @@
 package com.example.sideproject.domain.comment.service;
 
 import com.example.sideproject.domain.comment.dto.CommentRequestDto;
+import com.example.sideproject.domain.comment.dto.CommentResponseDto;
 import com.example.sideproject.domain.comment.dto.NestedCommentDto;
 import com.example.sideproject.domain.comment.entity.Comment;
 import com.example.sideproject.domain.comment.repository.CommentRepository;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,10 +46,18 @@ public class CommentService {
      * 댓글 조회
      * 상세조회는 필요 없어서 바로 전체 조회
      */
-    public Page<NestedCommentDto> getComments(Long projectId, int page) {
+    public Page<CommentResponseDto> getComments(Long projectId, int page) {
 
         final Pageable pageable = PageRequest.of(page - 1, 20);
         return commentQueryRepository.getComments(projectId, pageable);
+    }
+
+    /**
+     * 대댓글 전체 조회
+     */
+    public List<CommentResponseDto> getReply(Long commentId) {
+
+        return commentQueryRepository.getReply(commentId);
     }
 
     /**
