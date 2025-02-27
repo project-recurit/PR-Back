@@ -2,7 +2,6 @@ package com.example.sideproject.domain.comment.controller;
 
 import com.example.sideproject.domain.comment.dto.CommentRequestDto;
 import com.example.sideproject.domain.comment.dto.CommentResponseDto;
-import com.example.sideproject.domain.comment.dto.NestedCommentDto;
 import com.example.sideproject.domain.comment.service.CommentService;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;

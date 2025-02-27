@@ -2,7 +2,6 @@ package com.example.sideproject.domain.comment.service;
 
 import com.example.sideproject.domain.comment.dto.CommentRequestDto;
 import com.example.sideproject.domain.comment.dto.CommentResponseDto;
-import com.example.sideproject.domain.comment.dto.NestedCommentDto;
 import com.example.sideproject.domain.comment.entity.Comment;
 import com.example.sideproject.domain.comment.repository.CommentRepository;
 import com.example.sideproject.domain.comment.repository.query.CommentQueryRepository;
