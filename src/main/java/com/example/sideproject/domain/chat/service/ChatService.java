@@ -129,9 +129,7 @@ public class ChatService {
         return chatRooms.map(chatRoom ->
                 ChatRoomListResponse.from(
                         chatRoom,
-                        getUnreadCount(chatRoom.getId(), userId),
-                        projectRepository,
-                        publicResumesRepository
+                        getUnreadCount(chatRoom.getId(), userId)
                 )
         );
     }
@@ -213,12 +211,13 @@ public class ChatService {
                 .map(ChatMessageResponse::from)
                 .collect(Collectors.toList());
 
+        ContentSummaryResponse referenceInfo = getReferenceSummary(chatRoom.getType(), chatRoom.getReferenceId());
+
         return ChatRoomDetailResponse.of(
                 chatRoom,
                 messageResponses,
                 messages,
-                projectRepository,
-                publicResumesRepository
+                referenceInfo
         );
     }
 
@@ -238,7 +237,7 @@ public class ChatService {
      * @param userId
      * @return
      */
-    public long getUnreadCount(Long roomId, Long userId) {
+    public Long getUnreadCount(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
         return chatMessageRepository.countUnreadMessages(roomId, member.getLastReadAt());
     }
@@ -287,6 +286,33 @@ public class ChatService {
                 .forEach(userId -> markAsRead(chatRoom.getId(), userId));
     }
 
+    /**
+     * 채팅방 타입과 참조 ID에 따라 참조 객체의 요약 정보를 가져옴
+     * @param type 채팅방 타입 (PROJECT 또는 PR)
+     * @param referenceId 참조 ID (프로젝트 ID 또는 이력서 ID)
+     * @return 요약 정보 객체 (ContentSummaryResponse)
+     */
+    public ContentSummaryResponse getReferenceSummary(ChatRoomType type, Long referenceId) {
+        if (type == ChatRoomType.PROJECT) {
+            return projectRepository.findById(referenceId)
+                    .map(ContentSummaryResponse::from)
+                    .orElseThrow(() -> new IllegalArgumentException("Project not found with id: " + referenceId));
+        } else if (type == ChatRoomType.PR) {
+            return publicResumesRepository.findById(referenceId)
+                    .map(ContentSummaryResponse::from)
+                    .orElseThrow(() -> new IllegalArgumentException("PublicResume not found with id: " + referenceId));
+        }
+        throw new IllegalArgumentException("Unsupported chat room type: " + type);
+    }
+
+    /**
+     * 채팅방의 참조 객체 요약 정보를 가져옴
+     * @param chatRoom 채팅방
+     * @return 요약 정보 객체 (ContentSummaryResponse)
+     */
+    public ContentSummaryResponse getReferenceSummary(ChatRoom chatRoom) {
+        return getReferenceSummary(chatRoom.getType(), chatRoom.getReferenceId());
+    }
 
 //    /**
 //     * 프로젝트와 관련된 채팅방 개수 조회

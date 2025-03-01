@@ -3,10 +3,7 @@ package com.example.sideproject.domain.chat.dto;
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
 import com.example.sideproject.domain.chat.entity.ChatRoomType;
-import com.example.sideproject.domain.pr.entity.PublicResumes;
-import com.example.sideproject.domain.pr.repository.PublicResumesRepository;
-import com.example.sideproject.domain.project.entity.Project;
-import com.example.sideproject.domain.project.repository.ProjectRepository;
+import com.example.sideproject.domain.chat.service.ChatService;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -25,7 +22,7 @@ public record ChatRoomDetailResponse(
         long totalElements,
         boolean hasNext,
         ChatRoomType type,
-        Object referenceInfo  // ProjectSummaryResponse 또는 PRSummaryResponse
+        ContentSummaryResponse referenceInfo
 ) {
     @Builder
     public ChatRoomDetailResponse {}
@@ -34,26 +31,8 @@ public record ChatRoomDetailResponse(
             ChatRoom chatRoom,
             List<ChatMessageResponse> messageResponses,
             Page<ChatMessage> messagePage,
-            ProjectRepository projectRepository,
-            PublicResumesRepository publicResumesRepository
+            ContentSummaryResponse referenceInfo
     ) {
-        Object referenceInfo = null;
-
-        // 채팅방 타입에 따라 적절한 요약 정보 생성
-        if (chatRoom.getType() == ChatRoomType.PROJECT) {
-            Project project = projectRepository.findById(chatRoom.getReferenceId())
-                    .orElse(null);
-            if (project != null) {
-                referenceInfo = ProjectSummaryResponse.from(project);
-            }
-        } else if (chatRoom.getType() == ChatRoomType.PR) {
-            PublicResumes pr = publicResumesRepository.findById(chatRoom.getReferenceId())
-                    .orElse(null);
-            if (pr != null) {
-                referenceInfo = PRSummaryResponse.from(pr);
-            }
-        }
-
         return new ChatRoomDetailResponse(
                 chatRoom.getId(),
                 messageResponses,
