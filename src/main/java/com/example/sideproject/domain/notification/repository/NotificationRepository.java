@@ -1,7 +1,7 @@
-package com.example.sideproject.global.notification.repository;
+package com.example.sideproject.domain.notification.repository;
 
 import com.example.sideproject.domain.user.entity.User;
-import com.example.sideproject.global.notification.entity.Notification;
+import com.example.sideproject.domain.notification.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

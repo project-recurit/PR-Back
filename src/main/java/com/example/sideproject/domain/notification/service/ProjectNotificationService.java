@@ -1,23 +1,20 @@
-package com.example.sideproject.domain.project.service;
+package com.example.sideproject.domain.notification.service;
 
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.techstack.entity.TechStack;
-import com.example.sideproject.domain.user.entity.TechStack1;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserTechStack;
-import com.example.sideproject.global.notification.aop.annotation.NotifyOn;
-import com.example.sideproject.global.notification.dto.EventDto;
-import com.example.sideproject.global.notification.dto.EventListDto;
-import com.example.sideproject.global.notification.entity.NotificationType;
+import com.example.sideproject.domain.notification.aop.annotation.NotifyOn;
+import com.example.sideproject.domain.notification.dto.EventDto;
+import com.example.sideproject.domain.notification.dto.EventListDto;
+import com.example.sideproject.domain.notification.entity.NotificationType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class ProjectNoticeService {
+public class ProjectNotificationService {
 
     /**
      * 해당하는 유저에게 알림 메시지를 전달한다.
@@ -38,7 +35,7 @@ public class ProjectNoticeService {
                                 user.getUserTechStacks().stream().map(UserTechStack::getTechStack).toList(),
                                 projectTechStackIds) + " $| " + msg,
                         NotificationType.PROJECT_REGISTRATION,
-                        "/api/v1/project/" + project.getId())
+                        project.getId())
                 ).toList()
         );
     }

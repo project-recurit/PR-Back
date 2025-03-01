@@ -1,6 +1,6 @@
-package com.example.sideproject.global.notification.dto;
+package com.example.sideproject.domain.notification.dto;
 
-import com.example.sideproject.global.notification.entity.Notification;
+import com.example.sideproject.domain.notification.entity.Notification;
 import lombok.Builder;
 
 @Builder
@@ -9,7 +9,7 @@ public record NotificationDto(
         Long userId,
         String type,
         String message,
-        String relatedUrl
+        Long relatedId
 ) {
     public static NotificationDto of(Notification notification) {
         return NotificationDto.builder()
@@ -17,7 +17,7 @@ public record NotificationDto(
                 .userId(notification.getTo().getId())
                 .type(notification.getType().name())
                 .message(notification.getMessage())
-                .relatedUrl(notification.getRelatedUrl())
+                .relatedId(notification.getRelatedId())
                 .build();
     }
 }

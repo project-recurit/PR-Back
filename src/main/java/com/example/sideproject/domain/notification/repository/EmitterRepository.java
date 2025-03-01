@@ -1,4 +1,4 @@
-package com.example.sideproject.global.notification.repository;
+package com.example.sideproject.domain.notification.repository;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;

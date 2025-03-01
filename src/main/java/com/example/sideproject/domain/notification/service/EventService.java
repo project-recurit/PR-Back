@@ -1,9 +1,9 @@
-package com.example.sideproject.global.notification.service;
+package com.example.sideproject.domain.notification.service;
 
 import com.example.sideproject.domain.user.entity.User;
-import com.example.sideproject.global.notification.dto.EventDto;
-import com.example.sideproject.global.notification.dto.EventListDto;
-import com.example.sideproject.global.notification.dto.NotificationRequestDto;
+import com.example.sideproject.domain.notification.dto.EventDto;
+import com.example.sideproject.domain.notification.dto.EventListDto;
+import com.example.sideproject.domain.notification.dto.NotificationRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -38,7 +38,7 @@ public class EventService {
     public void save(EventListDto listDto) {
         filterEvents(listDto).forEach(eventDto -> {
             NotificationRequestDto requestDto = NotificationRequestDto.of(eventDto);
-            notificationService.createNotification(requestDto, new User(eventDto.from()));
+            notificationService.createNotification(requestDto);
         });
     }
 

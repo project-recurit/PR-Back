@@ -1,16 +1,13 @@
-package com.example.sideproject.global.notification.aop;
+package com.example.sideproject.domain.notification.aop;
 
-import com.example.sideproject.global.notification.aop.annotation.NotifyOn;
-import com.example.sideproject.global.notification.dto.EventDto;
-import com.example.sideproject.global.notification.dto.EventListDto;
+import com.example.sideproject.domain.notification.aop.annotation.NotifyOn;
+import com.example.sideproject.domain.notification.dto.EventListDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Slf4j
 @Component
