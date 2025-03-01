@@ -1,9 +1,10 @@
 package com.example.sideproject.global.notification.service;
 
-import com.example.sideproject.global.notification.aop.annotation.NotifyOn;
-import com.example.sideproject.global.notification.dto.EventDto;
-import com.example.sideproject.global.notification.dto.EventListDto;
-import com.example.sideproject.global.notification.entity.NotificationType;
+import com.example.sideproject.domain.notification.aop.annotation.NotifyOn;
+import com.example.sideproject.domain.notification.dto.EventDto;
+import com.example.sideproject.domain.notification.dto.EventListDto;
+import com.example.sideproject.domain.notification.entity.NotificationType;
+import com.example.sideproject.domain.notification.service.SseService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

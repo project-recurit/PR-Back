@@ -1,7 +1,7 @@
-package com.example.sideproject.global.notification.controller;
+package com.example.sideproject.domain.notification.controller;
 
-import com.example.sideproject.global.notification.dto.NotificationDto;
-import com.example.sideproject.global.notification.service.NotificationService;
+import com.example.sideproject.domain.notification.dto.NotificationDto;
+import com.example.sideproject.domain.notification.service.NotificationService;
 import com.example.sideproject.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

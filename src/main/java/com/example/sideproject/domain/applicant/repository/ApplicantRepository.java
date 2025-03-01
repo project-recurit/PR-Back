@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface ApplicantRepository extends JpaRepository<Applicant, Long> {
 
-    Optional<Applicant> findByIdAndProjectAndUser(Long id, Project project, User user);
-
+    Optional<Applicant> findByIdAndProject(Long id, Project project);
     boolean existsByProjectAndUser(Project project, User user);
 }

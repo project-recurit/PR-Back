@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.project.service;
 
+import com.example.sideproject.domain.notification.service.ProjectNotificationService;
 import com.example.sideproject.domain.project.dto.*;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.ProjectTechStack;
@@ -33,7 +34,7 @@ import java.util.Objects;
 public class ProjectService {
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
-    private final ProjectNoticeService projectNoticeService;
+    private final ProjectNotificationService projectNotificationService;
     private final ProjectTechStackService projectTechStackService;
     private final ProjectUrlService projectUrlService;
     private final TechStackRepository techStackRepository; // 임시

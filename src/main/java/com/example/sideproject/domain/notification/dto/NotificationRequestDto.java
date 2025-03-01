@@ -1,8 +1,8 @@
-package com.example.sideproject.global.notification.dto;
+package com.example.sideproject.domain.notification.dto;
 
 import com.example.sideproject.domain.user.entity.User;
-import com.example.sideproject.global.notification.entity.Notification;
-import com.example.sideproject.global.notification.entity.NotificationType;
+import com.example.sideproject.domain.notification.entity.Notification;
+import com.example.sideproject.domain.notification.entity.NotificationType;
 import lombok.Builder;
 
 @Builder
@@ -10,15 +10,14 @@ public record NotificationRequestDto(
         Long to,
         NotificationType type,
         String message,
-        String relatedUrl
+        Long relatedId
 ) {
-    public Notification toEntity(User from) {
+    public Notification toEntity() {
         return Notification.builder()
                 .to(new User(to))
-                .from(from)
                 .type(type)
                 .message(message)
-                .relatedUrl(relatedUrl)
+                .relatedId(relatedId)
                 .build();
     }
 
@@ -27,7 +26,7 @@ public record NotificationRequestDto(
                 .to(eventDto.to())
                 .type(eventDto.type())
                 .message(eventDto.msg())
-                .relatedUrl(eventDto.relatedUrl())
+                .relatedId(eventDto.relatedId())
                 .build();
     }
 }

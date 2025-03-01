@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -82,5 +83,9 @@ public class Project extends Timestamped {
 
     public void addCommentCount() {
         this.commentCount = this.commentCount + 1;
+    }
+
+    public boolean isProjectLeader(Long leaderId) {
+        return Objects.equals(user.getId(), leaderId);
     }
 }

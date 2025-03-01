@@ -1,4 +1,4 @@
-package com.example.sideproject.global.notification.aop.annotation;
+package com.example.sideproject.domain.notification.aop.annotation;
 
 import org.springframework.data.repository.query.Param;
 
