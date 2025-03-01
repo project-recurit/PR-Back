@@ -60,12 +60,9 @@ public class Project extends Timestamped {
     @Column(nullable = false, name = "team_size")
     private int teamSize;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ChatRoom> chatRooms = new ArrayList<>();
-
     @Builder
     public Project(String title, String content, List<ProjectTechStack> projectTechStacks, List<ProjectUrl> projectUrls,
-                   String expectedPeriod, String contact, User user,
+                   String expectedPeriod, User user,
                    String recruitmentPeriod, RecruitStatus recruitStatus,
                    int viewCount, int commentCount, int favoriteCount, int teamSize, Long id) {
         this.title = title;

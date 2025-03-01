@@ -25,7 +25,12 @@ public class RestChatController {
      */
     @PostMapping("/create/room")
     public ResponseEntity<ChatRoom> createRoom(@RequestBody ChatRoomRequest request) {
-        ChatRoom chatRoom = chatService.createRoom(request.getSenderId(), request.getReceiverId(), request.getProjectId());
+        ChatRoom chatRoom = chatService.createRoom(
+                request.getSenderId(),
+                request.getReceiverId(),
+                request.getChatRoomType(),
+                request.getReferenceId()
+        );
         return ResponseEntity.ok(chatRoom);
     }
 

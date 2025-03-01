@@ -2,13 +2,17 @@ package com.example.sideproject.domain.chat.dto;
 
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
+import com.example.sideproject.domain.chat.entity.ChatRoomType;
+import com.example.sideproject.domain.pr.entity.PublicResumes;
+import com.example.sideproject.domain.pr.repository.PublicResumesRepository;
+import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.project.repository.ProjectRepository;
 import lombok.Builder;
-import lombok.Getter;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 public record ChatRoomDetailResponse(
         Long roomId,
@@ -20,13 +24,36 @@ public record ChatRoomDetailResponse(
         int totalPages,
         long totalElements,
         boolean hasNext,
-        ProjectSummaryResponse project // 프로젝트 정보 추가
+        ChatRoomType type,
+        Object referenceInfo  // ProjectSummaryResponse 또는 PRSummaryResponse
 ) {
+    @Builder
+    public ChatRoomDetailResponse {}
+
     public static ChatRoomDetailResponse of(
             ChatRoom chatRoom,
             List<ChatMessageResponse> messageResponses,
-            Page<ChatMessage> messagePage
+            Page<ChatMessage> messagePage,
+            ProjectRepository projectRepository,
+            PublicResumesRepository publicResumesRepository
     ) {
+        Object referenceInfo = null;
+
+        // 채팅방 타입에 따라 적절한 요약 정보 생성
+        if (chatRoom.getType() == ChatRoomType.PROJECT) {
+            Project project = projectRepository.findById(chatRoom.getReferenceId())
+                    .orElse(null);
+            if (project != null) {
+                referenceInfo = ProjectSummaryResponse.from(project);
+            }
+        } else if (chatRoom.getType() == ChatRoomType.PR) {
+            PublicResumes pr = publicResumesRepository.findById(chatRoom.getReferenceId())
+                    .orElse(null);
+            if (pr != null) {
+                referenceInfo = PRSummaryResponse.from(pr);
+            }
+        }
+
         return new ChatRoomDetailResponse(
                 chatRoom.getId(),
                 messageResponses,
@@ -40,7 +67,8 @@ public record ChatRoomDetailResponse(
                 messagePage.getTotalPages(),
                 messagePage.getTotalElements(),
                 messagePage.hasNext(),
-                ProjectSummaryResponse.from(chatRoom.getProject())
+                chatRoom.getType(),
+                referenceInfo
         );
     }
 }
