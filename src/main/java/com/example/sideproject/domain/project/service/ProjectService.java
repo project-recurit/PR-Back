@@ -51,13 +51,15 @@ public class ProjectService {
         final Project project = requestDto.toEntity(foundUser);
         projectRepository.save(project);
 
+        List<TechStack> techStacks = new ArrayList<>();
+        List<Long> techStackIds = new ArrayList<>();
+
         if (!requestDto.projectTechStacks().isEmpty()) {
 
             // 테크스텍 있는거만 검증 한 후 List 반환
             // findAllById는 쿼리를 직접짠거랑 많이 다른게 없어서 적용
-            List<TechStack> techStacks = techStackRepository.findAllById(requestDto.projectTechStacks());
+            techStacks = techStackRepository.findAllById(requestDto.projectTechStacks());
             List<ProjectTechStack> projectTechStacks = new ArrayList<>();
-            List<Long> techStackIds = new ArrayList<>();
 
             for (TechStack techStack : techStacks) {
                 // 배열에 미리 넣어두기
@@ -72,17 +74,16 @@ public class ProjectService {
             // 이 메서드 안에 saveAll
             projectTechStackService.createProjectTechStack(projectTechStacks);
         }
-        if (!requestDto.files().isEmpty()) {
+        if (requestDto.files() != null) {
             for (MultipartFile url : requestDto.files()) {
                 projectUrlService.createProjectUrl(project, url);
             }
         }
 
         // 기술스택에 해당하는 유저를 조회
-        // List<User> users = findUserByTechStacks(project.getTechStacks());
+         List<User> users = findUserByTechStacks(techStacks);
 
-        // 세번째 파라미터에 등록한 프로젝트의 기술 스택 ID 리스트를 넣는다.
-        // projectNoticeService.notice(project, users, requestDto.getTechStackIds());
+        projectNotificationService.notice(project, users, techStackIds);
     }
 
     public List<User> findUserByTechStacks(List<TechStack> techStacks) {
