@@ -3,6 +3,7 @@ package com.example.sideproject.domain.favorite.entity;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,26 +12,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Favorite extends Timestamped {
     @Id
-    @Column(name = "favorite_id")
+    @Column(nullable = false, name = "favorite_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-    @Column(name = "favorite_item_id")
-    private Long item_id;
+    @Column(nullable = false, name = "favorite_item_id")
+    private Long itemId;
 
-    @Column(name = "favorite_item_type")
-    private FavoriteType item_type;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "favorite_item_type")
+    private FavoriteType itemType;
 
-//    @Builder
-//    public Favorite(User user, Project project, Resume resume, FavoriteType type) {
-//        this.user = user;
-//        this.project = project;
-//        this.resume = resume;
-//        this.type = type;
-//    }
+    @Builder
+    public Favorite(User user, Long itemId, FavoriteType itemType) {
+        this.user = user;
+        this.itemId = itemId;
+        this.itemType = itemType;
+    }
 
 }
