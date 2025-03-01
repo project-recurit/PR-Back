@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ServiceFacade {
+public class FavoriteFacade {
     private final FavoriteProjectService favoriteProjectService;
     private final FavoriteService favoriteService;
 
