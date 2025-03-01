@@ -5,6 +5,7 @@ import com.example.sideproject.domain.chat.entity.*;
 import com.example.sideproject.domain.chat.repository.ChatMessageRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
+import com.example.sideproject.domain.notification.service.ChatNotificationService;
 import com.example.sideproject.domain.pr.repository.PublicResumesRepository;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
@@ -37,6 +38,7 @@ public class ChatService {
     private final WebSocketEventHandler webSocketEventHandler;
     private final ProjectRepository projectRepository;
     private final PublicResumesRepository publicResumesRepository;
+    private final ChatNotificationService chatNotificationService;
 
     /**
      * 채팅방 생성
@@ -65,6 +67,8 @@ public class ChatService {
                 .build();
         chatRoom.addMember(new ChatRoomMember(sender));
         chatRoom.addMember(new ChatRoomMember(receiver));
+
+        chatNotificationService.createRoom(sender.getNickname(), receiverId, receiverId);
 
         return chatRoomRepository.save(chatRoom);
     }

@@ -22,6 +22,7 @@ public class Notification extends Timestamped {
     @JoinColumn(name = "user_id")
     private User to;
 
+    @Enumerated(value = EnumType.STRING)
     private NotificationType type;
     private String message;
     private Long relatedId;

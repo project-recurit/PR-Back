@@ -25,7 +25,7 @@ public record ProjectUpdateDto(
         return Project.builder()
                 .id(projectId)
                 .title(title)
-                .contact(contact)
+//                .contact(contact)
                 .content(content)
                 .expectedPeriod(expectedPeriod)
                 .recruitmentPeriod(recruitmentPeriod)
