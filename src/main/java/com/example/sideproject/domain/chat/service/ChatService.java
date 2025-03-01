@@ -68,7 +68,7 @@ public class ChatService {
         chatRoom.addMember(new ChatRoomMember(sender));
         chatRoom.addMember(new ChatRoomMember(receiver));
 
-        chatNotificationService.createRoom(sender.getNickname(), receiverId, receiverId);
+        chatNotificationService.createRoom(sender.getNickname(), referenceId, receiverId);
 
         return chatRoomRepository.save(chatRoom);
     }
