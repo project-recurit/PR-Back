@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class Project extends Timestamped {
     private String contact;
 
     @Column(nullable = false, name = "like_count")
+    @ColumnDefault("0")
     private int likeCount;
 
     @ManyToOne
