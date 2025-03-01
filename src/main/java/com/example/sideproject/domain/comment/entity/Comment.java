@@ -4,6 +4,7 @@ import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,25 +14,31 @@ import lombok.NoArgsConstructor;
 public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
+    @Column(nullable = false)
     private String content;
 
-    private long parentId;
+    @Column(nullable = true, name = "parent_id")
+    private Long parentId;
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name = "users_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "teamRecruit_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    public Comment(String content, long parentId, User user, Project project) {
+    @Builder
+    public Comment(String content, Long parentId, User user, Project project) {
         this.content = content;
         this.parentId = parentId;
         this.user = user;
         this.project = project;
     }
 
+    public void update(String content) {
+        this.content = content;
+    }
 }
