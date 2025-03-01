@@ -106,7 +106,7 @@ public class ChatController {
      */
     @GetMapping("/chat/room/{roomId}/unread")
     public ResponseEntity<Long> getUnreadCount(@PathVariable Long roomId, @RequestParam Long userId) {
-        long count = chatService.getUnreadCount(roomId, userId);
+        Long count = chatService.getUnreadCount(roomId, userId);
         return ResponseEntity.ok(count);
     }
 }

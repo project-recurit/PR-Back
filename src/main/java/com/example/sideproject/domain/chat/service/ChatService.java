@@ -237,7 +237,7 @@ public class ChatService {
      * @param userId
      * @return
      */
-    public long getUnreadCount(Long roomId, Long userId) {
+    public Long getUnreadCount(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
         return chatMessageRepository.countUnreadMessages(roomId, member.getLastReadAt());
     }
