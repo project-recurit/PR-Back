@@ -7,6 +7,5 @@ import com.example.sideproject.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
-    boolean existsByProjectAndUser(Project project, User user);
-    boolean existsByResumeAndUser(Resume resume, User user);
+    boolean existsByItemIdAndUser(Long itemId, User user);
 }
