@@ -25,7 +25,7 @@ public record ChatRoomDetailResponse(
         long totalElements,
         boolean hasNext,
         ChatRoomType type,
-        Object referenceInfo  // ProjectSummaryResponse 또는 PRSummaryResponse
+        Object referenceInfo
 ) {
     @Builder
     public ChatRoomDetailResponse {}
@@ -44,13 +44,13 @@ public record ChatRoomDetailResponse(
             Project project = projectRepository.findById(chatRoom.getReferenceId())
                     .orElse(null);
             if (project != null) {
-                referenceInfo = ProjectSummaryResponse.from(project);
+                referenceInfo = ContentSummaryResponse.from(project);
             }
         } else if (chatRoom.getType() == ChatRoomType.PR) {
             PublicResumes pr = publicResumesRepository.findById(chatRoom.getReferenceId())
                     .orElse(null);
             if (pr != null) {
-                referenceInfo = PRSummaryResponse.from(pr);
+                referenceInfo = ContentSummaryResponse.from(pr);
             }
         }
 
