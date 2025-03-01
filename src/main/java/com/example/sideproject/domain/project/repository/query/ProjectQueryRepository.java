@@ -1,6 +1,9 @@
 package com.example.sideproject.domain.project.repository.query;
 
-import com.example.sideproject.domain.project.dto.*;
+import com.example.sideproject.domain.project.dto.ProjectDetailResponseDto;
+import com.example.sideproject.domain.project.dto.ProjectTechStackDto;
+import com.example.sideproject.domain.project.dto.ProjectUrlResponseDto;
+import com.example.sideproject.domain.project.dto.ProjectsResponseDto;
 import com.example.sideproject.domain.project.entity.QProject;
 import com.example.sideproject.domain.project.entity.QProjectTechStack;
 import com.example.sideproject.domain.project.entity.QProjectUrl;

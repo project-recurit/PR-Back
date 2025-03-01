@@ -6,6 +6,8 @@ import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -18,9 +20,11 @@ public class Applicant extends Timestamped {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uesr_id")
     private User user;
 
     @Enumerated(EnumType.STRING)
@@ -30,5 +34,9 @@ public class Applicant extends Timestamped {
 
     public void updateStatus(ApplicationStatus status) {
         this.status = status;
+    }
+
+    public boolean isOwn(Long applicantId) {
+        return Objects.equals(user.getId(), applicantId);
     }
 }

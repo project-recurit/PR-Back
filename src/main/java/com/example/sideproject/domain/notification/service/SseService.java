@@ -1,10 +1,8 @@
-package com.example.sideproject.global.notification.service;
+package com.example.sideproject.domain.notification.service;
 
-import com.example.sideproject.domain.user.entity.User;
-import com.example.sideproject.global.notification.aop.annotation.NotifyOn;
-import com.example.sideproject.global.notification.dto.EventDto;
-import com.example.sideproject.global.notification.entity.NotificationType;
-import com.example.sideproject.global.notification.repository.EmitterRepository;
+import com.example.sideproject.domain.notification.dto.EventDto;
+import com.example.sideproject.domain.notification.entity.NotificationType;
+import com.example.sideproject.domain.notification.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,7 @@ public class SseService {
         log.debug("{} 알림 서비스 접속", userId);
         SseEmitter session = emitterRepository.connect(userId);
 
-        EventDto data = new EventDto(userId, userId, "connect", NotificationType.CONNECT, "");
+        EventDto data = new EventDto(userId, userId, "connect", NotificationType.CONNECT, 0L);
         send(userId, data, session);
 
         return session;
