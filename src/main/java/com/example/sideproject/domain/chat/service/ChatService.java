@@ -1,13 +1,11 @@
 package com.example.sideproject.domain.chat.service;
 
 import com.example.sideproject.domain.chat.dto.*;
-import com.example.sideproject.domain.chat.entity.ChatMessage;
-import com.example.sideproject.domain.chat.entity.ChatRoom;
-import com.example.sideproject.domain.chat.entity.ChatRoomMember;
-import com.example.sideproject.domain.chat.entity.MessageType;
+import com.example.sideproject.domain.chat.entity.*;
 import com.example.sideproject.domain.chat.repository.ChatMessageRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
+import com.example.sideproject.domain.pr.repository.PublicResumesRepository;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.user.entity.User;
@@ -38,6 +36,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final WebSocketEventHandler webSocketEventHandler;
     private final ProjectRepository projectRepository;
+    private final PublicResumesRepository publicResumesRepository;
 
     /**
      * 채팅방 생성
@@ -46,15 +45,24 @@ public class ChatService {
      * @return
      */
     @Transactional()
-    public ChatRoom createRoom(Long senderId, Long receiverId, Long projectId) {
+    public ChatRoom createRoom(Long senderId, Long receiverId, ChatRoomType chatRoomType,Long referenceId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
         User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("Project not found"));
 
-        ChatRoom chatRoom = new ChatRoom(project);
+        if (chatRoomType == ChatRoomType.PROJECT) {
+            projectRepository.findById(referenceId)
+                    .orElseThrow(() -> new IllegalArgumentException("Project not found"));
+        } else if (chatRoomType == ChatRoomType.PR) {
+            publicResumesRepository.findById(referenceId)
+                    .orElseThrow(() -> new IllegalArgumentException("PublicResume not found"));
+        }
+
+        ChatRoom chatRoom = ChatRoom.builder()
+                .type(chatRoomType)
+                .referenceId(referenceId)
+                .build();
         chatRoom.addMember(new ChatRoomMember(sender));
         chatRoom.addMember(new ChatRoomMember(receiver));
 
@@ -96,6 +104,7 @@ public class ChatService {
      * @param roomId
      * @param userId
      */
+    //TODO : 웹소켓 끊어질 때 가장 마지막 상대방의 메시지를 보낸 시간으로
     @Transactional
     public void disconnectFromRoom(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
@@ -116,7 +125,9 @@ public class ChatService {
         return chatRooms.map(chatRoom ->
                 ChatRoomListResponse.from(
                         chatRoom,
-                        getUnreadCount(chatRoom.getId(), userId)
+                        getUnreadCount(chatRoom.getId(), userId),
+                        projectRepository,
+                        publicResumesRepository
                 )
         );
     }
@@ -190,17 +201,21 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
-
         Pageable pageable = PageRequest.of(page, size, Sort.by("sentAt").ascending());
         Page<ChatMessage> messages = chatMessageRepository
                 .findAllByChatRoomIdOrderBySentAtAsc(roomId, pageable);
 
         List<ChatMessageResponse> messageResponses = messages.getContent().stream()
-                .map(ChatMessageResponse::from)  // convertToChatMessageResponse 대신 from 메서드 사용
+                .map(ChatMessageResponse::from)
                 .collect(Collectors.toList());
 
-
-        return ChatRoomDetailResponse.of(chatRoom,messageResponses, messages);
+        return ChatRoomDetailResponse.of(
+                chatRoom,
+                messageResponses,
+                messages,
+                projectRepository,
+                publicResumesRepository
+        );
     }
 
     /**
@@ -267,4 +282,47 @@ public class ChatService {
                 .filter(userId -> WebSocketEventHandler.isUserInRoom(userId, chatRoom.getId()))
                 .forEach(userId -> markAsRead(chatRoom.getId(), userId));
     }
+
+
+//    /**
+//     * 프로젝트와 관련된 채팅방 개수 조회
+//     * @param projectId 프로젝트 ID
+//     * @return 채팅방 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public long countChatRoomsByProjectId(Long projectId) {
+//        return chatRoomRepository.countByProjectId(projectId);
+//    }
+//
+//    /**
+//     * 공개 이력서와 관련된 채팅방 개수 조회
+//     * @param prId 공개 이력서 ID
+//     * @return 채팅방 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public long countChatRoomsByPublicResumeId(Long prId) {
+//        return chatRoomRepository.countByPublicResumeId(prId);
+//    }
+//
+//    /**
+//     * 특정 사용자의 프로젝트와 관련된 채팅방 개수 조회
+//     * @param projectId 프로젝트 ID
+//     * @param userId 사용자 ID
+//     * @return 채팅방 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public long countChatRoomsByProjectIdAndUserId(Long projectId, Long userId) {
+//        return chatRoomRepository.countByProjectIdAndUserId(projectId, userId);
+//    }
+//
+//    /**
+//     * 특정 사용자의 공개 이력서와 관련된 채팅방 개수 조회
+//     * @param prId 공개 이력서 ID
+//     * @param userId 사용자 ID
+//     * @return 채팅방 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public long countChatRoomsByPublicResumeIdAndUserId(Long prId, Long userId) {
+//        return chatRoomRepository.countByPublicResumeIdAndUserId(prId, userId);
+//    }
 }
