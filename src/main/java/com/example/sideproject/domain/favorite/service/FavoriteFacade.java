@@ -25,4 +25,9 @@ public class FavoriteFacade {
         favoriteService.saveItemToFavorites(resumeId, user, FavoriteType.RESUME);
     }
 
+    @Transactional
+    public void deleteFavorite(Long favoriteId, User user) {
+        favoriteService.deleteFavorite(favoriteId, user);
+    }
+
 }

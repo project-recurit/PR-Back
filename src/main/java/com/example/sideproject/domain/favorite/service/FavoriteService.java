@@ -8,6 +8,9 @@ import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,26 @@ public class FavoriteService {
         if (favoriteRepository.existsByItemIdAndUser(itemId, user)) {
             throw new CustomException(ErrorType.DUPLICATE_FAVORITE);
         }
+    }
+
+    public void deleteFavorite(Long favoriteId, User user) {
+        // NOTE: 관심목록 존재여부 확인 -> 예외처리
+        Favorite favorite = findFavorite(favoriteId);
+
+        // NOTE: 자신의 관심목록인지 확인 -> 예외처리
+        if(NotFavoriteOwner(favorite, user))
+            throw new CustomException(ErrorType.FAVORITE_ACCESS_DENIED);
+
+        favoriteRepository.delete(favorite);
+    }
+
+    private Favorite findFavorite(Long favoriteId) {
+        return favoriteRepository.findById(favoriteId)
+                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_FAVORITE));
+    }
+
+    private boolean NotFavoriteOwner(Favorite favorite, User user) {
+        return !Objects.equals(favorite.getUser().getId(), user.getId());
     }
 
 }
