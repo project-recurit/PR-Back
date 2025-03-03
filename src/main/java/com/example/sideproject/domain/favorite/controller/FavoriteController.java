@@ -27,4 +27,14 @@ public class FavoriteController {
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITE_CREATE_SUCCESS));
     }
 
+    @PostMapping("/resumes/{resumeId}/favorite")
+    public ResponseEntity<ResponseMessageDto> saveFavoritesResume(
+            @PathVariable("resumeId") Long resumeId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        favoriteFacade.saveFavoritesResume(resumeId, userDetails.getUser());
+
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.FAVORITE_CREATE_SUCCESS));
+    }
+
 }

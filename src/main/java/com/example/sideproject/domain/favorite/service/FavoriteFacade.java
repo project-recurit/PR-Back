@@ -9,13 +9,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class FavoriteFacade {
-    private final FavoriteProjectService favoriteProjectService;
     private final FavoriteService favoriteService;
+    private final FavoriteProjectService favoriteProjectService;
+    private final FavoriteResumeService favoriteResumeService;
 
     @Transactional
     public void saveFavoritesProject(Long projectId, User user) {
         favoriteProjectService.validateProject(projectId, user);
         favoriteService.saveItemToFavorites(projectId, user, FavoriteType.PROJECT);
+    }
+
+    @Transactional
+    public void saveFavoritesResume(Long resumeId, User user) {
+        favoriteResumeService.validateResume(resumeId, user);
+        favoriteService.saveItemToFavorites(resumeId, user, FavoriteType.RESUME);
     }
 
 }
