@@ -21,6 +21,7 @@ public class Notification {
     @ManyToOne
     private User from;
 
+    @Column(name = "NotificationType")
     private NotificationType type;
     private String message;
     private String relatedUrl;
