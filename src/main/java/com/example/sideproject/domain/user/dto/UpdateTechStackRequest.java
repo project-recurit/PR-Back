@@ -1,11 +1,11 @@
 package com.example.sideproject.domain.user.dto;
 
-import com.example.sideproject.domain.user.entity.TechStack1;
+
+import com.example.sideproject.domain.user.entity.UserTechStack;
 import lombok.Getter;
 
-import java.util.Set;
-
+import java.util.List;
 @Getter
 public class UpdateTechStackRequest {
-    private Set<TechStack1> techStack1s;
+    private List<UserTechStack> userTechStacks;
 }

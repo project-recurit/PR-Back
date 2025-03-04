@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.chat.entity;
 
+import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,8 @@ public class ChatRoomMember {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private User member;
+
+    private Long unReadCount;
 
     private LocalDateTime lastReadAt;
     private boolean isLeft;

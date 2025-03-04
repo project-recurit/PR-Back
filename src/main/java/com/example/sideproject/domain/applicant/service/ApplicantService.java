@@ -1,11 +1,13 @@
 package com.example.sideproject.domain.applicant.service;
 
+import com.example.sideproject.domain.applicant.dto.ApplicantApplyDto;
 import com.example.sideproject.domain.applicant.dto.ApplicantResponseDto;
 import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
 import com.example.sideproject.domain.applicant.entity.Applicant;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.repository.ApplicantRepository;
 import com.example.sideproject.domain.applicant.repository.query.ApplicantQueryRepository;
+import com.example.sideproject.domain.notification.service.ApplicantNotificationService;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.service.ProjectService;
 import com.example.sideproject.domain.user.entity.User;
@@ -23,13 +25,13 @@ public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final ProjectService projectService;
     private final ApplicantQueryRepository applicantQueryRepository;
+    private final ApplicantNotificationService applicantNotificationService;
 
     /**
      * 프로젝트 지원
      */
-    public Long apply(User user, Long projectId) {
+    public Long apply(User user, Long projectId, ApplicantApplyDto req) {
         // 프로젝트가 있는지 확인
-
         Project project = projectService.findProject(projectId);
 
         // 지원 내역 확인
@@ -40,8 +42,16 @@ public class ApplicantService {
         Applicant applicant = Applicant.builder()
                 .project(project)
                 .user(user)
+                .position(req.position())
                 .status(ApplicationStatus.unviewed)
                 .build();
+
+        applicantNotificationService.registerApplicant(
+                projectId,
+                project.getTitle(),
+                applicant.getPosition(),
+                project.getUser().getId()
+        );
 
         return applicantRepository.save(applicant).getId();
     }
@@ -49,21 +59,40 @@ public class ApplicantService {
     /**
      * 프로젝트 지원 상태 변경
      */
-//    @Transactional
-//    public void updateStatus(User user, Long projectId, Long applicantId, ApplicationStatus status) {
-//        Project project = Project.builder().id(projectId).build();
-//        Applicant applicant = applicantRepository.findByIdAndProjectAndUser(applicantId, project, user)
-//                .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
-//        applicant.updateStatus(status);
-//    }
+    @Transactional
+    public void updateStatus(User user, Long projectId, Long applicantId, ApplicationStatus status) {
+        Project project = projectService.findProject(projectId);
+        if (!project.isProjectLeader(user.getId())) {
+            throw new CustomException(ErrorType.APPLICANT_NOT_FOUND);
+        }
+
+        Applicant applicant = applicantRepository.findByIdAndProject(applicantId, project)
+                .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
+
+        applicant.updateStatus(status);
+
+        if (status.isNotify()) {
+            applicantNotificationService.changeApplicantStatus(
+                    projectId,
+                    project.getTitle(),
+                    status,
+                    applicant.getUser().getId()
+            );
+        }
+    }
 
     /**
      * 프로젝트 지원 삭제
      */
     public void cancel(User user, Long projectId, Long applicantId) {
         Project project = projectService.findProject(projectId);
-        Applicant applicant = applicantRepository.findByIdAndProjectAndUser(applicantId, project, user)
+        Applicant applicant = applicantRepository.findByIdAndProject(applicantId, project)
                 .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
+
+        if (!applicant.isOwn(user.getId())) {
+            throw new CustomException(ErrorType.APPLICANT_NOT_FOUND);
+        }
+
         applicantRepository.delete(applicant);
     }
 

@@ -2,6 +2,8 @@ package com.example.sideproject.domain.chat.repository;
 
 
 import com.example.sideproject.domain.chat.entity.ChatMessage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -41,7 +43,10 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Query("SELECT m FROM ChatMessage m " +
             "WHERE m.chatRoom.id = :roomId " +
             "ORDER BY m.sentAt ASC")
-    List<ChatMessage> findAllByChatRoomIdOrderBySentAtAsc(@Param("roomId") Long roomId);
+    Page<ChatMessage> findAllByChatRoomIdOrderBySentAtAsc(
+            @Param("roomId") Long roomId,
+            Pageable pageable
+    );
 
 
 

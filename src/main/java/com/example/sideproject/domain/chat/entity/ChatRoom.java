@@ -12,7 +12,9 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class ChatRoom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -27,6 +29,11 @@ public class ChatRoom {
     @JoinColumn(name = "last_message_id")
     private ChatMessage lastMessage;
 
+    @Enumerated(EnumType.STRING)
+    private ChatRoomType type;
+
+    private Long referenceId;
+
     private LocalDateTime createdAt;
 
     public void addMember(ChatRoomMember member) {
@@ -39,8 +46,9 @@ public class ChatRoom {
     }
 
     @Builder
-    public ChatRoom() {
-
+    public ChatRoom(ChatRoomType type, Long referenceId) {
+        this.type = type;
+        this.referenceId = referenceId;
         this.createdAt = LocalDateTime.now();
     }
 }

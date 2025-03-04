@@ -46,7 +46,7 @@ public class ChatController {
      * @param request
      * @return
      */
-    //TODO 채팅방 생성 및 입장을 하나의 로직에서 처리하기
+    //TODO 입장했을 때 읽음 자동으로 처리하기
     @MessageMapping("/room/{roomId}/enter")
     public ChatMessageResponse enterRoom(@DestinationVariable Long roomId,
                                          @Payload EnterRoomRequest request,
@@ -106,7 +106,7 @@ public class ChatController {
      */
     @GetMapping("/chat/room/{roomId}/unread")
     public ResponseEntity<Long> getUnreadCount(@PathVariable Long roomId, @RequestParam Long userId) {
-        long count = chatService.getUnreadCount(roomId, userId);
+        Long count = chatService.getUnreadCount(roomId, userId);
         return ResponseEntity.ok(count);
     }
 }

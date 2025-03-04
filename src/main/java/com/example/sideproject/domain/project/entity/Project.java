@@ -1,15 +1,18 @@
 package com.example.sideproject.domain.project.entity;
 
+import com.example.sideproject.domain.chat.entity.ChatRoom;
+import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.domain.user.entity.UserTechStack;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -29,20 +32,20 @@ public class Project extends Timestamped {
     @Column(nullable = true, name = "expected_period")
     private String expectedPeriod;
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectUrl> fileUrls = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectTechStack> projectTechStacks = new ArrayList<>();
 
     @Column(nullable = false, name = "view_count")
     private int viewCount;
 
-    private String contact;
+    @Column(nullable = false, name = "comment_count")
+    private int commentCount;
 
-    @Column(nullable = false, name = "like_count")
-    @ColumnDefault("0")
-    private int likeCount;
+    @Column(nullable = false, name = "favorite_count")
+    private int favoriteCount;
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
@@ -55,28 +58,34 @@ public class Project extends Timestamped {
     @Enumerated(EnumType.STRING)
     private RecruitStatus recruitStatus;
 
+    @Column(nullable = false, name = "team_size")
+    private int teamSize;
+
     @Builder
-    public Project(String title, String content, List<ProjectTechStack> projectTechStacks,
-                   String expectedPeriod, String contact, User user,
+    public Project(String title, String content, List<ProjectTechStack> projectTechStacks, List<ProjectUrl> projectUrls,
+                   String expectedPeriod, User user,
                    String recruitmentPeriod, RecruitStatus recruitStatus,
-                   int viewCount, int likeCount) {
+                   int viewCount, int commentCount, int favoriteCount, int teamSize, Long id) {
         this.title = title;
         this.content = content;
         this.expectedPeriod = expectedPeriod;
-        this.contact = contact;
         this.user = user;
         this.recruitmentPeriod = recruitmentPeriod;
         this.recruitStatus = recruitStatus;
-        this.likeCount = likeCount;
+        this.commentCount = commentCount;
         this.viewCount = viewCount;
+        this.favoriteCount = favoriteCount;
         this.projectTechStacks = projectTechStacks;
+        this.teamSize = teamSize;
+        this.id = id;
+        this.fileUrls = projectUrls;
     }
 
-    public void update(String title, String content,
-                       String expectedPeriod, String contact) {
-        this.title = title;
-        this.content = content;
-        this.expectedPeriod = expectedPeriod;
-        this.contact = contact;
+    public void addCommentCount() {
+        this.commentCount = this.commentCount + 1;
+    }
+
+    public boolean isProjectLeader(Long leaderId) {
+        return Objects.equals(user.getId(), leaderId);
     }
 }

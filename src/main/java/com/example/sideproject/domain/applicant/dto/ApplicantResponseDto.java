@@ -6,6 +6,7 @@ public record ApplicantResponseDto(
         Long id,
         Long projectId,
         String nickname,
+        String position,
         ApplicationStatus status,
         String createdAt,
         String modifiedAt

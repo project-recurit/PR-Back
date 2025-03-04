@@ -74,7 +74,7 @@ public enum ErrorType implements ErrorCode {
     UNAUTHORIZED_FEED_DELETE(HttpStatus.FORBIDDEN, "유저 커뮤니티 피드를 삭제할 권한이 없습니다."),
 
     // 유저 커뮤니티 & 아티스트 피드 댓글
-    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "댓글을 찾지 못했습니다."),
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "해당 댓글을 찾지 못했습니다."),
     NOT_USER_COMMENT(HttpStatus.NOT_ACCEPTABLE, "유저가 작성한 댓글이 아닙니다."),
     DUPLICATE_COMMENT(HttpStatus.LOCKED, "같은 댓글은 작성하실수 없습니다"),
 
@@ -136,6 +136,8 @@ public enum ErrorType implements ErrorCode {
     RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "이력서가 존재하지 않습니다. 먼저 이력서를 등록해주세요."),
     DUPLICATE_RESUME(HttpStatus.BAD_REQUEST, "이미 생성된 이력서가 있습니다."),
     UNPUBLISHED_RESUME(HttpStatus.BAD_REQUEST, "게시되지 않은 이력서입니다."),
+    PUBLIC_RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 PR을 찾을 수 없습니다."),
+    DUPLICATE_PUBLIC_RESUME(HttpStatus.BAD_REQUEST, "이미 게시된 이력서입니다"),
     PUBLISH_FAILED(HttpStatus.BAD_REQUEST, "필수 입력 값이 입력 되지 않아 게시를 실패했습니다."),
 
     APPLICANT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지원서입니다."),

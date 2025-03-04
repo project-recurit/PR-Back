@@ -1,21 +1,23 @@
 package com.example.sideproject.domain.chat.service;
 
-import com.example.sideproject.domain.chat.dto.ChatMessageRequest;
-import com.example.sideproject.domain.chat.dto.ChatMessageResponse;
-import com.example.sideproject.domain.chat.dto.ChatRoomDetailResponse;
-import com.example.sideproject.domain.chat.dto.ChatRoomMemberResponse;
-import com.example.sideproject.domain.chat.entity.ChatMessage;
-import com.example.sideproject.domain.chat.entity.ChatRoom;
-import com.example.sideproject.domain.chat.entity.ChatRoomMember;
-import com.example.sideproject.domain.chat.entity.MessageType;
+import com.example.sideproject.domain.chat.dto.*;
+import com.example.sideproject.domain.chat.entity.*;
 import com.example.sideproject.domain.chat.repository.ChatMessageRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
+import com.example.sideproject.domain.notification.service.ChatNotificationService;
+import com.example.sideproject.domain.pr.repository.PublicResumesRepository;
+import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.config.WebSocketEventHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,9 @@ public class ChatService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final UserRepository userRepository;
     private final WebSocketEventHandler webSocketEventHandler;
+    private final ProjectRepository projectRepository;
+    private final PublicResumesRepository publicResumesRepository;
+    private final ChatNotificationService chatNotificationService;
 
     /**
      * 채팅방 생성
@@ -41,16 +46,29 @@ public class ChatService {
      * @param receiverId
      * @return
      */
-    @Transactional(readOnly = true)
-    public ChatRoom createRoom(Long senderId, Long receiverId) {
+    @Transactional()
+    public ChatRoom createRoom(Long senderId, Long receiverId, ChatRoomType chatRoomType,Long referenceId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
         User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
 
-        ChatRoom chatRoom = new ChatRoom();
+        if (chatRoomType == ChatRoomType.PROJECT) {
+            projectRepository.findById(referenceId)
+                    .orElseThrow(() -> new IllegalArgumentException("Project not found"));
+        } else if (chatRoomType == ChatRoomType.PR) {
+            publicResumesRepository.findById(referenceId)
+                    .orElseThrow(() -> new IllegalArgumentException("PublicResume not found"));
+        }
+
+        ChatRoom chatRoom = ChatRoom.builder()
+                .type(chatRoomType)
+                .referenceId(referenceId)
+                .build();
         chatRoom.addMember(new ChatRoomMember(sender));
         chatRoom.addMember(new ChatRoomMember(receiver));
+
+        chatNotificationService.createRoom(sender.getNickname(), referenceId, receiverId);
 
         return chatRoomRepository.save(chatRoom);
     }
@@ -60,7 +78,6 @@ public class ChatService {
      * @param request
      * @return
      */
-    // TODO 이미지도 넣게할 것인가?
     @Transactional
     public ChatMessageResponse sendMessage(ChatMessageRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId())
@@ -83,16 +100,7 @@ public class ChatService {
 
         Map<Long, Long> unreadCounts = getUnreadCountsForMembers(chatRoom);
         log.info("{} unread messages have been sent", unreadCounts.size());
-        return ChatMessageResponse.builder()
-                .messageId(savedMessage.getId())
-                .roomId(savedMessage.getChatRoom().getId())
-                .senderId(savedMessage.getSender().getId())
-                .senderNickname(savedMessage.getSender().getNickname())
-                .content(savedMessage.getContent())
-                .sentAt(savedMessage.getSentAt())
-                .type(savedMessage.getType())
-                .unreadCounts(unreadCounts)  // 읽지 않은 메시지 수 추가
-                .build();
+        return ChatMessageResponse.from(savedMessage);
     }
 
     /**
@@ -100,6 +108,7 @@ public class ChatService {
      * @param roomId
      * @param userId
      */
+    //TODO : 웹소켓 끊어질 때 가장 마지막 상대방의 메시지를 보낸 시간으로
     @Transactional
     public void disconnectFromRoom(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
@@ -110,9 +119,19 @@ public class ChatService {
      * @param userId
      * @return
      */
-    @Transactional
-    public List<ChatRoom> getRooms(Long userId) {
-        return chatRoomRepository.findByUserId(userId);
+    @Transactional(readOnly = true)
+    public Page<ChatRoomListResponse> getRooms(Long userId, int page, int size) {
+        Page<ChatRoom> chatRooms = chatRoomRepository.findByUserId(
+                userId,
+                PageRequest.of(page, size, Sort.by("lastMessage.sentAt").descending())
+        );
+
+        return chatRooms.map(chatRoom ->
+                ChatRoomListResponse.from(
+                        chatRoom,
+                        getUnreadCount(chatRoom.getId(), userId)
+                )
+        );
     }
 
     /**
@@ -180,53 +199,27 @@ public class ChatService {
      * @return
      */
     @Transactional(readOnly = true)
-    public ChatRoomDetailResponse getChatRoomDetail(Long roomId) {
+    public ChatRoomDetailResponse getChatRoomDetail(Long roomId, int page, int size) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
-        List<ChatMessage> messages = chatMessageRepository.findAllByChatRoomIdOrderBySentAtAsc(roomId);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("sentAt").ascending());
+        Page<ChatMessage> messages = chatMessageRepository
+                .findAllByChatRoomIdOrderBySentAtAsc(roomId, pageable);
 
-        return ChatRoomDetailResponse.builder()
-                .roomId(chatRoom.getId())
-                .messages(messages.stream()
-                        .map(this::convertToChatMessageResponse)
-                        .collect(Collectors.toList()))
-                .lastMessage(chatRoom.getLastMessage() != null ?
-                        convertToChatMessageResponse(chatRoom.getLastMessage()) : null)
-                .members(chatRoom.getMembers().stream()
-                        .map(this::convertToChatRoomMemberResponse)
-                        .collect(Collectors.toList()))
-                .createdAt(chatRoom.getCreatedAt())
-                .build();
+        List<ChatMessageResponse> messageResponses = messages.getContent().stream()
+                .map(ChatMessageResponse::from)
+                .collect(Collectors.toList());
+
+        ContentSummaryResponse referenceInfo = getReferenceSummary(chatRoom.getType(), chatRoom.getReferenceId());
+
+        return ChatRoomDetailResponse.of(
+                chatRoom,
+                messageResponses,
+                messages,
+                referenceInfo
+        );
     }
-
-
-
-
-
-    private ChatMessageResponse convertToChatMessageResponse(ChatMessage message) {
-        return ChatMessageResponse.builder()
-                .messageId(message.getId())
-                .roomId(message.getChatRoom().getId())
-                .senderId(message.getSender().getId())
-                .senderNickname(message.getSender().getNickname())
-                .content(message.getContent())
-                .type(message.getType())
-                .sentAt(message.getSentAt())
-                .read(message.isRead())
-                .build();
-    }
-
-    private ChatRoomMemberResponse convertToChatRoomMemberResponse(ChatRoomMember member) {
-        return ChatRoomMemberResponse.builder()
-                .userId(member.getMember().getId())
-                .nickname(member.getMember().getNickname())
-                .lastReadAt(member.getLastReadAt())
-                .isLeft(member.isLeft())
-                .leftAt(member.getLeftAt())
-                .build();
-    }
-
 
     /**
      * 메시지 읽음처리
@@ -244,7 +237,7 @@ public class ChatService {
      * @param userId
      * @return
      */
-    public long getUnreadCount(Long roomId, Long userId) {
+    public Long getUnreadCount(Long roomId, Long userId) {
         ChatRoomMember member = findChatRoomMember(roomId, userId);
         return chatMessageRepository.countUnreadMessages(roomId, member.getLastReadAt());
     }
@@ -270,6 +263,7 @@ public class ChatService {
      * @param chatRoom
      * @return
      */
+    //필드로 빼자
     private Map<Long, Long> getUnreadCountsForMembers(ChatRoom chatRoom) {
         return chatRoom.getMembers().stream()
                 .collect(Collectors.toMap(
@@ -291,4 +285,74 @@ public class ChatService {
                 .filter(userId -> WebSocketEventHandler.isUserInRoom(userId, chatRoom.getId()))
                 .forEach(userId -> markAsRead(chatRoom.getId(), userId));
     }
+
+    /**
+     * 채팅방 타입과 참조 ID에 따라 참조 객체의 요약 정보를 가져옴
+     * @param type 채팅방 타입 (PROJECT 또는 PR)
+     * @param referenceId 참조 ID (프로젝트 ID 또는 이력서 ID)
+     * @return 요약 정보 객체 (ContentSummaryResponse)
+     */
+    public ContentSummaryResponse getReferenceSummary(ChatRoomType type, Long referenceId) {
+        if (type == ChatRoomType.PROJECT) {
+            return projectRepository.findById(referenceId)
+                    .map(ContentSummaryResponse::from)
+                    .orElseThrow(() -> new IllegalArgumentException("Project not found with id: " + referenceId));
+        } else if (type == ChatRoomType.PR) {
+            return publicResumesRepository.findById(referenceId)
+                    .map(ContentSummaryResponse::from)
+                    .orElseThrow(() -> new IllegalArgumentException("PublicResume not found with id: " + referenceId));
+        }
+        throw new IllegalArgumentException("Unsupported chat room type: " + type);
+    }
+
+    /**
+     * 채팅방의 참조 객체 요약 정보를 가져옴
+     * @param chatRoom 채팅방
+     * @return 요약 정보 객체 (ContentSummaryResponse)
+     */
+    public ContentSummaryResponse getReferenceSummary(ChatRoom chatRoom) {
+        return getReferenceSummary(chatRoom.getType(), chatRoom.getReferenceId());
+    }
+
+//    /**
+//     * 프로젝트와 관련된 채팅방 개수 조회
+//     * @param projectId 프로젝트 ID
+//     * @return 채팅방 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public long countChatRoomsByProjectId(Long projectId) {
+//        return chatRoomRepository.countByProjectId(projectId);
+//    }
+//
+//    /**
+//     * 공개 이력서와 관련된 채팅방 개수 조회
+//     * @param prId 공개 이력서 ID
+//     * @return 채팅방 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public long countChatRoomsByPublicResumeId(Long prId) {
+//        return chatRoomRepository.countByPublicResumeId(prId);
+//    }
+//
+//    /**
+//     * 특정 사용자의 프로젝트와 관련된 채팅방 개수 조회
+//     * @param projectId 프로젝트 ID
+//     * @param userId 사용자 ID
+//     * @return 채팅방 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public long countChatRoomsByProjectIdAndUserId(Long projectId, Long userId) {
+//        return chatRoomRepository.countByProjectIdAndUserId(projectId, userId);
+//    }
+//
+//    /**
+//     * 특정 사용자의 공개 이력서와 관련된 채팅방 개수 조회
+//     * @param prId 공개 이력서 ID
+//     * @param userId 사용자 ID
+//     * @return 채팅방 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public long countChatRoomsByPublicResumeIdAndUserId(Long prId, Long userId) {
+//        return chatRoomRepository.countByPublicResumeIdAndUserId(prId, userId);
+//    }
 }

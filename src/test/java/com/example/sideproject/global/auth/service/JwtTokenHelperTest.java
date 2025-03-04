@@ -15,7 +15,7 @@ class JwtTokenHelperTest {
 
     @Test
     void createToken() {
-        String socialId = "123";
+        String socialId = "1234";
         UserStatus status = UserStatus.ACTIVE_USER;
         UserRole role = UserRole.USER;
 
