@@ -7,6 +7,8 @@ import com.example.sideproject.domain.project.entity.ProjectTechStack;
 import com.example.sideproject.domain.project.entity.ProjectUrl;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.project.repository.query.ProjectQueryRepository;
+import com.example.sideproject.domain.search.repository.SearchProjectRepository;
+import com.example.sideproject.domain.search.service.SearchService;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.techstack.repository.TechStackRepository;
 import com.example.sideproject.domain.user.entity.User;
@@ -39,6 +41,8 @@ public class ProjectService {
     private final ProjectUrlService projectUrlService;
     private final TechStackRepository techStackRepository; // 임시
     private final ProjectQueryRepository projectQueryRepository;
+    private final SearchService searchService;
+    private final SearchProjectRepository searchProjectRepository;
 
     /**
      * 프로젝트 구인 글 생성
@@ -49,7 +53,8 @@ public class ProjectService {
 
         final User foundUser = validateActiveUser(user);
         final Project project = requestDto.toEntity(foundUser);
-        projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+        searchService.saveProject(savedProject);
 
         List<TechStack> techStacks = new ArrayList<>();
         List<Long> techStackIds = new ArrayList<>();
@@ -152,7 +157,8 @@ public class ProjectService {
         }
 
         Project updateProject = requestDto.update(user, projectId, projectTechStacks, existImageUrls);
-        projectRepository.save(updateProject);
+        Project savedProject = projectRepository.save(updateProject);
+        searchService.saveProject(savedProject);
     }
 
     @Transactional
@@ -162,6 +168,8 @@ public class ProjectService {
         validateTeamRecruitOwner(project, foundUser);
 
         projectRepository.delete(project);
+        // 이미 project를 지웠기 때문에 받은 projectId로 해당하는 엘라스틱서치의 document삭제
+        searchProjectRepository.deleteById(projectId);
     }
 
 

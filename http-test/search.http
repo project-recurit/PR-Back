@@ -1,0 +1,5 @@
+### 검색 API: 쿼리 파라미터만 사용
+GET http://localhost:8080/api/v1/search?query=사이드
+
+### 검색 API: 쿼리와 타입 파라미터 모두 사용
+GET http://localhost:8080/api/v1/search?query=사이드&type=project
