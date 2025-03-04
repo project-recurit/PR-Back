@@ -148,6 +148,7 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
         ChatRoomMember member = findChatRoomMember(roomId, userId);
+        //Todo 읽음처리 안되는거 수정 필요
         markAllMessagesAsRead(roomId, member);
         member.setLeft(false);
 
