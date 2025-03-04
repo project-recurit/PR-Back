@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.favorite.service;
 
+import com.example.sideproject.domain.favorite.dto.FavoriteProjectResponseDto;
 import com.example.sideproject.domain.favorite.entity.Favorite;
 import com.example.sideproject.domain.favorite.entity.FavoriteType;
 import com.example.sideproject.domain.favorite.repository.FavoriteRepository;
@@ -54,5 +55,28 @@ public class FavoriteService {
     private boolean NotFavoriteOwner(Favorite favorite, User user) {
         return !Objects.equals(favorite.getUser().getId(), user.getId());
     }
+
+    public void readFavoritesProjects(User user) {
+    }
+
+
+    //    private final Long id;
+//    private final Long projectId;
+//    private final String position;
+//    private final List<ProjectTechStack> techStack;
+//    private final WorkType workType;
+//    private final String recruitmentPeriod;
+//    private final String deadline;
+//    private final Long viewCount;
+//    private final Long commentCount; // NOTE: null
+//    private final Long likeCount;
+
+    // SELECT f.id, p.id,
+    // FROM Favorite as f
+    //  INNER JOIN Project as p
+    //  INNER JOIN Position as po
+    //  ON f.favorite_item_id = p.id
+    //  ON po.project_id = p.id
+    //WHERE f.user_id = {user 변수}
 
 }

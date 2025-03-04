@@ -30,4 +30,9 @@ public class FavoriteFacade {
         favoriteService.deleteFavorite(favoriteId, user);
     }
 
+
+    @Transactional
+    public void readFavoritesProjects(User user) {
+        favoriteService.readFavoritesProjects(user);
+    }
 }
