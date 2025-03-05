@@ -1,7 +1,6 @@
 package com.example.sideproject.domain.search.repository;
 
-import com.example.sideproject.domain.project.entity.Project;
-import com.example.sideproject.domain.search.dto.ProjectDocument;
+import com.example.sideproject.domain.search.entity.ProjectDocument;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.List;

@@ -2,6 +2,7 @@ package com.example.sideproject.domain.search.controller;
 
 
 import com.example.sideproject.domain.search.dto.SearchResultDto;
+import com.example.sideproject.domain.search.entity.PostSearchType;
 import com.example.sideproject.domain.search.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,8 @@ public class SearchController {
     private SearchService searchService;
 
     @GetMapping("/search")
-    public List<SearchResultDto> search(@RequestParam String query, @RequestParam(required = false) String type) {
+    public List<SearchResultDto> search(@RequestParam String query,
+                                        @RequestParam(required = false) PostSearchType type) {
         return searchService.search(query, type);
     }
 }

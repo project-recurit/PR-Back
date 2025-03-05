@@ -1,8 +1,9 @@
-package com.example.sideproject.domain.search.dto;
+package com.example.sideproject.domain.search.entity;
 
 
 import com.example.sideproject.domain.project.entity.Project;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -11,7 +12,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "projects")
 @NoArgsConstructor
-@Data
+@Getter
 public class ProjectDocument {
     @Id
     private Long id;
@@ -22,13 +23,10 @@ public class ProjectDocument {
     @Field(type = FieldType.Text, analyzer = "standard")
     private String content;
 
-    public static ProjectDocument fromProject(Project project) {
-        ProjectDocument doc = new ProjectDocument();
-        doc.setId(project.getId());
-        doc.setTitle(project.getTitle());
-        doc.setContent(project.getContent());
-        return doc;
+    public ProjectDocument(Project project) {
+        this.id = project.getId();
+        this.title = project.getTitle();
+        this.content = project.getContent();
     }
-
 
 }

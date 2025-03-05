@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.search.dto;
 
-import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.search.entity.ProjectDocument;
 import lombok.Builder;
 import lombok.Getter;
 
