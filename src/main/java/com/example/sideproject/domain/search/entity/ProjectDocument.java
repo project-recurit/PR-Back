@@ -29,8 +29,11 @@ public class ProjectDocument {
     @Field(type = FieldType.Text, analyzer = "nori")
     private String content;
 
-    @Field(type = FieldType.Keyword, analyzer = "nori")
+    @Field(type = FieldType.Keyword)
     private List<String> techStackNames;
+
+    @Field(type = FieldType.Keyword)
+    private String period;
 
     public ProjectDocument(Project project) {
         this.id = project.getId();

@@ -45,25 +45,20 @@ public class SearchService {
 
         List<ProjectDocument> projects;
         if (techStacks != null && !techStacks.isEmpty()) {
-            // techStacks 값 정제 (null/빈 문자열 제거)
             techStacks = techStacks.stream()
                     .filter(tech -> tech != null && !tech.trim().isEmpty())
+                    .map(String::trim)  // 공백 제거
                     .toList();
-
             if (query != null && !query.trim().isEmpty()) {
-                // query로 검색 + techStacks로 필터링
                 projects = searchProjectRepository.findByTitleContainingOrContentContainingAndTechStackNamesIn(
                         query, query, techStacks);
             } else {
-                // techStacks로만 필터링
-                projects = searchProjectRepository.findByTechStackNamesIn(techStacks);
+                projects = searchProjectRepository.findByTechStackNamesIn(techStacks);  // OR 조건
             }
         } else {
-            // query로만 검색
             projects = searchProjectRepository.findByTitleContainingOrContentContainingOrTechStackNamesContaining(
                     query, query, query);
         }
-
         log.info("검색 쿼리 '{}', 기술 스택 '{}': {} 개의 프로젝트 찾음", query, techStacks, projects.size());
         return projects.stream()
                 .map(SearchResultDto::fromProjectDocument)

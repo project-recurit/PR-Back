@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,10 @@ public class SearchController {
     @GetMapping("/search")
     public List<SearchResultDto> search(@RequestParam(required = false) String query,
                                         @RequestParam(required = false) PostSearchType type,
-                                        @RequestParam(required = false) List<String> techStacks) {
-        return searchService.search(query, type, techStacks);
+                                        @RequestParam(required = false) String techStacks) {
+        List<String> techStackList = (techStacks != null && !techStacks.isEmpty())
+                ? Arrays.asList(techStacks.split(","))
+                : null;
+        return searchService.search(query, type, techStackList);
     }
 }
