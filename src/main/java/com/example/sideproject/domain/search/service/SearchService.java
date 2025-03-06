@@ -23,13 +23,13 @@ public class SearchService {
     private final SearchProjectRepository searchProjectRepository;
     private final ProjectRepository projectRepository;
 
-    public List<SearchResultDto> search(String query, PostSearchType type, String keyword) {
+    public List<SearchResultDto> search(String query, PostSearchType type, List<String> techStacks) {
         List<SearchResultDto> results = new ArrayList<>();
 
         return switch (type) {
             case all -> results;
 
-            case project -> searchProject(query);
+            case project -> searchProject(query,techStacks);
             //todo pr 검색도 추가
             case pr -> results;
 
@@ -37,11 +37,34 @@ public class SearchService {
         };
     }
 
-    private List<SearchResultDto> searchProject(String query) {
-        List<ProjectDocument> projects = searchProjectRepository.findByTitleContainingOrContentContainingOrTechStackNamesContaining(
-                query, query, query);
-        log.info("검색 쿼리 '{}' 결과: {} 개의 프로젝트 찾음", query, projects.size());
+    private List<SearchResultDto> searchProject(String query, List<String> techStacks) {
+        if ((query == null || query.trim().isEmpty()) && (techStacks == null || techStacks.isEmpty())) {
+            log.warn("검색 쿼리와 기술 스택이 모두 비어있습니다.");
+            return new ArrayList<>();
+        }
 
+        List<ProjectDocument> projects;
+        if (techStacks != null && !techStacks.isEmpty()) {
+            // techStacks 값 정제 (null/빈 문자열 제거)
+            techStacks = techStacks.stream()
+                    .filter(tech -> tech != null && !tech.trim().isEmpty())
+                    .toList();
+
+            if (query != null && !query.trim().isEmpty()) {
+                // query로 검색 + techStacks로 필터링
+                projects = searchProjectRepository.findByTitleContainingOrContentContainingAndTechStackNamesIn(
+                        query, query, techStacks);
+            } else {
+                // techStacks로만 필터링
+                projects = searchProjectRepository.findByTechStackNamesIn(techStacks);
+            }
+        } else {
+            // query로만 검색
+            projects = searchProjectRepository.findByTitleContainingOrContentContainingOrTechStackNamesContaining(
+                    query, query, query);
+        }
+
+        log.info("검색 쿼리 '{}', 기술 스택 '{}': {} 개의 프로젝트 찾음", query, techStacks, projects.size());
         return projects.stream()
                 .map(SearchResultDto::fromProjectDocument)
                 .toList();
@@ -52,7 +75,7 @@ public class SearchService {
     public void saveProject(Project project) {
         ProjectDocument projectDocument = new ProjectDocument(project);
         searchProjectRepository.save(projectDocument);
-        log.info("프로젝트 ID {} Elasticsearch에 인덱싱 완료", project.getId());
+        log.info("프로젝트 ID {} Elasticsearch 인덱싱 완료", project.getId());
     }
 
     @Transactional
@@ -61,7 +84,7 @@ public class SearchService {
             searchProjectRepository.deleteAll();
             long count = searchProjectRepository.count();
             if (count == 0) {
-                log.info("Elasticsearch에 인덱싱된 프로젝트가 없습니다. 초기 인덱싱을 시작합니다...");
+                log.info("Elasticsearch 인덱싱된 프로젝트가 없습니다. 초기 인덱싱을 시작합니다...");
                 List<Project> allProjects = projectRepository.findAll();
                 List<ProjectDocument> documents = allProjects.stream()
                         .map(ProjectDocument::new)

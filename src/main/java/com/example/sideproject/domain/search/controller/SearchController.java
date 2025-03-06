@@ -21,9 +21,9 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("/search")
-    public List<SearchResultDto> search(@RequestParam String query,
+    public List<SearchResultDto> search(@RequestParam(required = false) String query,
                                         @RequestParam(required = false) PostSearchType type,
-                                        @RequestParam(required = false) String keyword) {
-        return searchService.search(query, type, keyword);
+                                        @RequestParam(required = false) List<String> techStacks) {
+        return searchService.search(query, type, techStacks);
     }
 }
