@@ -19,7 +19,6 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
         "com.example.sideproject.domain.notification.repository",
         "com.example.sideproject.domain.pr.repository",
         "com.example.sideproject.domain.resume.repository"
-
 })
 @EnableElasticsearchRepositories(basePackages = "com.example.sideproject.domain.search.repository")
 public class SideprojectApplication {
