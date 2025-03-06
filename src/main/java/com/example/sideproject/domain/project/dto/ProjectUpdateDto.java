@@ -1,9 +1,6 @@
 package com.example.sideproject.domain.project.dto;
 
-import com.example.sideproject.domain.project.entity.Project;
-import com.example.sideproject.domain.project.entity.ProjectTechStack;
-import com.example.sideproject.domain.project.entity.ProjectUrl;
-import com.example.sideproject.domain.project.entity.RecruitStatus;
+import com.example.sideproject.domain.project.entity.*;
 import com.example.sideproject.domain.user.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,11 +9,11 @@ import java.util.List;
 public record ProjectUpdateDto(
         String title,
         String content,
-        String expectedPeriod,
+        EstimatedDuration estimatedDuration, // 기존 expectedPeriod → estimatedDuration 변경 (Enum 적용)
         String contact,
-        String recruitmentPeriod,
-        int teamSize,
-        String recruitStatus,
+        String deadLine, // 기존 recruitmentPeriod → deadLine 변경
+        int recruitmentCapacity, // 기존 teamSize → recruitmentCapacity 변경
+        boolean isRecruiting, // 기존 recruitStatus → boolean 값 변경
         List<Long> projectTechStacks,
         List<Long> existFiles,
         List<MultipartFile> newFiles
@@ -25,13 +22,12 @@ public record ProjectUpdateDto(
         return Project.builder()
                 .id(projectId)
                 .title(title)
-                .contact(contact)
                 .content(content)
-                .expectedPeriod(expectedPeriod)
-                .recruitmentPeriod(recruitmentPeriod)
-                .recruitStatus(RecruitStatus.valueOf(recruitStatus))
+                .estimatedDuration(estimatedDuration)
+                .deadLine(deadLine)
+                .isRecruiting(isRecruiting) // 모집 상태 (true: 모집 중, false: 모집 종료)
                 .user(user)
-                .teamSize(teamSize)
+                .recruitmentCapacity(recruitmentCapacity)
                 .projectTechStacks(projectTechStacks)
                 .projectUrls(projectUrls)
                 .build();

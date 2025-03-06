@@ -52,13 +52,14 @@ public class ProjectQueryRepository {
                         project.id.as("id"),
                         project.title.as("title"),
                         project.content.as("content"),
-                        project.expectedPeriod.as("expectedPeriod"),
+//                        project.estimatedDuration.as("estimatedDuration"),
                         project.viewCount.as("viewCount"),
                         project.commentCount.as("commentCount"),
                         user.nickname.as("userNickname"),
-                        project.recruitmentPeriod.as("recruitmentPeriod"),
-                        project.recruitStatus.stringValue().as("recruitStatus"),
-                        project.teamSize.as("teamSize"),
+//                        project.deadLine.as("deadLine"),
+//                        project.isRecruiting.as("isRecruiting"),
+//                        project.recruitmentCapacity.as("recruitmentCapacity"),
+//                        project.workType.as("workType"),
                         project.modifiedAt.as("modifiedAt")
                 ))
                 .from(project)

@@ -29,7 +29,7 @@ public class ProjectController {
     @Operation(summary = "프로젝트 구인 글 생성", description = "contact 제외 모두 필수 값")
     @PostMapping
     public ResponseEntity<ResponseMessageDto> createProject(@ModelAttribute ProjectRequestDto requestDto,
-                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         projectService.createProject(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_TEAM_RECRUIT_SUCCESS));
     }

@@ -44,7 +44,7 @@ public class ProjectService {
      * todo IOException 없에기
      */
     @Transactional
-    public void createProject(ProjectRequestDto requestDto, User user) throws IOException {
+    public void createProject(ProjectRequestDto requestDto, User user) {
 
         final User foundUser = validateActiveUser(user);
         final Project project = requestDto.toEntity(foundUser);
@@ -153,7 +153,9 @@ public class ProjectService {
         projectRepository.save(updateProject);
     }
 
-    @Transactional
+    /**
+     * 게시글 삭제
+     */
     public void deleteProject(Long projectId, User user) {
         User foundUser = validateActiveUser(user);
         Project project = findProject(projectId);
