@@ -1,7 +1,6 @@
 package com.example.sideproject.domain.user.entity;
 
-import com.example.sideproject.domain.project.entity.Position;
-import com.example.sideproject.domain.resume.entity.ResumeTechStack;
+import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;

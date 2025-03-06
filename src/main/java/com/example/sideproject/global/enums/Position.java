@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.project.entity;
+package com.example.sideproject.global.enums;
 
 public enum Position {
     BACKEND,

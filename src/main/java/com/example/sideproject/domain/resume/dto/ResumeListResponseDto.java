@@ -1,10 +1,9 @@
 package com.example.sideproject.domain.resume.dto;
 
-import com.example.sideproject.domain.project.entity.Position;
+import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
 import com.example.sideproject.global.enums.WorkType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
