@@ -24,6 +24,8 @@ public class ChatRoomMember {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private User member;
 
+    private Long unReadCount;
+
     private LocalDateTime lastReadAt;
     private boolean isLeft;
     @Setter

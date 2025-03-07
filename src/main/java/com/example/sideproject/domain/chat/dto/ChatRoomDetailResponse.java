@@ -2,13 +2,14 @@ package com.example.sideproject.domain.chat.dto;
 
 import com.example.sideproject.domain.chat.entity.ChatMessage;
 import com.example.sideproject.domain.chat.entity.ChatRoom;
+import com.example.sideproject.domain.chat.entity.ChatRoomType;
+import com.example.sideproject.domain.chat.service.ChatService;
 import lombok.Builder;
-import lombok.Getter;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 public record ChatRoomDetailResponse(
         Long roomId,
@@ -20,12 +21,17 @@ public record ChatRoomDetailResponse(
         int totalPages,
         long totalElements,
         boolean hasNext,
-        ProjectSummaryResponse project // 프로젝트 정보 추가
+        ChatRoomType type,
+        ContentSummaryResponse referenceInfo
 ) {
+    @Builder
+    public ChatRoomDetailResponse {}
+
     public static ChatRoomDetailResponse of(
             ChatRoom chatRoom,
             List<ChatMessageResponse> messageResponses,
-            Page<ChatMessage> messagePage
+            Page<ChatMessage> messagePage,
+            ContentSummaryResponse referenceInfo
     ) {
         return new ChatRoomDetailResponse(
                 chatRoom.getId(),
@@ -40,7 +46,8 @@ public record ChatRoomDetailResponse(
                 messagePage.getTotalPages(),
                 messagePage.getTotalElements(),
                 messagePage.hasNext(),
-                ProjectSummaryResponse.from(chatRoom.getProject())
+                chatRoom.getType(),
+                referenceInfo
         );
     }
 }

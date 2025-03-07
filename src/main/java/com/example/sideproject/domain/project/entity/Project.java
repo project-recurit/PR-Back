@@ -65,9 +65,6 @@ public class Project extends Timestamped {
     @Enumerated(EnumType.STRING)
     private WorkType workType;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ChatRoom> chatRooms = new ArrayList<>();
-
     @Builder
     public Project(String title, String content, String deadLine,
                    EstimatedDuration estimatedDuration, boolean isRecruiting, int recruitmentCapacity,
@@ -91,5 +88,9 @@ public class Project extends Timestamped {
 
     public void addCommentCount() {
         this.commentCount = this.commentCount + 1;
+    }
+
+    public boolean isProjectLeader(Long leaderId) {
+        return Objects.equals(user.getId(), leaderId);
     }
 }

@@ -1,12 +1,12 @@
-package com.example.sideproject.global.notification.service;
+package com.example.sideproject.domain.notification.service;
 
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
-import com.example.sideproject.global.notification.dto.NotificationDto;
-import com.example.sideproject.global.notification.dto.NotificationRequestDto;
-import com.example.sideproject.global.notification.entity.Notification;
-import com.example.sideproject.global.notification.repository.NotificationRepository;
+import com.example.sideproject.domain.notification.dto.NotificationDto;
+import com.example.sideproject.domain.notification.dto.NotificationRequestDto;
+import com.example.sideproject.domain.notification.entity.Notification;
+import com.example.sideproject.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +18,8 @@ import java.util.List;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
-    public NotificationDto createNotification(NotificationRequestDto requestDto, User from) {
-        Notification notification = requestDto.toEntity(from);
+    public NotificationDto createNotification(NotificationRequestDto requestDto) {
+        Notification notification = requestDto.toEntity();
         notification = notificationRepository.save(notification);
         return NotificationDto.of(notification);
     }
