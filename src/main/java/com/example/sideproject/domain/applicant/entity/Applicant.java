@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.applicant.entity;
 
+import com.example.sideproject.domain.project.entity.Position;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
@@ -30,7 +31,7 @@ public class Applicant extends Timestamped {
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
-    private String position;
+    private Position position;
 
     public void updateStatus(ApplicationStatus status) {
         this.status = status;

@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.user.entity;
 
+import com.example.sideproject.domain.project.entity.Position;
 import com.example.sideproject.domain.resume.entity.ResumeTechStack;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.global.entity.Timestamped;
@@ -57,13 +58,14 @@ public class User extends Timestamped {
     @Column(unique = true, nullable = false)
     private UUID uuid;
 
-    private String position;
+    @Enumerated(EnumType.STRING)
+    private Position position;
 
     // 북마크 관련 필드 추가
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
-    public void updateRegisterInfo(String position, String nickname, List<TechStack> techStacks) {
+    public void updateRegisterInfo(Position position, String nickname, List<TechStack> techStacks) {
         this.position = position;
         this.nickname = nickname;
         this.lastLoginTime = LocalDateTime.now();

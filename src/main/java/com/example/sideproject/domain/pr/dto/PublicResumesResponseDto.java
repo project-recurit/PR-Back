@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.pr.dto;
 
+import com.example.sideproject.domain.project.entity.Position;
 import com.example.sideproject.global.enums.WorkType;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,7 +14,7 @@ public class PublicResumesResponseDto {
     @Schema(description = "prId == resumeId")
     private Long prId;
     private String nickname;
-    private String position;
+    private Position position;
     private String title;
     private String introduce;
     WorkType workType;
@@ -21,7 +22,7 @@ public class PublicResumesResponseDto {
     LocalDateTime publishedAt;
 
     @QueryProjection
-    public PublicResumesResponseDto(Long resumeId, String nickname, String position, String title, String introduce, WorkType workType, LocalDateTime publishedAt) {
+    public PublicResumesResponseDto(Long resumeId, String nickname, Position position, String title, String introduce, WorkType workType, LocalDateTime publishedAt) {
         this.prId = resumeId;
         this.nickname = nickname;
         this.position = position;

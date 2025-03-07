@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.resume.dto;
 
+import com.example.sideproject.domain.project.entity.Position;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
 import com.example.sideproject.global.enums.WorkType;
@@ -15,13 +16,13 @@ import java.util.List;
 public class ResumeListResponseDto {
     Long resumeId;
     String title;
-    String position;
+    Position position;
     List<TechStackDto> techStacks;
     WorkType workType;
     boolean isPublished;
     String modifiedAt;
 
-    public ResumeListResponseDto(Long resumeId, String title, String position, WorkType workType, LocalDateTime publishedAt, String modifiedAt) {
+    public ResumeListResponseDto(Long resumeId, String title, Position position, WorkType workType, LocalDateTime publishedAt, String modifiedAt) {
         this.resumeId = resumeId;
         this.title = title;
         this.position = position;
