@@ -111,6 +111,7 @@ public enum ErrorType implements ErrorCode {
     OVER_LOAD(HttpStatus.NOT_ACCEPTABLE, "사진은 10MB를 초과할 수 없습니다."),
     MAX_IMAGES_EXCEEDED(HttpStatus.NOT_ACCEPTABLE, "사진은 최대 10장 업로드할 수 있습니다."),
     NOT_STORED_FILE_NAME(HttpStatus.BAD_REQUEST, "해당 이름을 가진 파일이 존재하지 않습니다."),
+    FILE_CONVERSION_FAILED(HttpStatus.BAD_REQUEST, "파일 변환 중 실패했습니다."),
 
     INACTIVE_USER(HttpStatus.FORBIDDEN, "휴면 계정입니다. 휴면 상태를 풀어주세요."),
     CHECK_YOUR_INFO(HttpStatus.NOT_FOUND, "입력한 정보의 유저를 찾을 수 없습니다."),

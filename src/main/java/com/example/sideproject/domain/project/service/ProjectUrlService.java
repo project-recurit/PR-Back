@@ -30,7 +30,7 @@ public class ProjectUrlService {
     @Value("${UPLOAD_CARE_SEC}")
     private String secretKey;
 
-    public ProjectUrl createProjectUrl(Project project, MultipartFile multipartFile) throws IOException {
+    public ProjectUrl createProjectUrl(Project project, MultipartFile multipartFile) {
 
         Client client = new Client(publicKey, secretKey);
 
@@ -64,7 +64,7 @@ public class ProjectUrlService {
         projectUrlRepository.deleteAllById(urlIds);
     }
 
-    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+    private File convertMultipartFileToFile(MultipartFile multipartFile) {
         // 허용된 파일 크기 (10MB)
         final long MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB 제한
 
@@ -87,11 +87,16 @@ public class ProjectUrlService {
         if (multipartFile.getSize() > MAX_FILE_SIZE) {
             throw new CustomException(ErrorType.OVER_LOAD);
         }
+        File convFile = null;
+        try{
+            // 파일 변환
+            convFile = File.createTempFile("upload_", originalFilename);
+            convFile.deleteOnExit();
+            multipartFile.transferTo(convFile);
+        }catch(IOException e) {
+            throw new CustomException(ErrorType.FILE_CONVERSION_FAILED);
+        }
 
-        // 파일 변환
-        File convFile = File.createTempFile("upload_", originalFilename);
-        convFile.deleteOnExit();
-        multipartFile.transferTo(convFile);
 
         return convFile;
     }

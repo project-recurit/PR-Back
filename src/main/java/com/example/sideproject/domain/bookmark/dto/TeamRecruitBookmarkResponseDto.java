@@ -24,7 +24,7 @@ public class TeamRecruitBookmarkResponseDto {
     private final String title;
     private final String content;
 //    private final Set<TechStack1> techStack1s;
-    private final String expectedPeriod;
+//    private final String expectedPeriod;
 
     public TeamRecruitBookmarkResponseDto(TeamRecruitBookmark bookmark) {
         // 북마크 정보 매핑
@@ -42,6 +42,6 @@ public class TeamRecruitBookmarkResponseDto {
         this.title = recruit.getTitle();
         this.content = recruit.getContent();
 //        this.techStack1s = recruit.getTechStack1s();
-        this.expectedPeriod = recruit.getExpectedPeriod();
+//        this.expectedPeriod = recruit.getExpectedPeriod();
     }
 } 
