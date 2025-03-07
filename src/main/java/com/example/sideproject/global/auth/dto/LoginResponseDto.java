@@ -7,32 +7,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public record LoginResponseDto(
-        String loginId,
+        String id,
         String accessToken,
         String refreshToken,
-        boolean isFirstLogin
+        boolean isSignUpSuccess
 ) {
     // 최초 로그인(회원가입) 응답을 위한 팩토리 메서드
-    public static LoginResponseDto ofSignUp(String loginId) {
+    public static LoginResponseDto ofSignUp(String id) {
         return new LoginResponseDto(
-                loginId,
+                id,
                 null,
                 null,
-                true   // isFirstLogin
+                true   // isSignUpSuccess
         );
     }
 
     // 일반 로그인 성공 응답을 위한 팩토리 메서드
     public static LoginResponseDto ofLogin(
-            String loginId,
+            String id,
             String accessToken,
             String refreshToken
     ) {
         return new LoginResponseDto(
-                loginId,
+                id,
                 accessToken,
                 refreshToken,
-                false   // isFirstLogin
+                false   // isSignUpSuccess
         );
     }
 }

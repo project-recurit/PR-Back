@@ -1,7 +1,6 @@
 package com.example.sideproject.global.auth.service;
 
 import com.example.sideproject.domain.user.dto.SignUpRequestDto;
-import com.example.sideproject.domain.user.dto.SignUpResponseDto;
 import com.example.sideproject.domain.user.entity.User;
 
 import com.example.sideproject.domain.user.entity.UserStatus;
@@ -16,9 +15,6 @@ import com.example.sideproject.global.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -34,7 +30,6 @@ public class AuthService  {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
-    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
@@ -54,6 +49,11 @@ public class AuthService  {
         }
 
         User user = optionalUser.get();
+
+        if (user.getUserStatus() == UserStatus.INACTIVE_USER) {
+            return LoginResponseDto.ofSignUp(requestDto.getSocialId());
+        }
+
         validateUserStatus(user);
 
         String accessToken = tokenService.createAccessToken(
@@ -73,7 +73,6 @@ public class AuthService  {
                 refreshToken
         );
     }
-
 
     public void logout(String token) {
         try {
@@ -134,9 +133,6 @@ public class AuthService  {
     }
 
     private void validateUserStatus(User user) {
-        if (user.getUserStatus() == UserStatus.INACTIVE_USER) {
-            throw new CustomException(ErrorType.WITHDRAW_USER);
-        }
         if (user.getUserStatus() == UserStatus.WITHDRAW_USER) {
             throw new CustomException(ErrorType.WITHDRAW_USER);
         }
