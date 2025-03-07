@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -63,9 +64,6 @@ public class Project extends Timestamped {
     @Enumerated(EnumType.STRING)
     private WorkType workType;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ChatRoom> chatRooms = new ArrayList<>();
-
     @Builder
     public Project(String title, String content, String deadLine,
                    EstimatedDuration estimatedDuration, boolean isRecruiting, int recruitmentCapacity,
@@ -85,5 +83,15 @@ public class Project extends Timestamped {
         this.viewCount = viewCount;
         this.commentCount = commentCount;
         this.favoriteCount = favoriteCount;
+    }
+
+    public void addCommentCount() {
+        this.commentCount = this.commentCount + 1;
+    }
+    public void downCommentCount() {
+        this.commentCount = this.commentCount - 1;
+    }
+    public boolean isProjectLeader(Long leaderId) {
+        return Objects.equals(user.getId(), leaderId);
     }
 }

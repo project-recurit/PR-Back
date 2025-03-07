@@ -31,7 +31,10 @@ public class CommentService {
      * 댓글 생성
      * 파라미터에 parentId 값 x  -> 댓글
      * 파라미터에 parentId 값 o  -> 대댓글
+     * 트랜잭션 붙인 이유 : project 테이블에 있는 comment 값을 수정하기 위함
+     * todo : commentCount 수정하는 과정에서 많은 select가 날라가는거 수정
      */
+    @Transactional
     public void createComment(Long projectId, User user, CommentRequestDto requestDto) {
 
         final Project project = projectService.findProject(projectId);
@@ -78,10 +81,14 @@ public class CommentService {
     /**
      * 댓글 삭제
      * commentId나 user의 값이 하나라도 일치 안하면 에러
+     * 트랜잭션 붙인 이유 : project 테이블에 있는 comment 값을 수정하기 위함
      */
+    @Transactional
     public void deleteComment(Long commentId, User user) {
 
         final Comment comment = findComment(commentId);
+        final Project project = comment.getProject();
+        project.downCommentCount();
 
         if(user.getId() != comment.getUser().getId()) {
             throw new CustomException(ErrorType.NOT_USER_COMMENT);

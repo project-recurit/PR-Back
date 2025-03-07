@@ -42,7 +42,6 @@ public class ProjectService {
 
     /**
      * 프로젝트 구인 글 생성
-     * todo IOException 없에기
      */
     @Transactional
     public void createProject(ProjectRequestDto requestDto, User user) {

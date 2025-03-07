@@ -52,15 +52,15 @@ public class ProjectQueryRepository {
                         project.id.as("id"),
                         project.title.as("title"),
                         project.content.as("content"),
-//                        project.estimatedDuration.as("estimatedDuration"),
+                        project.estimatedDuration.as("estimatedDuration"),
                         project.viewCount.as("viewCount"),
                         project.commentCount.as("commentCount"),
                         user.nickname.as("userNickname"),
-//                        project.deadLine.as("deadLine"),
-//                        project.isRecruiting.as("isRecruiting"),
-//                        project.recruitmentCapacity.as("recruitmentCapacity"),
-//                        project.workType.as("workType"),
-                        project.modifiedAt.as("modifiedAt")
+                        project.deadLine.as("deadLine"),
+                        project.isRecruiting.as("isRecruiting"),
+                        project.recruitmentCapacity.as("recruitmentCapacity"),
+                        project.modifiedAt.as("modifiedAt"),
+                        project.workType.stringValue().as("workType")
                 ))
                 .from(project)
                 .join(project.user, user)
@@ -94,7 +94,9 @@ public class ProjectQueryRepository {
 
         detail.setFileUrls(projectUrls); // dto 합치기
         detail.setTechStacks(techStacks);
-
+        if(detail != null && detail.getEstimatedDuration() != null) {
+            detail.setEstimatedDurationDetail(detail.getEstimatedDuration().getDescription());
+        }
         return detail;
     }
 
