@@ -1,9 +1,7 @@
 package com.example.sideproject.domain.project.entity;
 
 import com.example.sideproject.domain.chat.entity.ChatRoom;
-import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
-import com.example.sideproject.domain.user.entity.UserTechStack;
 import com.example.sideproject.global.entity.Timestamped;
 import com.example.sideproject.global.enums.WorkType;
 import jakarta.persistence.*;
@@ -65,6 +63,9 @@ public class Project extends Timestamped {
     @Enumerated(EnumType.STRING)
     private WorkType workType;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ChatRoom> chatRooms = new ArrayList<>();
+
     @Builder
     public Project(String title, String content, String deadLine,
                    EstimatedDuration estimatedDuration, boolean isRecruiting, int recruitmentCapacity,
@@ -84,13 +85,5 @@ public class Project extends Timestamped {
         this.viewCount = viewCount;
         this.commentCount = commentCount;
         this.favoriteCount = favoriteCount;
-    }
-
-    public void addCommentCount() {
-        this.commentCount = this.commentCount + 1;
-    }
-
-    public boolean isProjectLeader(Long leaderId) {
-        return Objects.equals(user.getId(), leaderId);
     }
 }
