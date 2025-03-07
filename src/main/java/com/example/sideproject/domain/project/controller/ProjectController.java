@@ -56,7 +56,7 @@ public class ProjectController {
     @PutMapping("/{projectId}")
     public ResponseEntity<ResponseMessageDto> updateProject(@PathVariable("projectId") Long projectId,
                                                                 @ModelAttribute ProjectUpdateDto requestDto,
-                                                                @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+                                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
         projectService.updateProject(projectId, requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.UPDATE_TEAM_RECRUIT_SUCCESS));
     }

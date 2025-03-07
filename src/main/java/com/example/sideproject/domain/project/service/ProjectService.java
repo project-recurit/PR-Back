@@ -112,7 +112,7 @@ public class ProjectService {
      * 게시글 수정
      */
     @Transactional
-    public void updateProject(Long projectId, ProjectUpdateDto requestDto, User user) throws IOException {
+    public void updateProject(Long projectId, ProjectUpdateDto requestDto, User user) {
 
         User foundUser = validateActiveUser(user);
         Project project = findProject(projectId);
