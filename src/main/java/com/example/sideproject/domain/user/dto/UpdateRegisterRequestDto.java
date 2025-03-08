@@ -1,7 +1,7 @@
 package com.example.sideproject.domain.user.dto;
 
 
-import com.example.sideproject.domain.project.entity.Position;
+import com.example.sideproject.global.enums.Position;
 
 import java.util.List;
 

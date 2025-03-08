@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.pr.dto;
 
-import com.example.sideproject.domain.project.entity.Position;
+import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.enums.WorkType;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
