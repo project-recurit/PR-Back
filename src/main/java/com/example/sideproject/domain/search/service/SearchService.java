@@ -3,6 +3,7 @@ package com.example.sideproject.domain.search.service;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.project.entity.ProjectTechStack;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
+import com.example.sideproject.domain.project.repository.query.ProjectQueryRepository;
 import com.example.sideproject.domain.search.entity.PostSearchType;
 import com.example.sideproject.domain.search.entity.ProjectDocument;
 import com.example.sideproject.domain.search.dto.SearchResultDto;
@@ -22,6 +23,7 @@ import java.util.List;
 public class SearchService {
     private final SearchProjectRepository searchProjectRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectQueryRepository projectQueryRepository;
 
     public List<SearchResultDto> search(String query, PostSearchType type, List<String> techStacks) {
         List<SearchResultDto> results = new ArrayList<>();
@@ -80,7 +82,8 @@ public class SearchService {
             long count = searchProjectRepository.count();
             if (count == 0) {
                 log.info("Elasticsearch 인덱싱된 프로젝트가 없습니다. 초기 인덱싱을 시작합니다...");
-                List<Project> allProjects = projectRepository.findAll();
+                List<Project> allProjects = projectQueryRepository.findAllWithTechStacks();
+
                 List<ProjectDocument> documents = allProjects.stream()
                         .map(ProjectDocument::new)
                         .toList();

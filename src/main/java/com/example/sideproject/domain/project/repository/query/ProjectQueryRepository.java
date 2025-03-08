@@ -4,9 +4,7 @@ import com.example.sideproject.domain.project.dto.ProjectDetailResponseDto;
 import com.example.sideproject.domain.project.dto.ProjectTechStackDto;
 import com.example.sideproject.domain.project.dto.ProjectUrlResponseDto;
 import com.example.sideproject.domain.project.dto.ProjectsResponseDto;
-import com.example.sideproject.domain.project.entity.QProject;
-import com.example.sideproject.domain.project.entity.QProjectTechStack;
-import com.example.sideproject.domain.project.entity.QProjectUrl;
+import com.example.sideproject.domain.project.entity.*;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.techstack.entity.QTechStack;
 import com.example.sideproject.domain.user.entity.QUser;
@@ -162,4 +160,40 @@ public class ProjectQueryRepository {
                 .from(project);
     }
 
+    public List<Project> findAllWithTechStacks() {
+        // 프로젝트 ID 목록 조회
+        List<Long> projectIds = queryFactory
+                .select(project.id)
+                .from(project)
+                .fetch();
+
+        if (projectIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 프로젝트 조회
+        List<Project> projects = queryFactory
+                .selectFrom(project)
+                .where(project.id.in(projectIds))
+                .fetch();
+
+        // 프로젝트 ID별 기술 스택 조회
+        Map<Long, List<ProjectTechStack>> techStacksByProjectId = queryFactory
+                .selectFrom(projectTechStack)
+                .join(projectTechStack.techStack, techStack).fetchJoin()
+                .where(projectTechStack.project.id.in(projectIds))
+                .fetch()
+                .stream()
+                .collect(Collectors.groupingBy(pts -> pts.getProject().getId()));
+
+        // 각 프로젝트에 기술 스택 설정
+        projects.forEach(p -> {
+            List<ProjectTechStack> techStacks = techStacksByProjectId.getOrDefault(p.getId(), Collections.emptyList());
+            // 기존 컬렉션 초기화 후 추가
+            p.getProjectTechStacks().clear();
+            p.getProjectTechStacks().addAll(techStacks);
+        });
+
+        return projects;
+    }
 }
