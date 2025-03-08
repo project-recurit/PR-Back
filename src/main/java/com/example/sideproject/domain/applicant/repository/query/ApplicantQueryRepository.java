@@ -4,6 +4,7 @@ import com.example.sideproject.domain.applicant.dto.ApplicantResponseDto;
 import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.entity.QApplicant;
+import com.example.sideproject.global.enums.Position;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -43,7 +44,7 @@ public class ApplicantQueryRepository {
 
     private BooleanExpression createSearchCondition(SearchApplicantDto searchDto) {
         String nickname = searchDto.nickname();
-        String position = searchDto.position();
+        Position position = searchDto.position();
         ApplicationStatus status = searchDto.status();
 
         BooleanExpression result = Expressions.asString("1").eq("1");

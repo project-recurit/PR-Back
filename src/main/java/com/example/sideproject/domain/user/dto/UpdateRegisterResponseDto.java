@@ -1,12 +1,13 @@
 package com.example.sideproject.domain.user.dto;
 
+import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.user.entity.User;
 
 import java.util.List;
 
 public record UpdateRegisterResponseDto(
         String nickname,
-        String position,
+        Position position,
         List<String> techStacks,
         String accessToken,
         String refreshToken

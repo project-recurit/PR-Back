@@ -46,7 +46,7 @@ public class Project extends Timestamped {
     @Column(nullable = false, name = "favorite_count")
     private int favoriteCount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
     private User user;
 

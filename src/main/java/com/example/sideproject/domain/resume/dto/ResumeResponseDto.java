@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.resume.dto;
 
+import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.resume.entity.Resume;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.global.enums.WorkType;
@@ -12,7 +13,7 @@ import java.util.List;
 public record ResumeResponseDto(
         Long resumeId,
         Long userId,
-        String position,
+        Position position,
         String title,
         String introduce,
         WorkType workType,

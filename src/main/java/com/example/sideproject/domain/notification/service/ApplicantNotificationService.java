@@ -5,6 +5,7 @@ import com.example.sideproject.domain.notification.aop.annotation.NotifyOn;
 import com.example.sideproject.domain.notification.dto.EventDto;
 import com.example.sideproject.domain.notification.dto.EventListDto;
 import com.example.sideproject.domain.notification.entity.NotificationType;
+import com.example.sideproject.global.enums.Position;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +23,12 @@ public class ApplicantNotificationService {
      * @param leaderId 팀장
      */
     @NotifyOn
-    public EventListDto registerApplicant(Long projectId, String projectTitle, String position, Long leaderId) {
+    public EventListDto registerApplicant(Long projectId, String projectTitle, Position position, Long leaderId) {
         String msg = """
                 \'$_projectTitle\'의 \'[$_position]\'에 새로운 지원자가 있어요!
                 """
                 .replace("$_projectTitle", projectTitle)
-                .replace("$_position", position);
+                .replace("$_position", position.name());
         EventDto eventDto = EventDto.builder()
                 .to(leaderId)
                 .msg(msg)
