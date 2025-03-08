@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.resume.dto;
 
+import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.resume.entity.Resume;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public record ResumeRequestDto(
         @Schema(description = "직무")
-        String position,
+        Position position,
         @Schema(description = "이력서 제목")
         String title,
         @Schema(description = "자기 소개")

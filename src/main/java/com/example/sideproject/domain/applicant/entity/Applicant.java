@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.applicant.entity;
 
-import com.example.sideproject.domain.project.entity.Position;
+import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
