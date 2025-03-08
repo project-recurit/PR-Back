@@ -82,7 +82,7 @@ public class SearchService {
             long count = searchProjectRepository.count();
             if (count == 0) {
                 log.info("Elasticsearch 인덱싱된 프로젝트가 없습니다. 초기 인덱싱을 시작합니다...");
-                List<Project> allProjects = projectQueryRepository.findAllWithTechStacks();
+                List<Project> allProjects = projectRepository.findAllWithTechStacks();
 
                 List<ProjectDocument> documents = allProjects.stream()
                         .map(ProjectDocument::new)
