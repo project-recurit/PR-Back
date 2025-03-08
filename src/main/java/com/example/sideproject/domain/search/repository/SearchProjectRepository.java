@@ -14,4 +14,5 @@ public interface SearchProjectRepository extends ElasticsearchRepository<Project
 
     List<ProjectDocument> findByTitleContainingOrContentContainingAndTechStackNamesIn(
             String title, String content, List<String> techStackNames);
+
 }
