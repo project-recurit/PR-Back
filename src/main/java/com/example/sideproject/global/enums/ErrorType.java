@@ -113,7 +113,7 @@ public enum ErrorType implements ErrorCode {
     NOT_STORED_FILE_NAME(HttpStatus.BAD_REQUEST, "해당 이름을 가진 파일이 존재하지 않습니다."),
     FILE_CONVERSION_FAILED(HttpStatus.BAD_REQUEST, "파일 변환 중 실패했습니다."),
 
-    INACTIVE_USER(HttpStatus.FORBIDDEN, "휴면 계정입니다. 휴면 상태를 풀어주세요."),
+    INACTIVE_USER(HttpStatus.FORBIDDEN, "추가 정보를 마저 입력하고 진행해주세요."),
     CHECK_YOUR_INFO(HttpStatus.NOT_FOUND, "입력한 정보의 유저를 찾을 수 없습니다."),
     NOT_YOUR_ENTERTAINMENT(HttpStatus.NOT_ACCEPTABLE, "소속사가 다른 아티스트입니다."),
     ARTIST_NOT_SUBSCRIBED(HttpStatus.NOT_ACCEPTABLE, "구독한 뒤 사용할 수 있는 서비스 입니다."),

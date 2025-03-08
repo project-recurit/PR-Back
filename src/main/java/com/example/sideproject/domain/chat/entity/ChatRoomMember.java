@@ -24,12 +24,13 @@ public class ChatRoomMember {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private User member;
 
+    //Todo 필드로 추가 해야함
     private Long unReadCount;
 
     private LocalDateTime lastReadAt;
-    private boolean isLeft;
-    @Setter
     private LocalDateTime leftAt;
+    private boolean isLeft;
+
 
     @Builder
     public ChatRoomMember(User member) {
@@ -40,6 +41,10 @@ public class ChatRoomMember {
 
     public void setLeft(boolean left) {
         this.isLeft = left;
+    }
+
+    public void setLeftAt(LocalDateTime leftAt) {
+        this.leftAt = leftAt;
     }
 
 

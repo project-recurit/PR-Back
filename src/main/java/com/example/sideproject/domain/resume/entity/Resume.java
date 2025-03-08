@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.resume.entity;
 
+import com.example.sideproject.domain.project.entity.Position;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
@@ -26,7 +27,8 @@ public class Resume extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String position;
+    @Enumerated(EnumType.STRING)
+    private Position position;
 
     private String title;
 
@@ -46,7 +48,7 @@ public class Resume extends Timestamped {
     private List<ResumeTechStack> resumeTechStacks;
 
     @Builder
-    public Resume(Long id, User user, String position, String title, String introduce, WorkType workType, List<String> documentUrl, LocalDateTime publishedAt, List<Experience> experiences, List<TechStack> resumeTechStacks) {
+    public Resume(Long id, User user, Position position, String title, String introduce, WorkType workType, List<String> documentUrl, LocalDateTime publishedAt, List<Experience> experiences, List<TechStack> resumeTechStacks) {
         this.id = id;
         this.user = user;
         this.position = position;

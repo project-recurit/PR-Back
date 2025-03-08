@@ -23,8 +23,12 @@ public class AuthController {
     public ResponseEntity<ResponseDataDto<LoginResponseDto>> login(
             @Valid @RequestBody LoginRequestDto requestDto) {
         LoginResponseDto response = authService.login(requestDto);
+        ResponseStatus status = response.isSignUpSuccess()
+                ? ResponseStatus.USER_INFO_UPDATE
+                : ResponseStatus.LOGIN_SUCCESS;
+
         return ResponseEntity.ok(new ResponseDataDto<>(
-                ResponseStatus.LOGIN_SUCCESS,
+                status,
                 response
         ));
     }
