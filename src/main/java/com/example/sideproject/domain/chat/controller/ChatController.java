@@ -53,7 +53,6 @@ public class ChatController {
                                          @Header("simpSessionId") String sessionId) {
         log.info("User {} entering room {}", request.getSenderId(), roomId);
         WebSocketEventHandler.addUserChatSession(sessionId, request.getSenderId(), roomId);
-        chatService.markAsRead(roomId, request.getSenderId());
         return chatService.enterRoom(roomId, request.getSenderId());
     }
 

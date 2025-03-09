@@ -147,6 +147,7 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
+
         ChatRoomMember member = findChatRoomMember(roomId, userId);
         //Todo 읽음처리 안되는거 수정 필요
         markAllMessagesAsRead(roomId, member);
@@ -160,6 +161,7 @@ public class ChatService {
                 .type(MessageType.ENTER)
                 .build();
 
+        enterMessage.markAsRead();
         ChatMessage savedMessage = chatMessageRepository.save(enterMessage);
         return ChatMessageResponse.from(savedMessage);
     }
@@ -254,6 +256,7 @@ public class ChatService {
      * @param roomId
      * @param member
      */
+
     private void markAllMessagesAsRead(Long roomId, ChatRoomMember member) {
         chatMessageRepository.markMessagesAsRead(roomId, member.getLastReadAt());
         member.updateLastRead();
