@@ -5,12 +5,12 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
 
-  elasticsearch:
-    uris: http://localhost:9200
-    username: ${ELASTIC_USERNAME}
-    password: ${ELASTIC_PASSWORD}
-    connection-timeout: 10s # 연결 타임아웃
-    socket-timeout: 30s # 소켓 타임아웃
+#  elasticsearch:
+#    uris: http://localhost:9200
+#    username: ${ELASTIC_USERNAME}
+#    password: ${ELASTIC_PASSWORD}
+#    connection-timeout: 10s # 연결 타임아웃
+#    socket-timeout: 30s # 소켓 타임아웃
 
   jpa:
     hibernate:
