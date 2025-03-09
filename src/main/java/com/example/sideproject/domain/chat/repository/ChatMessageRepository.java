@@ -30,6 +30,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             @Param("lastReadAt") LocalDateTime lastReadAt
     );
 
+    @Transactional
     @Modifying  // 벌크 업데이트를 위한 어노테이션 추가
     @Query("UPDATE ChatMessage m SET m.read = true " +
             "WHERE m.chatRoom.id = :roomId " +

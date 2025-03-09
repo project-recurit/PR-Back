@@ -2,7 +2,7 @@ package com.example.sideproject;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+//import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
@@ -20,7 +20,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
         "com.example.sideproject.domain.pr.repository",
         "com.example.sideproject.domain.resume.repository"
 })
-@EnableElasticsearchRepositories(basePackages = "com.example.sideproject.domain.search.repository")
+//@EnableElasticsearchRepositories(basePackages = "com.example.sideproject.domain.search.repository")
 public class SideprojectApplication {
 
     public static void main(String[] args) {
