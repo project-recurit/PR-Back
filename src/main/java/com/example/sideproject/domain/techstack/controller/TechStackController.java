@@ -21,7 +21,6 @@ import java.util.List;
 public class TechStackController {
     private final TechStackService techStackService;
 
-
     @GetMapping
     public ResponseEntity<ResponseDataDto<List<TechStackDto>>> getTechStackList(){
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, techStackService.getTeckStackList()));

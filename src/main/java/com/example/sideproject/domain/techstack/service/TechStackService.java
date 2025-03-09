@@ -14,23 +14,21 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TechStackService {
-
     private final TechStackRepository techStackRepository;
     private final TechStackCacheRepository techStackCacheRepository;
 
     public List<TechStackDto> getTeckStackList(){
         List<TechStack> cacheTechStacks = techStackCacheRepository.findTechStack();
 
-        if (cacheTechStacks.isEmpty()) {
-            List<TechStack> techStacks = techStackRepository.findAll();
-            for (TechStack techStack : techStacks) {
-                techStackCacheRepository.save(techStack);
-            }
-            return TechStackDto.of(techStacks);
+        if (!cacheTechStacks.isEmpty()) {
+            return TechStackDto.of(cacheTechStacks);
         }
 
-        return TechStackDto.of(cacheTechStacks);
+        List<TechStack> techStacks = techStackRepository.findAll();
+        for (TechStack techStack : techStacks) {
+            techStackCacheRepository.save(techStack);
+        }
+        return TechStackDto.of(techStacks);
     }
-
 
 }
