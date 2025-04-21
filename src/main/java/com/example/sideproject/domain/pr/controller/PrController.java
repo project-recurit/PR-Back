@@ -2,6 +2,7 @@ package com.example.sideproject.domain.pr.controller;
 
 import com.example.sideproject.domain.pr.dto.PrListResponse;
 import com.example.sideproject.domain.pr.dto.PrRequest;
+import com.example.sideproject.domain.pr.dto.PrResponse;
 import com.example.sideproject.domain.pr.service.PrService;
 import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
 import com.example.sideproject.global.dto.ResponseDataDto;
@@ -29,6 +30,13 @@ public class PrController {
     public ResponseEntity<ResponseDataDto<Long>> savePr(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                         @RequestBody PrRequest prRequest) {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, prService.savePr(userDetails.getUser(), prRequest)));
+    }
+
+    @Operation(summary = "pr 게시글 조회", description = "해당하는 pr 게시글 상세 조회")
+    @GetMapping("/{prId}")
+    public ResponseEntity<ResponseDataDto<PrResponse>> getPr(@PathVariable("prId") Long prId) {
+        PrResponse pr = prService.read(prId);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, pr));
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.sideproject.domain.pr.entity;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

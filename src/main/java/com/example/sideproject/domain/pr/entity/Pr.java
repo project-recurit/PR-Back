@@ -7,6 +7,7 @@ import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.enums.WorkType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +16,19 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@NamedEntityGraph(
+        name = "Pr.withTechStacks",
+        attributeNodes = {
+                @NamedAttributeNode(value = "techStacks", subgraph = "techStacks.techStack"),
+                @NamedAttributeNode(value = "user")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "techStacks.techStack",
+                        attributeNodes = @NamedAttributeNode("techStack")
+                )
+        }
+)
 public class Pr extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +45,7 @@ public class Pr extends Timestamped {
     private WorkType workType;
     private String documentUrl;
 
+//    @BatchSize(size = 20)
     @OneToMany(mappedBy = "pr", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PrExperience> experiences;
 

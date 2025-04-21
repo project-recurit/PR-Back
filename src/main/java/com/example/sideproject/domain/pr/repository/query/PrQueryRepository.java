@@ -1,7 +1,10 @@
 //package com.example.sideproject.domain.pr.repository.query;
 //
 //import com.example.sideproject.domain.pr.dto.PrListResponse;
+//import com.example.sideproject.domain.pr.dto.PrResponse;
+//import com.example.sideproject.domain.pr.entity.Pr;
 //import com.example.sideproject.domain.pr.entity.QPr;
+//import com.example.sideproject.domain.pr.entity.QPrTechStack;
 //import com.example.sideproject.domain.resume.entity.QResumeTechStack;
 //import com.example.sideproject.domain.resume.entity.Resume;
 //import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
@@ -29,7 +32,7 @@
 //    private final JPAQueryFactory jpaQueryFactory;
 //    private QPr qPr = QPr.pr;
 //
-//    public Page<PrListResponse> getPublicResumes(Pageable pageable, Sort sort) {
+//    public Page<PrListResponse> getPrs(Pageable pageable, Sort sort) {
 //        List<PrListResponse> publicResumes = jpaQueryFactory.select(Projections.constructor(
 //                        PrListResponse.class,
 //                        qPr.id,
@@ -62,18 +65,17 @@
 //    }
 //
 //    private List<TechStackMappingDto> getTechStacks(List<Long> resumeIds) {
-//        QResumeTechStack qResumeTechStack = QResumeTechStack.resumeTechStack;
+//        QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
 //
 //        List<TechStackMappingDto> techStacks = jpaQueryFactory.select(Projections.constructor(
 //                        TechStackMappingDto.class,
-//                        qResumeTechStack.resume.id,
-//                        qResumeTechStack.techStack.id,
-//                        qResumeTechStack.techStack.name
+//                        qPrTechStack.pr.id,
+//                        qPrTechStack.techStack.id,
+//                        qPrTechStack.techStack.name
 //                ))
-//                .from(qResumeTechStack)
-//                .join(qResumeTechStack.techStack)
+//                .from(qPrTechStack)
 //                .where(
-//                        qResumeTechStack.resume.id.in(resumeIds)
+//                        qPrTechStack.pr.id.in(resumeIds)
 //                )
 //                .fetch();
 //        return techStacks;
@@ -83,15 +85,14 @@
 //        List<OrderSpecifier<?>> orders = new ArrayList<>();
 //        sort.stream().forEach(order -> {
 //            Order direction = order.isAscending() ? Order.ASC : Order.DESC;
-//            PathBuilder<?> expression = new PathBuilder<>(Resume.class, "resume");
+//            PathBuilder<?> expression = new PathBuilder<>(Pr.class, "pr");
 //            orders.add(new OrderSpecifier<>(direction, expression.get(order.getProperty(), Comparable.class)));
 //        });
 //        return orders.toArray(OrderSpecifier[]::new);
 //    }
 //
-//
 //    private JPAQuery<Long> countQuery() {
-//        return jpaQueryFactory.select(QPr.count())
-//                .from(QPr);
+//        return jpaQueryFactory.select(qPr.count())
+//                .from(qPr);
 //    }
 //}
