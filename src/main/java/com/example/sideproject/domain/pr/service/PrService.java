@@ -45,4 +45,11 @@ public class PrService {
         return pr.getId();
     }
 
+    public void deletePr(User user, Long prId) {
+        Pr pr = getPr(prId);
+        if (!pr.isOwner(user.getId())) {
+            throw new CustomException(ErrorType.NOT_OWNER);
+        }
+        prRepository.delete(pr);
+    }
 }

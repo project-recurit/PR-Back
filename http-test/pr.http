@@ -68,3 +68,8 @@ Authorization: Bearer {{accessToken}}
     "level": 10
   }]
 }
+
+### PR 게시글 삭제
+DELETE {{host}}/api/v1/post/pr/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}

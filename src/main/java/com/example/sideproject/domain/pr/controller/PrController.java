@@ -6,6 +6,7 @@ import com.example.sideproject.domain.pr.dto.PrResponse;
 import com.example.sideproject.domain.pr.service.PrService;
 import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
 import com.example.sideproject.global.dto.ResponseDataDto;
+import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.enums.ResponseStatus;
 import com.example.sideproject.global.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,5 +47,13 @@ public class PrController {
                                                           @RequestBody PrRequest prRequest) {
         Long res = prService.updatePr(userDetails.getUser(), prId, prRequest);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, res));
+    }
+
+    @Operation(summary = "pr 게시글 삭제", description = "해당하는 pr 게시글 삭제")
+    @DeleteMapping("/{prId}")
+    public ResponseEntity<ResponseMessageDto> deletePr(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                       @PathVariable("prId") Long prId) {
+        prService.deletePr(userDetails.getUser(), prId);
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.SUCCESS));
     }
 }
