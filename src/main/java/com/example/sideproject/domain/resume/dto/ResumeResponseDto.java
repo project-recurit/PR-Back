@@ -6,12 +6,11 @@ import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.global.enums.WorkType;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
 public record ResumeResponseDto(
-        Long resumeId,
+        Long id,
         Long userId,
         Position position,
         String title,
@@ -19,14 +18,13 @@ public record ResumeResponseDto(
         WorkType workType,
         List<String> documentUrl,
         List<TechStackDto> techStacks,
-        List<ExperienceResponseDto> experiences,
-        LocalDateTime publishedAt,
+        List<ExperienceResponse> experiences,
         String createdAt,
         String modifiedAt
 ) {
     public static ResumeResponseDto of(Resume resume) {
         return ResumeResponseDto.builder()
-                .resumeId(resume.getId())
+                .id(resume.getId())
                 .userId(resume.getUser().getId())
                 .position(resume.getPosition())
                 .title(resume.getTitle())
@@ -34,8 +32,7 @@ public record ResumeResponseDto(
                 .workType(resume.getWorkType())
                 .documentUrl(resume.getDocumentUrl())
                 .techStacks(resume.getResumeTechStacks().stream().map(TechStackDto::of).toList())
-                .experiences(resume.getExperiences().stream().map(ExperienceResponseDto::of).toList())
-                .publishedAt(resume.getPublishedAt())
+                .experiences(resume.getExperiences().stream().map(ExperienceResponse::of).toList())
                 .createdAt(resume.getCreatedAt())
                 .modifiedAt(resume.getModifiedAt())
                 .build();

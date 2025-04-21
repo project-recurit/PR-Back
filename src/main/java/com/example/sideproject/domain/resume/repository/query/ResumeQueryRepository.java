@@ -1,25 +1,14 @@
 package com.example.sideproject.domain.resume.repository.query;
 
-import com.example.sideproject.domain.pr.dto.PublicResumesResponseDto;
-import com.example.sideproject.domain.resume.dto.ResumeListResponseDto;
+import com.example.sideproject.domain.resume.dto.ResumeListResponse;
 import com.example.sideproject.domain.resume.entity.QResume;
 import com.example.sideproject.domain.resume.entity.QResumeTechStack;
-import com.example.sideproject.domain.resume.entity.Resume;
 import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,24 +17,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ResumeQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
-    private QResume qResume = QResume.resume;
+    private final QResume qResume = QResume.resume;
 
-    public List<ResumeListResponseDto> getResumes(Long userId) {
-        List<ResumeListResponseDto> resumes = jpaQueryFactory.select(Projections.constructor(
-                        ResumeListResponseDto.class,
+    public List<ResumeListResponse> getResumes(Long userId) {
+        List<ResumeListResponse> resumes = jpaQueryFactory.select(Projections.constructor(
+                        ResumeListResponse.class,
                         qResume.id,
                         qResume.title,
                         qResume.position,
                         qResume.workType,
-                        qResume.publishedAt,
-                        qResume.modifiedAt
+                        qResume.modifiedAt,
+                        qResume.createdAt
                 )).from(qResume)
                 .where(qResume.user.id.eq(userId))
                 .orderBy(qResume.modifiedAt.desc())
                 .fetch();
 
         List<Long> resumeIds = resumes.stream()
-                .map(ResumeListResponseDto::getResumeId)
+                .map(ResumeListResponse::getId)
                 .toList();
 
         List<TechStackMappingDto> techStacks = getTechStacks(resumeIds);
@@ -53,7 +42,7 @@ public class ResumeQueryRepository {
         Map<Long, List<TechStackMappingDto>> techStackMap = techStacks.stream()
                 .collect(Collectors.groupingBy(TechStackMappingDto::id));
 
-        List<ResumeListResponseDto> result = resumes.stream().map(resume -> resume.addTechStack(techStackMap.get(resume.getResumeId()))).toList();
+        List<ResumeListResponse> result = resumes.stream().map(resume -> resume.addTechStack(techStackMap.get(resume.getId()))).toList();
         return result;
     }
 

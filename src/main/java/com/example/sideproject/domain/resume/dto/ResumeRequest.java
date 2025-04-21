@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
 
-public record ResumeRequestDto(
+public record ResumeRequest(
         @Schema(description = "직무")
         Position position,
         @Schema(description = "이력서 제목")
@@ -20,15 +20,15 @@ public record ResumeRequestDto(
         String introduce,
         @Schema(description = "희망 진행 방식")
         WorkType workType,
-        @Schema(description = "이력서 링크")
+        @Schema(description = "이력서 링크", example = "['http://a.com', 'http://b.com]")
         List<String> documentUrl,
-        @Schema(description = "기술 스택 ID 리스트")
+        @Schema(description = "기술 스택 ID 리스트", example = "[1,3,5]")
         List<Long> techStackIds,
         @Schema(description = "프로젝트 리스트")
         @Valid
-        List<ExperienceRequestDto> experiences
+        List<ExperienceRequest> experiences
 ) {
-    public ResumeRequestDto {
+    public ResumeRequest {
         // 중복 제거
         techStackIds = new HashSet<>(techStackIds).stream().toList();
     }
@@ -42,7 +42,7 @@ public record ResumeRequestDto(
                 .workType(workType)
                 .documentUrl(documentUrl)
                 .resumeTechStacks(techStackIds.stream().map(id -> TechStack.builder().id(id).build()).toList())
-                .experiences(experiences.stream().map(ExperienceRequestDto::toEntity).toList())
+                .experiences(experiences.stream().map(ExperienceRequest::toEntity).toList())
                 .build();
     }
 }

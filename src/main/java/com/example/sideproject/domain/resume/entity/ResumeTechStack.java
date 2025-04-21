@@ -23,6 +23,11 @@ public class ResumeTechStack {
     @JoinColumn(name = "resume_id")
     private Resume resume;
 
+    public ResumeTechStack(TechStack techStack, Resume resume) {
+        this.techStack = techStack;
+        this.resume = resume;
+    }
+
     public void setResume(Resume resume) {
         this.resume = resume;
     }

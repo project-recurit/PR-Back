@@ -24,5 +24,4 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
     Optional<Resume> findByUser(User user);
 
-    Page<Resume> findByPublishedAtIsNotNull(Pageable pageable);
 }

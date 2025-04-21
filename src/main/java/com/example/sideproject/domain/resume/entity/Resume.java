@@ -1,5 +1,7 @@
 package com.example.sideproject.domain.resume.entity;
 
+import com.example.sideproject.domain.resume.dto.ExperienceRequest;
+import com.example.sideproject.domain.resume.dto.ResumeRequest;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
@@ -39,8 +41,6 @@ public class Resume extends Timestamped {
 
     private String documentUrl;
 
-    private LocalDateTime publishedAt;
-
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Experience> experiences;
 
@@ -48,7 +48,7 @@ public class Resume extends Timestamped {
     private List<ResumeTechStack> resumeTechStacks;
 
     @Builder
-    public Resume(Long id, User user, Position position, String title, String introduce, WorkType workType, List<String> documentUrl, LocalDateTime publishedAt, List<Experience> experiences, List<TechStack> resumeTechStacks) {
+    public Resume(Long id, User user, Position position, String title, String introduce, WorkType workType, List<String> documentUrl, List<Experience> experiences, List<TechStack> resumeTechStacks) {
         this.id = id;
         this.user = user;
         this.position = position;
@@ -58,7 +58,6 @@ public class Resume extends Timestamped {
         if (Objects.nonNull(documentUrl)) {
             this.documentUrl = String.join(",", documentUrl);
         }
-        this.publishedAt = publishedAt;
         this.experiences = addExperiences(experiences);
         this.resumeTechStacks = addTechStack(resumeTechStacks);
     }
@@ -79,38 +78,29 @@ public class Resume extends Timestamped {
         return result;
     }
 
-    public void update(Resume resume) {
-        this.position = resume.position;
-        this.title = resume.title;
-        this.introduce = resume.introduce;
-        this.workType = resume.workType;
-        this.documentUrl = String.join(",", resume.documentUrl);
-        updateExperience(resume.experiences);
-        updateTechStack(resume.resumeTechStacks);
-    }
-
-    public void setPublished(boolean published) {
-        if (!published) {
-            this.publishedAt = null;
-            return;
-        }
-        this.publishedAt = LocalDateTime.now();
+    public void update(ResumeRequest req) {
+        List<TechStack> techStacks = req.techStackIds().stream().map(TechStack::new).toList();
+        this.position = req.position();
+        this.title = req.title();
+        this.introduce = req.introduce();
+        this.workType = req.workType();
+        this.documentUrl = String.join(",", req.documentUrl());
+        updateExperience(req.experiences().stream().map(ExperienceRequest::toEntity).toList());
+        updateTechStack(techStacks);
     }
 
     public boolean canPublish() {
         return !title.isEmpty() && !introduce.isEmpty();
     }
 
-    public boolean checkPublishStatus() {
-        return publishedAt != null;
-    }
-
-    private void updateTechStack(List<ResumeTechStack> resumeTechStacks) {
-        this.resumeTechStacks.clear();
-        for (ResumeTechStack resumeTechStack : resumeTechStacks) {
-            resumeTechStack.setResume(this);
+    private void updateTechStack(List<TechStack> techStacks) {
+        resumeTechStacks.clear();
+        if (techStacks.isEmpty()) {
+            return;
         }
-        this.resumeTechStacks.addAll(resumeTechStacks);
+        for (TechStack techStack : techStacks) {
+            resumeTechStacks.add(new ResumeTechStack(techStack, this));
+        }
     }
 
     /**
