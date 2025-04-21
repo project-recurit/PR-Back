@@ -25,6 +25,12 @@ public class PrTechStack {
 
     private int level;
 
+    public PrTechStack(Pr pr, TechStack techStack, int level) {
+        this.pr = pr;
+        this.techStack = techStack;
+        this.level = level;
+    }
+
     public void addPr(Pr pr) {
         this.pr = pr;
     }

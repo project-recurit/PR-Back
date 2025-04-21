@@ -39,4 +39,12 @@ public class PrController {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, pr));
     }
 
+    @Operation(summary = "pr 게시글 수정", description = "해당하는 pr 게시글 수정")
+    @PutMapping("/{prId}")
+    public ResponseEntity<ResponseDataDto<Long>> updatePr(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                          @PathVariable("prId") Long prId,
+                                                          @RequestBody PrRequest prRequest) {
+        Long res = prService.updatePr(userDetails.getUser(), prId, prRequest);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, res));
+    }
 }

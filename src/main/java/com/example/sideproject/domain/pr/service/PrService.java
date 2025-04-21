@@ -24,14 +24,25 @@ public class PrService {
 
     @Transactional
     public PrResponse read(Long prId) {
-        Pr pr = prRepository.findPrById(prId).orElseThrow(() -> new CustomException(ErrorType.PUBLIC_RESUME_NOT_FOUND));
+        Pr pr = prRepository.findPrById(prId).orElseThrow(() -> new CustomException(ErrorType.PR_NOT_FOUND));
         pr.increaseViewCount();
         return new PrResponse(pr);
     }
 
     public Pr getPr(Long prId) {
         return prRepository.findById(prId).orElseThrow(
-                () -> new CustomException(ErrorType.PUBLIC_RESUME_NOT_FOUND)
+                () -> new CustomException(ErrorType.PR_NOT_FOUND)
         );
     }
+
+    @Transactional
+    public Long updatePr(User user, Long prId, PrRequest prRequest) {
+        Pr pr = getPr(prId);
+        if (!pr.isOwner(user.getId())) {
+            throw new CustomException(ErrorType.NOT_OWNER);
+        }
+        pr.update(prRequest);
+        return pr.getId();
+    }
+
 }

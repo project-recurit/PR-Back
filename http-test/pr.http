@@ -33,3 +33,38 @@ Content-Type: application/json
 ### PR 게시글 조회
 GET {{host}}/api/v1/post/pr/1
 Content-Type: application/json
+
+### PR 게시글 수정
+PUT {{host}}/api/v1/post/pr/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "pr 타이틀222",
+  "introduce": "소개 글 업데이트",
+  "position": "FRONTEND",
+  "workType": "OFFLINE",
+  "documentUrl": ["http://pr-file1", "http://pr-file2"],
+  "experiences": [{
+    "title": "사이드 프로젝트1",
+    "description": "이러이러한 사이드 프로젝트에요~",
+    "startDate": "2025-02-05T13:53:31",
+    "endDate": "2025-03-05T13:53:31",
+    "documentUrl": "http://pr-experience-file",
+    "teamSize": 5
+  },{
+    "title": "사이드 프로젝트2",
+    "description": "플젝222222",
+    "startDate": "2025-03-05T13:53:31",
+    "endDate": "2025-04-05T13:53:31",
+    "documentUrl": "http://pr-experience2-file",
+    "teamSize": 1
+  }],
+  "techStacks": [{
+    "id": 103,
+    "level": 1
+  },{
+    "id": 104,
+    "level": 10
+  }]
+}

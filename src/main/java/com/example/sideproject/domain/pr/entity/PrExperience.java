@@ -38,4 +38,13 @@ public class PrExperience extends Timestamped {
     public void addPr(Pr pr) {
         this.pr = pr;
     }
+
+    public void update(PrExperience experience) {
+        this.title = experience.getTitle();
+        this.description = experience.getDescription();
+        this.teamSize = experience.getTeamSize();
+        this.startDate = experience.getStartDate();
+        this.endDate = experience.getEndDate();
+        this.documentUrl = experience.getDocumentUrl();
+    }
 }
