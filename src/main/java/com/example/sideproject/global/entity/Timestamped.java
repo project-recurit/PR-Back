@@ -34,4 +34,9 @@ public abstract class Timestamped {
     public void onPreUpdate() {
         modifiedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
     }
+
+    public static LocalDateTime toLocalDateTime(String str) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        return LocalDateTime.parse(str, formatter);
+    }
 }

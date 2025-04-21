@@ -6,8 +6,7 @@ import com.example.sideproject.domain.chat.repository.ChatMessageRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
 import com.example.sideproject.domain.notification.service.ChatNotificationService;
-import com.example.sideproject.domain.pr.repository.PublicResumesRepository;
-import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.pr.repository.PrRepository;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
@@ -37,7 +36,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final WebSocketEventHandler webSocketEventHandler;
     private final ProjectRepository projectRepository;
-    private final PublicResumesRepository publicResumesRepository;
+    private final PrRepository prRepository;
     private final ChatNotificationService chatNotificationService;
 
     /**
@@ -57,7 +56,7 @@ public class ChatService {
             projectRepository.findById(referenceId)
                     .orElseThrow(() -> new IllegalArgumentException("Project not found"));
         } else if (chatRoomType == ChatRoomType.PR) {
-            publicResumesRepository.findById(referenceId)
+            prRepository.findById(referenceId)
                     .orElseThrow(() -> new IllegalArgumentException("PublicResume not found"));
         }
 
@@ -302,7 +301,7 @@ public class ChatService {
                     .map(ContentSummaryResponse::from)
                     .orElseThrow(() -> new IllegalArgumentException("Project not found with id: " + referenceId));
         } else if (type == ChatRoomType.PR) {
-            return publicResumesRepository.findById(referenceId)
+            return prRepository.findById(referenceId)
                     .map(ContentSummaryResponse::from)
                     .orElseThrow(() -> new IllegalArgumentException("PublicResume not found with id: " + referenceId));
         }

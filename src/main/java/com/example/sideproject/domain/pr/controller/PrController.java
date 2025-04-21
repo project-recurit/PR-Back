@@ -1,0 +1,34 @@
+package com.example.sideproject.domain.pr.controller;
+
+import com.example.sideproject.domain.pr.dto.PrListResponse;
+import com.example.sideproject.domain.pr.dto.PrRequest;
+import com.example.sideproject.domain.pr.service.PrService;
+import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
+import com.example.sideproject.global.dto.ResponseDataDto;
+import com.example.sideproject.global.enums.ResponseStatus;
+import com.example.sideproject.global.security.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "pr api")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/post/pr")
+public class PrController {
+    private final PrService prService;
+
+    @Operation(summary = "pr 게시글 작성", description = "pr 게시글 작성")
+    @PostMapping
+    public ResponseEntity<ResponseDataDto<Long>> savePr(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @RequestBody PrRequest prRequest) {
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, prService.savePr(userDetails.getUser(), prRequest)));
+    }
+
+}

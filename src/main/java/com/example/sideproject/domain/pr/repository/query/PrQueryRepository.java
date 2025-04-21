@@ -18,7 +18,6 @@
 //import org.springframework.data.support.PageableExecutionUtils;
 //import org.springframework.stereotype.Repository;
 //
-//import com.example.sideproject.domain.pr.entity.QPr;
 //import java.util.ArrayList;
 //import java.util.List;
 //import java.util.Map;
@@ -26,7 +25,7 @@
 //
 //@Repository
 //@RequiredArgsConstructor
-//public class PublicResumesQueryRepository {
+//public class PrQueryRepository {
 //    private final JPAQueryFactory jpaQueryFactory;
 //    private QPr qPr = QPr.pr;
 //

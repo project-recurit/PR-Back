@@ -53,6 +53,10 @@ public final class PostCount {
         return buildPostCount();
     }
 
+    public static PostCount init() {
+        return new PostCount(0, 0, 0);
+    }
+
     private PostCount buildPostCount() {
         return new PostCount(viewCount, commentCount, favoriteCount);
     }

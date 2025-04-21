@@ -1,3 +1,31 @@
+### PR 게시글 작성
+POST {{host}}/api/v1/post/pr
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "pr 타이틀",
+  "introduce": "안녕하세요! 사이드 프로젝트하고 싶어요! 여기 제 이력 좀 보세요 개쩌는 프로젝트 엄청난 수상경력 간지나는 학력 첨부 이미지는 제 포트폴리오의 일부입니다! 관심있으시면 채팅주세요~",
+  "position": "BACKEND",
+  "workType": "ALL",
+  "documentUrl": ["http://pr-file", "http://pr-file2"],
+  "experiences": [{
+    "title": "사이드 프로젝트1",
+    "description": "이러이러한 사이드 프로젝트에요~",
+    "startDate": "2025-02-05T13:53:31",
+    "endDate": "2025-03-05T13:53:31",
+    "documentUrl": "http://pr-experience-file",
+    "teamSize": 5
+  }],
+  "techStacks": [{
+    "id": 101,
+    "level": 1
+  },{
+    "id": 102,
+    "level": 5
+  }]
+}
+
 ### PR 게시글 리스트 조회
 GET {{host}}/api/v1/post/pr?page=0&size=20
 Content-Type: application/json
