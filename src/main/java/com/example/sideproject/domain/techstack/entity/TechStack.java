@@ -16,6 +16,10 @@ public class TechStack {
 
     private String name;
 
+    public TechStack(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         if (name.isEmpty()) {
             return "";

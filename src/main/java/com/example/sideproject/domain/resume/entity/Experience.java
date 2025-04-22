@@ -11,10 +11,11 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Entity
+@Table(name = "resume_experience")
 public class Experience extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "experience_id")
+    @Column(name = "resume_experience_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,10 +24,10 @@ public class Experience extends Timestamped {
 
     private String title;
 
-    private int teamSize;
-
     @Column(columnDefinition = "TEXT")
-    private String achievement;
+    private String description;
+
+    private int teamSize;
 
     private LocalDateTime startDate;
 
@@ -43,7 +44,7 @@ public class Experience extends Timestamped {
         this.startDate = experience.startDate;
         this.endDate = experience.endDate;
         this.teamSize = experience.teamSize;
-        this.achievement = experience.achievement;
+        this.description = experience.description;
         this.documentUrl = experience.documentUrl;
     }
 }

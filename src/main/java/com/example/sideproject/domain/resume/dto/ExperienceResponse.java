@@ -6,23 +6,23 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record ExperienceResponseDto(
-        Long experienceId,
+public record ExperienceResponse(
+        Long id,
         String title,
         LocalDateTime startDate,
         LocalDateTime endDate,
         int teamSize,
-        String achievement,
+        String description,
         String documentUrl
 ) {
-    public static ExperienceResponseDto of(Experience experience) {
-        return ExperienceResponseDto.builder()
-                .experienceId(experience.getId())
+    public static ExperienceResponse of(Experience experience) {
+        return ExperienceResponse.builder()
+                .id(experience.getId())
                 .title(experience.getTitle())
                 .startDate(experience.getStartDate())
                 .endDate(experience.getEndDate())
                 .teamSize(experience.getTeamSize())
-                .achievement(experience.getAchievement())
+                .description(experience.getDescription())
                 .documentUrl(experience.getDocumentUrl())
                 .build();
     }

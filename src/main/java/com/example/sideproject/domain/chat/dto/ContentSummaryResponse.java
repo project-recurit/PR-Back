@@ -1,7 +1,7 @@
 package com.example.sideproject.domain.chat.dto;
 
 import com.example.sideproject.domain.chat.entity.ChatRoomType;
-import com.example.sideproject.domain.pr.entity.PublicResumes;
+import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.project.entity.Project;
 
 public record ContentSummaryResponse(
@@ -17,10 +17,10 @@ public record ContentSummaryResponse(
                     project.getTitle(),
                     ChatRoomType.PROJECT
             );
-        } else if (content instanceof PublicResumes pr) {
+        } else if (content instanceof Pr pr) {
             return new ContentSummaryResponse(
                     pr.getId(),
-                    pr.getResume().getTitle(),
+                    pr.getTitle(),
                     ChatRoomType.PR
             );
         }
