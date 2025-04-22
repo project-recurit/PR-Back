@@ -87,6 +87,10 @@ public class Pr extends Timestamped {
         addTechStacks();
     }
 
+    public Pr(Long id) {
+        this.id = id;
+    }
+
     public void update(PrRequest req) {
         List<PrTechStack> prTechStack = req.techStacks().stream().map(PrTechStackRequest::toEntity).toList();
         title = req.title();

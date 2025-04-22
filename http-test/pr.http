@@ -81,6 +81,9 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "parentId": 1,
-  "content": "댓글1"
+  "content": "댓글4"
 }
+
+### PR 댓글 조회
+GET {{host}}/api/v1/prs/2/comments
+Content-Type: application/json
