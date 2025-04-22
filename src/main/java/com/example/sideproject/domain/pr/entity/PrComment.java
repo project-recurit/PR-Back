@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -34,7 +35,8 @@ public class PrComment extends Timestamped {
     private PrComment parent;
 
     @BatchSize(size = 20)
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    @OrderBy(value = "id asc")
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PrComment> reply;
 
     public PrComment(Long id) {
@@ -43,5 +45,9 @@ public class PrComment extends Timestamped {
 
     public void contentUpdate(String content) {
         this.content = content;
+    }
+
+    public boolean isOwner(Long userId) {
+        return Objects.equals(user.getId(), userId);
     }
 }
