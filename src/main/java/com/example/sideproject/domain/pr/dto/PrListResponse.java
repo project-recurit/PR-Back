@@ -12,6 +12,7 @@ public class PrListResponse {
     private final Long id;
     private final String title;
     private final WorkType workType;
+    private final Position position;
     private final int viewCount;
     private final int commentCount;
     private final int favoriteCount;
@@ -29,15 +30,17 @@ public class PrListResponse {
                           int favoriteCount,
                           String nickname,
                           String profileUrl,
+                          Position userPosition,
                           String createdAt,
                           String modifiedAt) {
         this.id = id;
         this.title = title;
         this.workType = workType;
+        this.position = position;
         this.viewCount = viewCount;
         this.commentCount = commentCount;
         this.favoriteCount = favoriteCount;
-        this.user = new User(nickname, profileUrl, position);
+        this.user = new User(nickname, profileUrl, userPosition);
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }

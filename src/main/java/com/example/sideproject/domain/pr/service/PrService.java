@@ -1,9 +1,6 @@
 package com.example.sideproject.domain.pr.service;
 
-import com.example.sideproject.domain.pr.dto.PrListResponse;
-import com.example.sideproject.domain.pr.dto.PrRequest;
-import com.example.sideproject.domain.pr.dto.PrResponse;
-import com.example.sideproject.domain.pr.dto.PrSort;
+import com.example.sideproject.domain.pr.dto.*;
 import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.pr.repository.PrRepository;
 import com.example.sideproject.domain.pr.repository.query.PrQueryRepository;
@@ -18,8 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -63,13 +58,13 @@ public class PrService {
         prRepository.delete(pr);
     }
 
-    public PagedModel<PrListResponse> getPrs(Pageable pageable, PrSort prSort) {
+    public PagedModel<PrListResponse> getPrs(Pageable pageable, PrSort prSort, PrSearchRequest prSearchRequest) {
         if (prSort == null) {
             prSort = PrSort.modifiedAt;
         }
         Sort sort = Sort.by(Sort.Order.desc(prSort.getOrder()));
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        Page<PrListResponse> prs = prQueryRepository.getPrs(pageRequest);
+        Page<PrListResponse> prs = prQueryRepository.getPrs(pageRequest, prSearchRequest);
         return new PagedModel<>(prs);
     }
 }
