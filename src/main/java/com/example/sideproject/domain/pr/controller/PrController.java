@@ -3,8 +3,8 @@ package com.example.sideproject.domain.pr.controller;
 import com.example.sideproject.domain.pr.dto.PrListResponse;
 import com.example.sideproject.domain.pr.dto.PrRequest;
 import com.example.sideproject.domain.pr.dto.PrResponse;
+import com.example.sideproject.domain.pr.dto.PrSort;
 import com.example.sideproject.domain.pr.service.PrService;
-import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.enums.ResponseStatus;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +30,14 @@ public class PrController {
     public ResponseEntity<ResponseDataDto<Long>> savePr(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                         @RequestBody PrRequest prRequest) {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, prService.savePr(userDetails.getUser(), prRequest)));
+    }
+
+    @Operation(summary = "pr 게시글 리스트 조회", description = "해당하는 pr 게시글 조회")
+    @GetMapping
+    public ResponseEntity<ResponseDataDto<PagedModel<PrListResponse>>> getPrs(Pageable pageable,
+                                                                          PrSort prSort) {
+        PagedModel<PrListResponse> prs = prService.getPrs(pageable, prSort);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, prs));
     }
 
     @Operation(summary = "pr 게시글 조회", description = "해당하는 pr 게시글 상세 조회")

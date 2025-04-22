@@ -3,7 +3,6 @@ package com.example.sideproject.domain.pr.dto;
 import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.pr.entity.PrExperience;
 import com.example.sideproject.domain.pr.entity.PrTechStack;
-import com.example.sideproject.domain.resume.entity.Experience;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.enums.WorkType;
 import com.querydsl.core.annotations.QueryProjection;
@@ -57,6 +56,7 @@ public class PrResponse {
     private List<PrTechStackResponse> of(List<PrTechStack> techStacks) {
         return techStacks.stream()
                 .map(t -> new PrTechStackResponse(
+                        t.getTechStack().getId(),
                         t.getTechStack().getName(),
                         t.getLevel())
                 ).toList();
@@ -80,11 +80,6 @@ public class PrResponse {
     record UserResponse(
             String nickname,
             String profileUrl
-    ) {}
-
-    record PrTechStackResponse(
-            String name,
-            int level
     ) {}
 }
 

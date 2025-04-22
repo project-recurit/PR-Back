@@ -1,98 +1,108 @@
-//package com.example.sideproject.domain.pr.repository.query;
-//
-//import com.example.sideproject.domain.pr.dto.PrListResponse;
-//import com.example.sideproject.domain.pr.dto.PrResponse;
-//import com.example.sideproject.domain.pr.entity.Pr;
-//import com.example.sideproject.domain.pr.entity.QPr;
-//import com.example.sideproject.domain.pr.entity.QPrTechStack;
-//import com.example.sideproject.domain.resume.entity.QResumeTechStack;
-//import com.example.sideproject.domain.resume.entity.Resume;
-//import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
-//import com.querydsl.core.types.Order;
-//import com.querydsl.core.types.OrderSpecifier;
-//import com.querydsl.core.types.Projections;
-//import com.querydsl.core.types.dsl.PathBuilder;
-//import com.querydsl.jpa.impl.JPAQuery;
-//import com.querydsl.jpa.impl.JPAQueryFactory;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.data.domain.Sort;
-//import org.springframework.data.support.PageableExecutionUtils;
-//import org.springframework.stereotype.Repository;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.stream.Collectors;
-//
-//@Repository
-//@RequiredArgsConstructor
-//public class PrQueryRepository {
-//    private final JPAQueryFactory jpaQueryFactory;
-//    private QPr qPr = QPr.pr;
-//
-//    public Page<PrListResponse> getPrs(Pageable pageable, Sort sort) {
-//        List<PrListResponse> publicResumes = jpaQueryFactory.select(Projections.constructor(
-//                        PrListResponse.class,
-//                        qPr.id,
-//                        qPr.resume.id,
-//                        qPr.resume.title,
-//                        qPr.resume.workType,
-//                        qPr.viewCount,
-//                        qPr.commentCount,
-//                        qPr.favoriteCount
-//                )).from(qPr)
-//                .leftJoin(qPr.resume)
-//                .limit(pageable.getPageSize())
-//                .offset(pageable.getOffset())
-//                .orderBy(getOrderSpecifier(sort))
-//                .fetch();
-//
-//        List<Long> resumeIds = publicResumes.stream()
-//                .map(PrListResponse::getResumeId)
-//                .toList();
-//
-//        List<TechStackMappingDto> techStacks = getTechStacks(resumeIds);
-//
-//        Map<Long, List<String>> techStackMap = techStacks.stream().collect(Collectors.groupingBy(TechStackMappingDto::id,
-//                Collectors.mapping(TechStackMappingDto::name, Collectors.toList())));
-//
-//        List<PrListResponse> result = publicResumes.stream()
-//                .map(pr -> pr.addTechStacks(techStackMap.get(pr.getResumeId()))).toList();
-//
-//        return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());
-//    }
-//
-//    private List<TechStackMappingDto> getTechStacks(List<Long> resumeIds) {
-//        QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
-//
-//        List<TechStackMappingDto> techStacks = jpaQueryFactory.select(Projections.constructor(
-//                        TechStackMappingDto.class,
-//                        qPrTechStack.pr.id,
-//                        qPrTechStack.techStack.id,
-//                        qPrTechStack.techStack.name
-//                ))
-//                .from(qPrTechStack)
-//                .where(
-//                        qPrTechStack.pr.id.in(resumeIds)
-//                )
-//                .fetch();
-//        return techStacks;
-//    }
-//
-//    private OrderSpecifier<?>[] getOrderSpecifier(Sort sort) {
-//        List<OrderSpecifier<?>> orders = new ArrayList<>();
-//        sort.stream().forEach(order -> {
-//            Order direction = order.isAscending() ? Order.ASC : Order.DESC;
-//            PathBuilder<?> expression = new PathBuilder<>(Pr.class, "pr");
-//            orders.add(new OrderSpecifier<>(direction, expression.get(order.getProperty(), Comparable.class)));
-//        });
-//        return orders.toArray(OrderSpecifier[]::new);
-//    }
-//
-//    private JPAQuery<Long> countQuery() {
-//        return jpaQueryFactory.select(qPr.count())
-//                .from(qPr);
-//    }
-//}
+package com.example.sideproject.domain.pr.repository.query;
+
+import com.example.sideproject.domain.pr.dto.PrListResponse;
+import com.example.sideproject.domain.pr.dto.PrTechStackMapping;
+import com.example.sideproject.domain.pr.dto.PrTechStackResponse;
+import com.example.sideproject.domain.pr.entity.Pr;
+import com.example.sideproject.domain.pr.entity.QPr;
+import com.example.sideproject.domain.pr.entity.QPrTechStack;
+import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Repository
+@RequiredArgsConstructor
+public class PrQueryRepository {
+    private final JPAQueryFactory jpaQueryFactory;
+    private final QPr qPr = QPr.pr;
+
+    public Page<PrListResponse> getPrs(Pageable pageable) {
+        List<PrListResponse> prs = jpaQueryFactory.select(Projections.constructor(
+                        PrListResponse.class,
+                        qPr.id,
+                        qPr.title,
+                        qPr.workType,
+                        qPr.position,
+                        qPr.count.viewCount,
+                        qPr.count.commentCount,
+                        qPr.count.favoriteCount,
+                        qPr.user.nickname,
+                        qPr.user.profileUrl,
+                        qPr.createdAt,
+                        qPr.modifiedAt
+                )).from(qPr)
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .orderBy(getOrderSpecifier(pageable.getSort()))
+                .fetch();
+
+        List<Long> prIds = prs.stream()
+                .map(PrListResponse::getId)
+                .toList();
+
+        List<PrTechStackMapping> techStacks = getTechStacks(prIds);
+
+        Map<Long, List<PrTechStackResponse>> techStackMap = techStacks.stream().collect(
+                Collectors.groupingBy(
+                        PrTechStackMapping::prId,
+                        Collectors.mapping(
+                                PrTechStackResponse::new,
+                                Collectors.toList()
+                        )
+                )
+        );
+
+        List<PrListResponse> result = prs.stream()
+                .map(pr -> pr.addTechStacks(techStackMap.get(pr.getId()))).toList();
+
+        return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());
+    }
+
+    private List<PrTechStackMapping> getTechStacks(List<Long> prIds) {
+        QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
+
+        List<PrTechStackMapping> techStacks = jpaQueryFactory.select(Projections.constructor(
+                        PrTechStackMapping.class,
+                        qPrTechStack.pr.id,
+                        qPrTechStack.techStack.id,
+                        qPrTechStack.techStack.name,
+                        qPrTechStack.level
+                ))
+                .from(qPrTechStack)
+                .where(
+                        qPrTechStack.pr.id.in(prIds)
+                )
+                .fetch();
+        return techStacks;
+    }
+
+    private OrderSpecifier<?>[] getOrderSpecifier(Sort sort) {
+        List<OrderSpecifier<?>> orders = new ArrayList<>();
+        sort.stream().forEach(order -> {
+            Order direction = order.isAscending() ? Order.ASC : Order.DESC;
+            PathBuilder<?> expression = new PathBuilder<>(Pr.class, "pr");
+            orders.add(new OrderSpecifier<>(direction, expression.get(order.getProperty(), Comparable.class)));
+        });
+        return orders.toArray(OrderSpecifier[]::new);
+    }
+
+    private JPAQuery<Long> countQuery() {
+        return jpaQueryFactory.select(qPr.count())
+                .from(qPr);
+    }
+}

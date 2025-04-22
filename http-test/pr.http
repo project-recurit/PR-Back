@@ -31,7 +31,7 @@ GET {{host}}/api/v1/post/pr?page=0&size=20
 Content-Type: application/json
 
 ### PR 게시글 조회
-GET {{host}}/api/v1/post/pr/1
+GET {{host}}/api/v1/post/pr/2
 Content-Type: application/json
 
 ### PR 게시글 수정
