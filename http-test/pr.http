@@ -73,3 +73,14 @@ Authorization: Bearer {{accessToken}}
 DELETE {{host}}/api/v1/post/pr/1
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
+
+
+### PR 댓글 작성
+POST {{host}}/api/v1/prs/2/comments
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "parentId": 1,
+  "content": "댓글1"
+}
