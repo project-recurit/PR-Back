@@ -7,6 +7,7 @@ import com.example.sideproject.global.auth.service.JwtTokenHelper;
 import com.example.sideproject.global.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.http.client.methods.HttpGet;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,6 +67,8 @@ public class SecurityConfig {
                                 "/ws-stomp/**",
                                 "/error"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/notifications/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/sse/**").authenticated()
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
         );
