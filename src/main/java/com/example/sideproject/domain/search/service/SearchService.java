@@ -1,8 +1,8 @@
 //package com.example.sideproject.domain.search.service;
 //
-//import com.example.sideproject.domain.project.entity.Project;
-//import com.example.sideproject.domain.project.entity.ProjectTechStack;
-//import com.example.sideproject.domain.project.repository.ProjectRepository;
+//import com.example.sideproject.domain.entity.recruitment.Recruitment;
+//import com.example.sideproject.domain.entity.recruitment.ProjectTechStack;
+//import com.example.sideproject.domain.repository.recruitment.ProjectRepository;
 //import com.example.sideproject.domain.search.entity.PostSearchType;
 //import com.example.sideproject.domain.search.entity.ProjectDocument;
 //import com.example.sideproject.domain.search.dto.SearchResultDto;
@@ -29,7 +29,7 @@
 //        return switch (type) {
 //            case all -> results;
 //
-//            case project -> searchProject(query,techStacks);
+//            case recruitment -> searchProject(query,techStacks);
 //            //todo pr 검색도 추가
 //            case pr -> results;
 //
@@ -67,10 +67,10 @@
 //
 //
 //    //엘라스틱 서치 동기화
-//    public void saveProject(Project project) {
-//        ProjectDocument projectDocument = new ProjectDocument(project);
+//    public void saveProject(Recruitment recruitment) {
+//        ProjectDocument projectDocument = new ProjectDocument(recruitment);
 //        searchProjectRepository.save(projectDocument);
-//        log.info("프로젝트 ID {} Elasticsearch 인덱싱 완료", project.getId());
+//        log.info("프로젝트 ID {} Elasticsearch 인덱싱 완료", recruitment.getId());
 //    }
 //
 //    @Transactional
@@ -80,7 +80,7 @@
 //            long count = searchProjectRepository.count();
 //            if (count == 0) {
 //                log.info("Elasticsearch 인덱싱된 프로젝트가 없습니다. 초기 인덱싱을 시작합니다...");
-//                List<Project> allProjects = projectRepository.findAll();
+//                List<Recruitment> allProjects = projectRepository.findAll();
 //                List<ProjectDocument> documents = allProjects.stream()
 //                        .map(ProjectDocument::new)
 //                        .toList();

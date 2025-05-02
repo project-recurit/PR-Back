@@ -1,7 +1,7 @@
 package com.example.sideproject.domain.applicant.entity;
 
 import com.example.sideproject.global.enums.Position;
-import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -21,8 +21,8 @@ public class Applicant extends Timestamped {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    private Project project;
+    @JoinColumn(name = "recruitment_id")
+    private Recruitment recruitment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uesr_id")

@@ -1,12 +1,9 @@
 package com.example.sideproject.domain.bookmark.dto;
 
 
-import java.util.Set;
-
-import com.example.sideproject.domain.user.entity.TechStack1;
 import lombok.Getter;
 import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
-import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.recruitment.entity.Recruitment;
 
 @Getter
 public class TeamRecruitBookmarkResponseDto {
@@ -37,7 +34,7 @@ public class TeamRecruitBookmarkResponseDto {
         this.username = bookmark.getUser().getUsername();
         
         // 팀 모집글 정보 매핑
-        Project recruit = bookmark.getProject();
+        Recruitment recruit = bookmark.getRecruitment();
         this.teamRecruitId = recruit.getId();
         this.title = recruit.getTitle();
         this.content = recruit.getContent();

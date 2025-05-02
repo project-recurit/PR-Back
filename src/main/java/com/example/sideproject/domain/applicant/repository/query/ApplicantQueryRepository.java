@@ -20,22 +20,22 @@ public class ApplicantQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private QApplicant qApplicant = QApplicant.applicant;
 
-    public List<ApplicantResponseDto> findApplicants(Long userId, Long projectId, SearchApplicantDto searchDto) {
+    public List<ApplicantResponseDto> findApplicants(Long userId, Long recruitmentId, SearchApplicantDto searchDto) {
         List<ApplicantResponseDto> result = jpaQueryFactory.select(Projections.constructor(
                         ApplicantResponseDto.class,
                         qApplicant.id,
-                        qApplicant.project.id,
+                        qApplicant.recruitment.id,
                         qApplicant.user.nickname,
                         qApplicant.position,
                         qApplicant.status,
                         qApplicant.createdAt,
                         qApplicant.modifiedAt
                 )).from(qApplicant)
-                .join(qApplicant.project)
+                .join(qApplicant.recruitment)
                 .join(qApplicant.user)
                 .where(
-                        eqProjectId(projectId),
-                        eqProjectUserId(userId),
+                        eqRecruitmentId(recruitmentId),
+                        eqRecruitmentUserId(userId),
                         createSearchCondition(searchDto)
                 ).fetch();
 
@@ -64,17 +64,17 @@ public class ApplicantQueryRepository {
         return result;
     }
 
-    private BooleanExpression eqProjectUserId(Long userId) {
+    private BooleanExpression eqRecruitmentUserId(Long userId) {
         if (userId == null) {
             return null;
         }
-        return qApplicant.project.user.id.eq(userId);
+        return qApplicant.recruitment.user.id.eq(userId);
     }
 
-    private BooleanExpression eqProjectId(Long projectId) {
-        if (projectId == null) {
+    private BooleanExpression eqRecruitmentId(Long recruitmentId) {
+        if (recruitmentId == null) {
             return null;
         }
-        return qApplicant.project.id.eq(projectId);
+        return qApplicant.recruitment.id.eq(recruitmentId);
     }
 }

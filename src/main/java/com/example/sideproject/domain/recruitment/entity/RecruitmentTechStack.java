@@ -1,0 +1,28 @@
+package com.example.sideproject.domain.recruitment.entity;
+
+import com.example.sideproject.domain.techstack.entity.TechStack;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class RecruitmentTechStack {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tech_stack_id", nullable = false)
+    private TechStack techStack;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruitment_id", nullable = false)
+    private Recruitment recruitment;
+}
