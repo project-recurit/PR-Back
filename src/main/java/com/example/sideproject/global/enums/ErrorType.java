@@ -1,6 +1,7 @@
 package com.example.sideproject.global.enums;
 
 import com.example.sideproject.global.exception.ErrorCode;
+import com.sun.net.httpserver.HttpsServer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ public enum ErrorType implements ErrorCode {
     NOT_AVAILABLE_PERMISSION(HttpStatus.LOCKED, "권한이 없습니다.")
      */
 
+    AUTHORIZATION_FAILED(HttpStatus.UNAUTHORIZED, "토큰 검증 도중 실패했습니다."),
     // common
     PAYLOAD_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "255자 이내로 입력해주세요."),
     TOKEN_ERROR(HttpStatus.UNAUTHORIZED,

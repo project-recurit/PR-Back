@@ -1,7 +1,11 @@
 package com.example.sideproject.global.auth.filter;
 
 import com.example.sideproject.global.auth.service.JwtTokenHelper;
+import com.example.sideproject.global.dto.ExceptionDto;
+import com.example.sideproject.global.enums.ErrorType;
+import com.example.sideproject.global.exception.CustomException;
 import com.example.sideproject.global.security.UserDetailsServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,6 +19,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
@@ -42,12 +47,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(refreshValue)) {
             if (!jwtTokenHelper.validateToken(refreshValue)) {
                 log.error("RefreshToken Error");
+                setUnAuthorizedResponse(res, new CustomException(ErrorType.INVALID_TOKEN));
                 return;
             }
         }
         else if (StringUtils.hasText(accessValue)) {
             if (!jwtTokenHelper.validateToken(accessValue)) {
                 log.error("AccessToken Error");
+                setUnAuthorizedResponse(res, new CustomException(ErrorType.INVALID_TOKEN));
                 return;
             }
             Claims info = jwtTokenHelper.getUserInfoFromToken(accessValue);
@@ -56,13 +63,27 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 setAuthentication(info.getSubject());
             } catch (Exception e) {
                 log.error(e.getMessage());
-                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                res.setCharacterEncoding("utf-8");
-                res.getWriter().write("상태 : " + res.getStatus() + e.getMessage());
+                setUnAuthorizedResponse(res, e);
             }
         }
 
         filterChain.doFilter(req, res);
+    }
+
+    private void setUnAuthorizedResponse(HttpServletResponse res, Exception e) throws IOException {
+        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        res.setCharacterEncoding("utf-8");
+
+        ErrorType errorType = getErrorType(e);
+        ExceptionDto responseDto = new ExceptionDto(errorType);
+        res.getWriter().write(new ObjectMapper().writeValueAsString(responseDto));
+    }
+
+    private ErrorType getErrorType(Exception e) {
+        if (e instanceof CustomException error) {
+            return error.getErrorType();
+        }
+        return ErrorType.AUTHORIZATION_FAILED;
     }
 
     // 인증 처리

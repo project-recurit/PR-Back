@@ -101,7 +101,14 @@ public class PrQueryRepository {
             idIn = qPr.id.in(prIds);
         }
 
-        return Expressions.allOf(positionIn, workTypeIn, idIn);
+        return Expressions.allOf(positionIn, workTypeIn, idIn, containsBySearchText(prSearchRequest.searchText()));
+    }
+
+    private BooleanExpression containsBySearchText(String searchText){
+        if (searchText == null) {
+            return null;
+        }
+        return qPr.title.contains(searchText).or(qPr.introduce.contains(searchText));
     }
 
     private List<Long> findIdsByTechStackIds(List<Long> techStackIds) {

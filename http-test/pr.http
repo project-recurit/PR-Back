@@ -27,7 +27,7 @@ Authorization: Bearer {{accessToken}}
 }
 
 ### PR 게시글 리스트 조회
-GET {{host}}/api/v1/post/pr?page=0&size=20&workTypes=ALL&positions=FRONTEND,BACKEND&techStackIds=102,103
+GET {{host}}/api/v1/post/pr?page=0&size=20&workTypes=ALL&positions=FRONTEND,BACKEND&techStackIds=102,103&searchText=title
 Content-Type: application/json
 
 ### PR 게시글 조회

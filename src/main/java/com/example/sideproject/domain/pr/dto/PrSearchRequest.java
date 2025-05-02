@@ -14,7 +14,9 @@ public record PrSearchRequest(
         @Schema(description = "기술 스택 고유번호")
         List<Long> techStackIds,
         @Schema(description = "진행 방식")
-        List<WorkType> workTypes
+        List<WorkType> workTypes,
+        @Schema(description = "검색 텍스트, 제목과 소개 내용 검색")
+        String searchText
 ) {
     public PrSearchRequest {
         // 중복 제거
