@@ -105,6 +105,9 @@ public class PrQueryRepository {
     }
 
     private BooleanExpression containsBySearchText(String searchText){
+        if (searchText == null) {
+            return null;
+        }
         return qPr.title.contains(searchText).or(qPr.introduce.contains(searchText));
     }
 
