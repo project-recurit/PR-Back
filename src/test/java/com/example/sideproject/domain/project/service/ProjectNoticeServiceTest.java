@@ -1,6 +1,6 @@
-//package com.example.sideproject.domain.project.service;
+//package com.example.sideproject.domain.recruitment.service;
 //
-//import com.example.sideproject.domain.project.entity.Project;
+//import com.example.sideproject.domain.entity.recruitment.Recruitment;
 //import com.example.sideproject.domain.techstack.entity.TechStack;
 //import com.example.sideproject.domain.user.entity.User;
 //import com.example.sideproject.domain.user.entity.UserTechStack;
@@ -48,13 +48,13 @@
 //                        .build()
 //        );
 //
-//        Project project = Project.builder()
+//        Recruitment recruitment = Recruitment.builder()
 //                .id(1L)
 //                .title("project1")
 //                .user(user1)
 //                .build();
 //        List<Long> techStackIds = techStacks.stream().map(TechStack::getId).toList();
-//        EventListDto notice = projectNoticeService.notice(project, users, techStackIds);
+//        EventListDto notice = projectNoticeService.notice(recruitment, users, techStackIds);
 //        System.out.println(notice);
 //    }
 //}

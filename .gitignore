@@ -12,7 +12,7 @@ build/
 .apt_generated
 .classpath
 .factorypath
-.project
+.recruitment
 .settings
 .springBeans
 .sts4-cache

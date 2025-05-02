@@ -3,9 +3,9 @@ package com.example.sideproject.domain.bookmark.service;
 import com.example.sideproject.domain.bookmark.dto.TeamRecruitBookmarkPageResponseDto;
 import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
 import com.example.sideproject.domain.bookmark.repository.TeamRecruitBookmarkRepository;
-import com.example.sideproject.domain.project.repository.ProjectRepository;
+import com.example.sideproject.domain.recruitment.entity.Recruitment;
+import com.example.sideproject.domain.recruitment.repository.RecruitmentRepository;
 import com.example.sideproject.domain.user.repository.UserRepository;
-import com.example.sideproject.domain.project.entity.Project;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.exception.CustomException;
 import com.example.sideproject.global.enums.ErrorType;
@@ -23,19 +23,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class TeamRecruitBookmarkService {
     private final TeamRecruitBookmarkRepository bookmarkRepository;
     private final UserRepository userRepository;
-    private final ProjectRepository projectRepository;
+    private final RecruitmentRepository recruitmentRepository;
 
     public void toggleBookmark(Long teamRecruitId, User user) {
         User foundUser = userRepository.findById(user.getId())
             .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
-        Project project = projectRepository.findById(teamRecruitId)
+        Recruitment recruitment = recruitmentRepository.findById(teamRecruitId)
             .orElseThrow(() -> new CustomException(ErrorType.TEAM_RECRUIT_NOT_FOUND));
 
-        if (bookmarkRepository.existsByUserAndProject(foundUser, project)) {
-            bookmarkRepository.deleteByUserAndProject(foundUser, project);
+        if (bookmarkRepository.existsByUserAndRecruitment(foundUser, recruitment)) {
+            bookmarkRepository.deleteByUserAndRecruitment(foundUser, recruitment);
         } else {
-            bookmarkRepository.save(new TeamRecruitBookmark(foundUser, project));
+            bookmarkRepository.save(new TeamRecruitBookmark(foundUser, recruitment));
         }
     }
 

@@ -8,8 +8,8 @@ import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.repository.ApplicantRepository;
 import com.example.sideproject.domain.applicant.repository.query.ApplicantQueryRepository;
 import com.example.sideproject.domain.notification.service.ApplicantNotificationService;
-import com.example.sideproject.domain.project.entity.Project;
-import com.example.sideproject.domain.project.service.ProjectService;
+import com.example.sideproject.domain.recruitment.entity.Recruitment;
+import com.example.sideproject.domain.recruitment.service.RecruitmentService;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
@@ -23,34 +23,34 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
-    private final ProjectService projectService;
+    private final RecruitmentService recruitmentService;
     private final ApplicantQueryRepository applicantQueryRepository;
     private final ApplicantNotificationService applicantNotificationService;
 
     /**
      * 프로젝트 지원
      */
-    public Long apply(User user, Long projectId, ApplicantApplyDto req) {
+    public Long apply(User user, Long recruitmentId, ApplicantApplyDto req) {
         // 프로젝트가 있는지 확인
-        Project project = projectService.findProject(projectId);
+        Recruitment recruitment = recruitmentService.findRecruitment(recruitmentId);
 
         // 지원 내역 확인
-        if (applicantRepository.existsByProjectAndUser(project, user)) {
+        if (applicantRepository.existsByRecruitmentAndUser(recruitment, user)) {
             throw new CustomException(ErrorType.DUPLICATE_APPLICATION);
         }
 
         Applicant applicant = Applicant.builder()
-                .project(project)
+                .recruitment(recruitment)
                 .user(user)
                 .position(req.position())
                 .status(ApplicationStatus.unviewed)
                 .build();
 
         applicantNotificationService.registerApplicant(
-                projectId,
-                project.getTitle(),
+                recruitmentId,
+                recruitment.getTitle(),
                 applicant.getPosition(),
-                project.getUser().getId()
+                recruitment.getUser().getId()
         );
 
         return applicantRepository.save(applicant).getId();
@@ -60,21 +60,21 @@ public class ApplicantService {
      * 프로젝트 지원 상태 변경
      */
     @Transactional
-    public void updateStatus(User user, Long projectId, Long applicantId, ApplicationStatus status) {
-        Project project = projectService.findProject(projectId);
-        if (!project.isProjectLeader(user.getId())) {
+    public void updateStatus(User user, Long recruitmentId, Long applicantId, ApplicationStatus status) {
+        Recruitment recruitment = recruitmentService.findRecruitment(recruitmentId);
+        if (!recruitment.isRecruitmentLeader(user.getId())) {
             throw new CustomException(ErrorType.APPLICANT_NOT_FOUND);
         }
 
-        Applicant applicant = applicantRepository.findByIdAndProject(applicantId, project)
+        Applicant applicant = applicantRepository.findByIdAndRecruitment(applicantId, recruitment)
                 .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
 
         applicant.updateStatus(status);
 
         if (status.isNotify()) {
             applicantNotificationService.changeApplicantStatus(
-                    projectId,
-                    project.getTitle(),
+                    recruitmentId,
+                    recruitment.getTitle(),
                     status,
                     applicant.getUser().getId()
             );
@@ -84,9 +84,9 @@ public class ApplicantService {
     /**
      * 프로젝트 지원 삭제
      */
-    public void cancel(User user, Long projectId, Long applicantId) {
-        Project project = projectService.findProject(projectId);
-        Applicant applicant = applicantRepository.findByIdAndProject(applicantId, project)
+    public void cancel(User user, Long recruitmentId, Long applicantId) {
+        Recruitment recruitment = recruitmentService.findRecruitment(recruitmentId);
+        Applicant applicant = applicantRepository.findByIdAndRecruitment(applicantId, recruitment)
                 .orElseThrow(() -> new CustomException(ErrorType.APPLICANT_NOT_FOUND));
 
         if (!applicant.isOwn(user.getId())) {
@@ -99,7 +99,7 @@ public class ApplicantService {
     /**
      * 해당 프로젝트의 지원자 목록 조회
      */
-    public List<ApplicantResponseDto> getApplicants(User user, Long projectId, SearchApplicantDto searchDto) {
-        return applicantQueryRepository.findApplicants(user.getId(), projectId, searchDto);
+    public List<ApplicantResponseDto> getApplicants(User user, Long recruitmentId, SearchApplicantDto searchDto) {
+        return applicantQueryRepository.findApplicants(user.getId(), recruitmentId, searchDto);
     }
 }

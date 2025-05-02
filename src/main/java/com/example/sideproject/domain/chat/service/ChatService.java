@@ -7,7 +7,7 @@ import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
 import com.example.sideproject.domain.notification.service.ChatNotificationService;
 import com.example.sideproject.domain.pr.repository.PrRepository;
-import com.example.sideproject.domain.project.repository.ProjectRepository;
+import com.example.sideproject.domain.recruitment.repository.RecruitmentRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.config.WebSocketEventHandler;
@@ -35,7 +35,7 @@ public class ChatService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final UserRepository userRepository;
     private final WebSocketEventHandler webSocketEventHandler;
-    private final ProjectRepository projectRepository;
+    private final RecruitmentRepository projectRepository;
     private final PrRepository prRepository;
     private final ChatNotificationService chatNotificationService;
 
@@ -54,7 +54,7 @@ public class ChatService {
 
         if (chatRoomType == ChatRoomType.PROJECT) {
             projectRepository.findById(referenceId)
-                    .orElseThrow(() -> new IllegalArgumentException("Project not found"));
+                    .orElseThrow(() -> new IllegalArgumentException("Recruitment not found"));
         } else if (chatRoomType == ChatRoomType.PR) {
             prRepository.findById(referenceId)
                     .orElseThrow(() -> new IllegalArgumentException("PublicResume not found"));
@@ -299,7 +299,7 @@ public class ChatService {
         if (type == ChatRoomType.PROJECT) {
             return projectRepository.findById(referenceId)
                     .map(ContentSummaryResponse::from)
-                    .orElseThrow(() -> new IllegalArgumentException("Project not found with id: " + referenceId));
+                    .orElseThrow(() -> new IllegalArgumentException("Recruitment not found with id: " + referenceId));
         } else if (type == ChatRoomType.PR) {
             return prRepository.findById(referenceId)
                     .map(ContentSummaryResponse::from)

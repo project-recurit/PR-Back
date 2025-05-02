@@ -21,7 +21,7 @@
 //                .title(document.getTitle())
 //                .content(document.getContent())
 //                .techStacks(document.getTechStackNames())
-//                .type("project")
+//                .type("recruitment")
 //                .build();
 //    }
 //}

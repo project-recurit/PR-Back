@@ -1,8 +1,8 @@
 //package com.example.sideproject.domain.search.entity;
 //
 //
-//import com.example.sideproject.domain.project.entity.Project;
-//import com.example.sideproject.domain.project.entity.ProjectTechStack;
+//import com.example.sideproject.domain.entity.recruitment.Recruitment;
+//import com.example.sideproject.domain.entity.recruitment.ProjectTechStack;
 //import com.example.sideproject.domain.techstack.entity.TechStack;
 //import lombok.Data;
 //import lombok.Getter;
@@ -35,11 +35,11 @@
 //    @Field(type = FieldType.Keyword)
 //    private String period;
 //
-//    public ProjectDocument(Project project) {
-//        this.id = project.getId();
-//        this.title = project.getTitle();
-//        this.content = project.getContent();
-//        this.techStackNames = project.getProjectTechStacks().stream()
+//    public ProjectDocument(Recruitment recruitment) {
+//        this.id = recruitment.getId();
+//        this.title = recruitment.getTitle();
+//        this.content = recruitment.getContent();
+//        this.techStackNames = recruitment.getProjectTechStacks().stream()
 //                .map(pts -> pts.getTechStack().getName())
 //                .collect(Collectors.toList());
 //    }

@@ -4,7 +4,7 @@ import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 
 public record ApplicantResponseDto(
         Long id,
-        Long projectId,
+        Long recruitmentId,
         String nickname,
         String position,
         ApplicationStatus status,

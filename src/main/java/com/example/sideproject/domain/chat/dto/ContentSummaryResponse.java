@@ -2,7 +2,7 @@ package com.example.sideproject.domain.chat.dto;
 
 import com.example.sideproject.domain.chat.entity.ChatRoomType;
 import com.example.sideproject.domain.pr.entity.Pr;
-import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.recruitment.entity.Recruitment;
 
 public record ContentSummaryResponse(
         Long id,
@@ -11,10 +11,10 @@ public record ContentSummaryResponse(
 ) {
     // 단일 팩토리 메서드로 통합
     public static ContentSummaryResponse from(Object content) {
-        if (content instanceof Project project) {
+        if (content instanceof Recruitment recruitment) {
             return new ContentSummaryResponse(
-                    project.getId(),
-                    project.getTitle(),
+                    recruitment.getId(),
+                    recruitment.getTitle(),
                     ChatRoomType.PROJECT
             );
         } else if (content instanceof Pr pr) {

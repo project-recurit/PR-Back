@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "프로젝트 지원 api", description = "프로젝트 지원 api")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/project/{projectId}/applicant")
+@RequestMapping("/api/v1/recruitment/{recruitmentId}/applicant")
 public class ApplicantController {
     private final ApplicantService applicantService;
 
@@ -38,9 +38,9 @@ public class ApplicantController {
     })
     @GetMapping
     public ResponseEntity<ResponseDataDto<List<ApplicantResponseDto>>> getApplicants(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                                    @PathVariable("projectId") Long projectId,
+                                                                                    @PathVariable("recruitmentId") Long recruitmentId,
                                                                                     SearchApplicantDto searchDto) {
-        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, applicantService.getApplicants(userDetails.getUser(), projectId, searchDto)));
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, applicantService.getApplicants(userDetails.getUser(), recruitmentId, searchDto)));
     }
 
     @Operation(summary = "프로젝트 지원", description = "프로젝트에 지원한다.")
@@ -52,9 +52,9 @@ public class ApplicantController {
     })
     @PostMapping
     public ResponseEntity<ResponseDataDto<Long>> apply(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                       @PathVariable("projectId") Long projectId,
+                                                       @PathVariable("recruitmentId") Long recruitmentId,
                                                        @RequestBody ApplicantApplyDto req){
-        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, applicantService.apply(userDetails.getUser(), projectId, req)));
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, applicantService.apply(userDetails.getUser(), recruitmentId, req)));
     }
 
 
@@ -66,10 +66,10 @@ public class ApplicantController {
     })
     @PutMapping("/{applicantId}")
     public ResponseEntity<ResponseDataDto<Void>> updateStatus(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                              @PathVariable("projectId") Long projectId,
+                                                              @PathVariable("recruitmentId") Long recruitmentId,
                                                               @PathVariable("applicantId") Long applicantId,
                                                               @RequestBody ApplicantRequestDto req){
-        applicantService.updateStatus(userDetails.getUser(), projectId, applicantId, req.status());
+        applicantService.updateStatus(userDetails.getUser(), recruitmentId, applicantId, req.status());
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, null));
     }
 
@@ -81,9 +81,9 @@ public class ApplicantController {
     })
     @DeleteMapping("/{applicantId}")
     public ResponseEntity<ResponseDataDto<Void>> cancel(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                        @PathVariable("projectId") Long projectId,
+                                                        @PathVariable("recruitmentId") Long recruitmentId,
                                                         @PathVariable("applicantId") Long applicantId){
-        applicantService.cancel(userDetails.getUser(), projectId, applicantId);
+        applicantService.cancel(userDetails.getUser(), recruitmentId, applicantId);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, null));
     }
 }
