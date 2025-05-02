@@ -19,11 +19,14 @@ public record RecruitmentUpdateDto(
         int recruitmentCapacity, // 기존 teamSize → recruitmentCapacity 변경
         String isRecruiting, // 기존 recruitStatus → boolean 값 변경
         WorkType workType,
+        RecruitmentCategory recruitmentCategory,
+        boolean isCommercial,
         List<Long> recruitmentTechStacks,
         List<Long> existFiles,
         List<MultipartFile> newFiles
 ) {
-    public Recruitment update(User user, Long recruitmentId, List<RecruitmentTechStack> recruitmentTechStacks, List<RecruitmentImage> recruitmentImages) {
+    public Recruitment update(User user, Long recruitmentId, List<RecruitmentTechStack> recruitmentTechStacks,
+                              List<RecruitmentImage> recruitmentImages) {
 
         boolean recruiting;
         if(isRecruiting == "TRUE") {
@@ -40,10 +43,11 @@ public record RecruitmentUpdateDto(
                 .deadLine(deadLine)
                 .isRecruiting(recruiting) // 모집 상태 (true: 모집 중, false: 모집 종료)
                 .user(user)
-                .recruitmentCapacity(recruitmentCapacity)
                 .recruitmentTechStacks(recruitmentTechStacks)
                 .recruitmentImages(recruitmentImages)
                 .workType(workType)
+                .isCommercial(isCommercial)
+                .recruitmentCategory(recruitmentCategory)
                 .build();
     }
 }

@@ -1,9 +1,6 @@
 package com.example.sideproject.domain.recruitment.repository.query;
 
-import com.example.sideproject.domain.recruitment.dto.RecruitmentDetailResponseDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentTechStackDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentImageResponseDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentsResponseDto;
+import com.example.sideproject.domain.recruitment.dto.*;
 import com.example.sideproject.domain.recruitment.entity.*;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.techstack.entity.QTechStack;
@@ -18,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,15 +33,13 @@ public class RecruitmentQueryRepository {
     QUser user = QUser.user;
     QTechStack techStack = QTechStack.techStack;
     QRecruitmentImage recruitmentImage = QRecruitmentImage.recruitmentImage;
+    QRecruitmentPosition recruitmentPosition = QRecruitmentPosition.recruitmentPosition;
+
     private PageableExecutionUtils pageableExecutionUtils;
 
     public RecruitmentDetailResponseDto getRecruitment(Long recruitmentId) {
 
-        queryFactory // 조회수 + 1
-                .update(recruitment)
-                .set(recruitment.viewCount, recruitment.viewCount.add(1))
-                .where(recruitment.id.eq(recruitmentId))
-                .execute();
+        increaseViewCount(recruitmentId); // 조회수 + 1
 
         RecruitmentDetailResponseDto detail = queryFactory // 구인 글 정보 조회
                 .select(Projections.constructor(
@@ -56,9 +53,10 @@ public class RecruitmentQueryRepository {
                         user.nickname.as("userNickname"),
                         recruitment.deadLine.as("deadLine"),
                         recruitment.isRecruiting.as("isRecruiting"),
-                        recruitment.recruitmentCapacity.as("recruitmentCapacity"),
                         recruitment.modifiedAt.as("modifiedAt"),
-                        recruitment.workType.stringValue().as("workType")
+                        recruitment.workType.stringValue().as("workType"),
+                        recruitment.recruitmentCategory.as("recruitmentCategory"),
+                        recruitment.isCommercial.as("isCommercial")
                 ))
                 .from(recruitment)
                 .join(recruitment.user, user)
@@ -89,12 +87,25 @@ public class RecruitmentQueryRepository {
                 .from(recruitmentImage)
                 .where(recruitmentImage.recruitment.id.eq(recruitmentId))
                 .fetch();
+        List<RecruitmentPositionResponseDto> recruitmentPositions = queryFactory
+                .select(
+                        Projections.constructor(
+                                RecruitmentPositionResponseDto.class,
+                                recruitmentPosition.position.as("position"),
+                                recruitmentPosition.capacity.as("capacity")
+                        ))
+                .from(recruitmentPosition)
+                .where(recruitmentPosition.recruitment.id.eq(recruitmentId))
+                .fetch();
 
         detail.setFileUrls(recruitmentImages); // dto 합치기
         detail.setTechStacks(techStacks);
-        if(detail != null && detail.getEstimatedDuration() != null) {
+        detail.setRecruitPositions(recruitmentPositions);
+
+        if (detail != null && detail.getEstimatedDuration() != null) {
             detail.setEstimatedDurationDetail(detail.getEstimatedDuration().getDescription());
         }
+
         return detail;
     }
 
@@ -102,13 +113,15 @@ public class RecruitmentQueryRepository {
 
         List<RecruitmentsResponseDto> recruitments = queryFactory
                 .select(Projections.constructor(
-                        RecruitmentsResponseDto.class,
+                                RecruitmentsResponseDto.class,
                                 recruitment.id.as("id"),
                                 recruitment.title.as("title"),
                                 user.nickname.as("userNickname"),
                                 recruitment.viewCount.as("viewCount"),
                                 recruitment.commentCount.as("commentCount"),
-                                recruitment.modifiedAt.as("modifiedAt")
+                                recruitment.modifiedAt.as("modifiedAt"),
+                                recruitment.recruitmentCategory.as("recruitmentCategory"),
+                                recruitment.isCommercial.as("isCommercial")
                         )
                 ).from(recruitment)
                 .join(recruitment.user, user)
@@ -145,6 +158,8 @@ public class RecruitmentQueryRepository {
                         recruitment.getViewCount(),
                         recruitment.getCommentCount(),
                         recruitment.getModifiedAt(),
+                        recruitment.getRecruitmentCategory(),
+                        recruitment.isCommercial(),
                         techStackMap.getOrDefault(recruitment.getId(), Collections.emptyList())
                                 .stream()
                                 .map(entry -> new TechStackDto(entry.getKey(), entry.getValue())) // DTO 변환
@@ -155,6 +170,7 @@ public class RecruitmentQueryRepository {
 
         return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());
     }
+
     private JPAQuery<Long> countQuery() {
         return queryFactory.select(recruitment.count())
                 .from(recruitment);
@@ -195,5 +211,13 @@ public class RecruitmentQueryRepository {
         });
 
         return recruitments;
+    }
+
+    private void increaseViewCount(Long recruitmentId) {
+        queryFactory // 조회수 + 1
+                .update(recruitment)
+                .set(recruitment.viewCount, recruitment.viewCount.add(1))
+                .where(recruitment.id.eq(recruitmentId))
+                .execute();
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,15 +33,15 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RecruitmentService {
     private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
-    private final RecruitmentNotificationService recruitmentNotificationService;
-    private final RecruitmentTechStackService recruitmentTechStackService;
-    private final RecruitmentImageService recruitmentImageService;
+    private final RecruitmentNotificationService recruitmentNotificationService; //알림
+    private final RecruitmentTechStackService recruitmentTechStackService; // 모집공고 기술스택
+    private final RecruitmentImageService recruitmentImageService; // 모집공고 이미지
     private final TechStackRepository techStackRepository; // 임시
-    private final RecruitmentQueryRepository recruitmentQueryRepository;
+    private final RecruitmentQueryRepository recruitmentQueryRepository; // 동적쿼리
+    private final RecruitmentPositionService recruitmentPositionService; // 모집공고 포지션
 //    private final SearchService searchService;
 //    private final SearchProjectRepository searchProjectRepository;
 
@@ -78,15 +79,21 @@ public class RecruitmentService {
             // 이 메서드 안에 saveAll
             recruitmentTechStackService.createRecruitmentTechStack(recruitmentTechStacks);
         }
+
+        // 구인공고 이미지
         if (requestDto.files() != null) {
             for (MultipartFile url : requestDto.files()) {
                 recruitmentImageService.createRecruitmentImage(recruitment, url);
             }
         }
 
-        // 기술스택에 해당하는 유저를 조회
-         List<User> users = findUserByTechStacks(techStacks);
+        // 구인공고 직무
+        if (!requestDto.positions().isEmpty()) {
+            recruitmentPositionService.createPosition(recruitment,requestDto.positions());
+        }
 
+        // 기술스택에 해당하는 유저를 조회 (알림)
+        List<User> users = findUserByTechStacks(techStacks);
         recruitmentNotificationService.notice(recruitment, users, techStackIds);
     }
 
@@ -98,8 +105,8 @@ public class RecruitmentService {
      * 게시글 상세 조회
      * 조회 시 viewCount + 1
      */
+    @Transactional
     public RecruitmentDetailResponseDto getRecruitment(Long recruitmentId) {
-
         return recruitmentQueryRepository.getRecruitment(recruitmentId);
     }
 
@@ -128,7 +135,7 @@ public class RecruitmentService {
         List<RecruitmentImage> existImageUrls = recruitmentImageService.existImageUrls(recruitmentId);
 
         // 기존 이미지중 삭제된거 있는 지 확인 후 삭제하기
-        if(!existImageUrls.isEmpty() && existImageUrls.size() != requestDto.existFiles().size()) {
+        if (!existImageUrls.isEmpty() && existImageUrls.size() != requestDto.existFiles().size()) {
             existImageUrls.removeIf(recruitmentImage -> !requestDto.existFiles().contains(recruitmentImage.getId()));
         }
 
