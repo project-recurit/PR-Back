@@ -114,3 +114,13 @@ Authorization: Bearer {{accessToken}}
   "parentId": 10,
   "content": "대댓글10-2"
 }
+
+### PR 관심 목록 등록
+POST {{host}}/api/v1/prs/2/favorites
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### PR 관심 목록 삭제
+DELETE {{host}}/api/v1/prs/2/favorites/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}

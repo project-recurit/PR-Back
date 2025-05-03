@@ -67,4 +67,16 @@ public class PrService {
         Page<PrListResponseDto> prs = prQueryRepository.getPrs(pageRequest, prSearchRequest);
         return new PagedModel<>(prs);
     }
+
+    @Transactional
+    public void increaseFavoriteCount(Long id) {
+        Pr pr = getPr(id);
+        pr.increaseFavoriteCount();
+    }
+
+    @Transactional
+    public void decrementFavoriteCount(Long id) {
+        Pr pr = getPr(id);
+        pr.decreaseFavoriteCount();
+    }
 }
