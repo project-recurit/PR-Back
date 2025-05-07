@@ -26,7 +26,7 @@ public class PrComment extends Timestamped {
 
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
     private PrComment parent;
 
