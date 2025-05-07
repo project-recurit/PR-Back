@@ -26,7 +26,7 @@ public class PrComment extends Timestamped {
 
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
     private PrComment parent;
 
@@ -68,6 +68,10 @@ public class PrComment extends Timestamped {
 
     public boolean isOwner(Long userId) {
         return Objects.equals(user.getId(), userId);
+    }
+
+    public boolean canDeleted() {
+        return replyCount == 0;
     }
 
 }

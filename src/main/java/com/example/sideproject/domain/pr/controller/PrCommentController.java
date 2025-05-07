@@ -10,6 +10,8 @@ import com.example.sideproject.global.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -32,17 +34,19 @@ public class PrCommentController {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, res));
     }
 
-    @Operation(summary = "pr 게시글 댓글 조회 ", description = "pr 게시글 댓글 조회, 페이징 처리 X")
+    @Operation(summary = "pr 게시글 댓글 조회 ", description = "pr 게시글 댓글 조회")
     @GetMapping
-    public ResponseEntity<ResponseDataDto<List<PrCommentResponse>>> getComments(@PathVariable("prId") Long prId) {
-        List<PrCommentResponse> res = prCommentService.getComments(prId);
+    public ResponseEntity<ResponseDataDto<PagedModel<PrCommentResponse>>> getComments(@PathVariable("prId") Long prId,
+                                                                                      Pageable page) {
+        PagedModel<PrCommentResponse> res = prCommentService.getComments(prId, page);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, res));
     }
 
-    @Operation(summary = "pr 게시글 댓글 조회 ", description = "pr 게시글 댓글 조회, 페이징 처리 X")
-    @GetMapping("reply")
-    public ResponseEntity<ResponseDataDto<List<PrCommentResponse>>> getCommentReplys(@PathVariable("prId") Long prId) {
-        List<PrCommentResponse> res = prCommentService.getComments(prId);
+    @Operation(summary = "pr 대댓글 조회", description = "pr 게시글 댓글 조회, 페이징 처리 X")
+    @GetMapping("/{parentId}/reply")
+    public ResponseEntity<ResponseDataDto<List<PrCommentResponse>>> getReply(@PathVariable("parentId") Long parentId,
+                                                                             Pageable page) {
+        List<PrCommentResponse> res = prCommentService.getReplys(parentId, page);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, res));
     }
 
