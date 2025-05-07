@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Timestamped {
+    public static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @CreatedDate
     @Column(updatable = false)
@@ -25,17 +26,14 @@ public abstract class Timestamped {
     private LocalDateTime modifiedAt;
 
     public static LocalDateTime toLocalDateTime(String str) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        return LocalDateTime.parse(str, formatter);
+        return LocalDateTime.parse(str, FORMATTER);
     }
 
     public String getCreatedAtToString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        return createdAt.format(formatter);
+        return createdAt.format(FORMATTER);
     }
 
     public String getModifiedAtToString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        return modifiedAt.format(formatter);
+        return modifiedAt.format(FORMATTER);
     }
 }
