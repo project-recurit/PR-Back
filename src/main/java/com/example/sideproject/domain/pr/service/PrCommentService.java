@@ -9,6 +9,9 @@ import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +36,10 @@ public class PrCommentService {
         return prCommentRepository.save(prComment).getId();
     }
 
-    public List<PrCommentResponse> getComments(Long prId) {
-        List<PrComment> comments = prCommentRepository.findByPr_IdAndParentIsNull(prId);
-        return comments.stream().map(PrCommentResponse::new).toList();
+    public PagedModel<PrCommentResponse> getComments(Long prId, Pageable page) {
+        Page<PrComment> comments = prCommentRepository.findByPr_IdAndParentIsNullOrderById(prId, page);
+        Page<PrCommentResponse> res = comments.map(PrCommentResponse::new);
+        return new PagedModel<>(res);
     }
 
     @Transactional
@@ -61,6 +65,12 @@ public class PrCommentService {
             throw new CustomException(ErrorType.NOT_OWNER);
         }
         prComment.decreaseCount();
+        prCommentRepository.save(prComment);
         prCommentRepository.delete(prComment);
+    }
+
+    public List<PrCommentResponse> getReplys(Long parentId, Pageable page) {
+        List<PrComment> replys = prCommentRepository.findByParent_IdOrderById(parentId, page);
+        return replys.stream().map(PrCommentResponse::new).toList();
     }
 }

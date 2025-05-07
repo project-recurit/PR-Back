@@ -101,6 +101,10 @@ DELETE {{host}}/api/v1/prs/2/comments/6
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
+### PR 대댓글 조회
+GET {{host}}/api/v1/prs/2/comments/5/reply
+Content-Type: application/json
+
 ### PR 대댓글 작성
 POST {{host}}/api/v1/prs/2/comments
 Content-Type: application/json
