@@ -31,10 +31,10 @@ public class PrController {
 
     @Operation(summary = "pr 게시글 리스트 조회", description = "해당하는 pr 게시글 조회")
     @GetMapping
-    public ResponseEntity<ResponseDataDto<PagedModel<PrListResponse>>> getPrs(Pageable pageable,
-                                                                              PrSort prSort,
-                                                                              PrSearchRequest prSearchRequest) {
-        PagedModel<PrListResponse> prs = prService.getPrs(pageable, prSort, prSearchRequest);
+    public ResponseEntity<ResponseDataDto<PagedModel<PrListResponseDto>>> getPrs(Pageable pageable,
+                                                                                 PrSort prSort,
+                                                                                 PrSearchRequest prSearchRequest) {
+        PagedModel<PrListResponseDto> prs = prService.getPrs(pageable, prSort, prSearchRequest);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, prs));
     }
 

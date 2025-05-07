@@ -8,11 +8,7 @@ public record PrCommentRequest(
         Long parentId,
         String content
 ) {
-    public PrComment toEntity(User user, Pr pr) {
-        PrComment parent = null;
-        if (parentId != null) {
-            parent = new PrComment(parentId);
-        }
+    public PrComment toEntity(User user, Pr pr, PrComment parent) {
         return PrComment.builder()
                 .pr(pr)
                 .parent(parent)

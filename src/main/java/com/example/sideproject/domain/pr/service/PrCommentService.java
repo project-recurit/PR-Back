@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.pr.service;
 
-import com.example.sideproject.domain.pr.dto.PrCommentListResponse;
+import com.example.sideproject.domain.pr.dto.PrCommentResponse;
 import com.example.sideproject.domain.pr.dto.PrCommentRequest;
 import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.pr.entity.PrComment;
@@ -18,16 +18,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PrCommentService {
     private final PrCommentRepository prCommentRepository;
+    private final PrService prService;
 
+    @Transactional
     public Long saveComment(User user, Long prId, PrCommentRequest prCommentRequest) {
-        Pr pr = new Pr(prId);
-        PrComment prComment = prCommentRequest.toEntity(user, pr);
+        Pr pr = prService.getPr(prId);
+        Long parentId = prCommentRequest.parentId();
+        PrComment parent = null;
+        if (prCommentRequest.parentId() != null) {
+            parent = getPrComment(parentId);
+        }
+        PrComment prComment = prCommentRequest.toEntity(user, pr, parent);
+        prComment.increaseCount();
         return prCommentRepository.save(prComment).getId();
     }
 
-    public List<PrCommentListResponse> getComment(Long prId) {
+    public List<PrCommentResponse> getComments(Long prId) {
         List<PrComment> comments = prCommentRepository.findByPr_IdAndParentIsNull(prId);
-        return comments.stream().map(PrCommentListResponse::new).toList();
+        return comments.stream().map(PrCommentResponse::new).toList();
     }
 
     @Transactional
@@ -47,11 +55,12 @@ public class PrCommentService {
         );
     }
 
-    public void deletetComment(User user, Long commentId) {
+    public void deleteComment(User user, Long commentId) {
         PrComment prComment = getPrComment(commentId);
         if (!prComment.isOwner(user.getId())) {
             throw new CustomException(ErrorType.NOT_OWNER);
         }
+        prComment.decreaseCount();
         prCommentRepository.delete(prComment);
     }
 }

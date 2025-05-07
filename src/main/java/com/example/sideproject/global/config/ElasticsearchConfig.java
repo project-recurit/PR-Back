@@ -6,10 +6,12 @@
 //import org.springframework.boot.CommandLineRunner;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
+//import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 //
 //
 //@Configuration
 //@RequiredArgsConstructor
+//@EnableElasticsearchRepositories(basePackages = "com.example.sideproject.domain.search.repository")
 //@Slf4j
 //public class ElasticsearchConfig {
 //
