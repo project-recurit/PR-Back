@@ -15,6 +15,6 @@ public class PrCommentResponse extends CommentResponseDto {
 
     public PrCommentResponse(PrComment prComment) {
         super(prComment.getId(), prComment.getContent(), prComment.getUser().getNickname(), prComment.getUser().getProfileUrl(),
-              prComment.getReplyCount(), prComment.getCreatedAt(), prComment.getModifiedAt());
+              prComment.getReplyCount(), prComment.getCreatedAtToString(), prComment.getModifiedAtToString());
     }
 }

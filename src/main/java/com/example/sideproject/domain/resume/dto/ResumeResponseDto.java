@@ -6,6 +6,7 @@ import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.global.enums.WorkType;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -19,8 +20,8 @@ public record ResumeResponseDto(
         List<String> documentUrl,
         List<TechStackDto> techStacks,
         List<ExperienceResponse> experiences,
-        String createdAt,
-        String modifiedAt
+        LocalDateTime createdAt,
+        LocalDateTime modifiedAt
 ) {
     public static ResumeResponseDto of(Resume resume) {
         return ResumeResponseDto.builder()
