@@ -26,8 +26,8 @@ public class TeamRecruitBookmarkResponseDto {
     public TeamRecruitBookmarkResponseDto(TeamRecruitBookmark bookmark) {
         // 북마크 정보 매핑
         this.bookmarkId = bookmark.getId();
-        this.createdAt = bookmark.getCreatedAt();
-        this.modifiedAt = bookmark.getModifiedAt();
+        this.createdAt = bookmark.getCreatedAtToString();
+        this.modifiedAt = bookmark.getModifiedAtToString();
         
         // 사용자 정보 매핑
         this.userId = bookmark.getUser().getId();

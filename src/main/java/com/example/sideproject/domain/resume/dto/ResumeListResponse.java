@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -28,13 +29,13 @@ public class ResumeListResponse {
     @Schema(description = "생성일")
     String createdAt;
 
-    public ResumeListResponse(Long resumeId, String title, Position position, WorkType workType, String modifiedAt, String createdAt) {
+    public ResumeListResponse(Long resumeId, String title, Position position, WorkType workType, LocalDateTime modifiedAt, LocalDateTime createdAt) {
         this.id = resumeId;
         this.title = title;
         this.position = position;
         this.workType = workType;
-        this.modifiedAt = modifiedAt;
-        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt.toString();
+        this.createdAt = createdAt.toString();
     }
 
     public ResumeListResponse addTechStack(List<TechStackMappingDto> techStacks) {

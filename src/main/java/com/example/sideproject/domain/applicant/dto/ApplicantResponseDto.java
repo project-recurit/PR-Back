@@ -1,14 +1,17 @@
 package com.example.sideproject.domain.applicant.dto;
 
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
+import com.example.sideproject.global.enums.Position;
+
+import java.time.LocalDateTime;
 
 public record ApplicantResponseDto(
         Long id,
         Long recruitmentId,
         String nickname,
-        String position,
+        Position position,
         ApplicationStatus status,
-        String createdAt,
-        String modifiedAt
+        LocalDateTime createdAt,
+        LocalDateTime modifiedAt
 ) {
 }

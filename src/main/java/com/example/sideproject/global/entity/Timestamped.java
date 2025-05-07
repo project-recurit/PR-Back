@@ -2,12 +2,10 @@ package com.example.sideproject.global.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -31,12 +29,12 @@ public abstract class Timestamped {
         return LocalDateTime.parse(str, formatter);
     }
 
-    public String getCreatedAt() {
+    public String getCreatedAtToString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         return createdAt.format(formatter);
     }
 
-    public String getModifiedAt() {
+    public String getModifiedAtToString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         return modifiedAt.format(formatter);
     }
