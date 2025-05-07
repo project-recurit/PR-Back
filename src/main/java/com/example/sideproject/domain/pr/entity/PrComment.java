@@ -70,4 +70,8 @@ public class PrComment extends Timestamped {
         return Objects.equals(user.getId(), userId);
     }
 
+    public boolean canDeleted() {
+        return replyCount == 0;
+    }
+
 }

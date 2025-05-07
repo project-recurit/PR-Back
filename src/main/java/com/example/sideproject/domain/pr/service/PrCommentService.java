@@ -62,9 +62,11 @@ public class PrCommentService {
     @Transactional
     public void deleteComment(User user, Long commentId) {
         PrComment prComment = getPrComment(commentId);
-        // todo 대댓글이 있으면 삭제 불가
         if (!prComment.isOwner(user.getId())) {
             throw new CustomException(ErrorType.NOT_OWNER);
+        }
+        if (!prComment.canDeleted()) {
+            throw new CustomException(ErrorType.REPLY_COMMENT_EXIST);
         }
         prComment.decreaseCount();
         prCommentRepository.delete(prComment);

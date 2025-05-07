@@ -21,8 +21,7 @@ public enum ErrorType implements ErrorCode {
     AUTHORIZATION_FAILED(HttpStatus.UNAUTHORIZED, "토큰 검증 도중 실패했습니다."),
     // common
     PAYLOAD_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "255자 이내로 입력해주세요."),
-    TOKEN_ERROR(HttpStatus.UNAUTHORIZED,
-            "토큰 에러!"),
+    TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "토큰 에러!"),
 
     // like
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요가 없습니다."),
@@ -134,6 +133,7 @@ public enum ErrorType implements ErrorCode {
     PR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 PR을 찾을 수 없습니다."),
     NOT_OWNER(HttpStatus.FORBIDDEN, "작성자가 아닙니다."),
     PR_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 댓글을 찾을 수 없습니다."),
+    REPLY_COMMENT_EXIST(HttpStatus.NOT_FOUND, "대댓글이 존재하여 삭제할 수 없습니다."),
 
     APPLICANT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지원서입니다."),
     DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST, "이미 지원한 사용자입니다."),
