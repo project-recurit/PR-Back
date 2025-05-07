@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.pr.repository.query;
 
-import com.example.sideproject.domain.pr.dto.PrListResponse;
+import com.example.sideproject.domain.pr.dto.PrListResponseDto;
 import com.example.sideproject.domain.pr.dto.PrSearchRequest;
 import com.example.sideproject.domain.pr.dto.PrTechStackMapping;
 import com.example.sideproject.domain.pr.dto.PrTechStackResponse;
@@ -35,21 +35,20 @@ public class PrQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private final QPr qPr = QPr.pr;
 
-    public Page<PrListResponse> getPrs(Pageable pageable, PrSearchRequest prSearchRequest) {
-        List<PrListResponse> prs = jpaQueryFactory.select(Projections.constructor(
-                        PrListResponse.class,
+    public Page<PrListResponseDto> getPrs(Pageable pageable, PrSearchRequest prSearchRequest) {
+        List<PrListResponseDto> prs = jpaQueryFactory.select(Projections.constructor(
+                        PrListResponseDto.class,
                         qPr.id,
                         qPr.title,
-                        qPr.workType,
-                        qPr.position,
+                        qPr.user.nickname,
+                        qPr.user.profileUrl,
                         qPr.count.viewCount,
                         qPr.count.commentCount,
                         qPr.count.favoriteCount,
-                        qPr.user.nickname,
-                        qPr.user.profileUrl,
-                        qPr.user.position,
                         qPr.createdAt,
-                        qPr.modifiedAt
+                        qPr.modifiedAt,
+                        qPr.workType,
+                        qPr.position
                 )).from(qPr)
                 .where(prSearchCondition(prSearchRequest))
                 .limit(pageable.getPageSize())
@@ -58,7 +57,7 @@ public class PrQueryRepository {
                 .fetch();
 
         List<Long> prIds = prs.stream()
-                .map(PrListResponse::getId)
+                .map(PrListResponseDto::getId)
                 .toList();
 
         List<PrTechStackMapping> techStacks = getTechStacks(prIds);
@@ -73,7 +72,7 @@ public class PrQueryRepository {
                 )
         );
 
-        List<PrListResponse> result = prs.stream()
+        List<PrListResponseDto> result = prs.stream()
                 .map(pr -> pr.addTechStacks(techStackMap.get(pr.getId()))).toList();
 
         return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());

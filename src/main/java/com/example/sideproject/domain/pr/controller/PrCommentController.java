@@ -1,14 +1,14 @@
 package com.example.sideproject.domain.pr.controller;
 
-import com.example.sideproject.domain.pr.dto.PrCommentListResponse;
+import com.example.sideproject.domain.pr.dto.PrCommentResponse;
 import com.example.sideproject.domain.pr.dto.PrCommentRequest;
-import com.example.sideproject.domain.pr.dto.PrRequest;
 import com.example.sideproject.domain.pr.service.PrCommentService;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.enums.ResponseStatus;
 import com.example.sideproject.global.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "pr 댓글 api")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/prs/{prId}/comments")
@@ -33,8 +34,15 @@ public class PrCommentController {
 
     @Operation(summary = "pr 게시글 댓글 조회 ", description = "pr 게시글 댓글 조회, 페이징 처리 X")
     @GetMapping
-    public ResponseEntity<ResponseDataDto<List<PrCommentListResponse>>> getComment(@PathVariable("prId") Long prId) {
-        List<PrCommentListResponse> res = prCommentService.getComment(prId);
+    public ResponseEntity<ResponseDataDto<List<PrCommentResponse>>> getComments(@PathVariable("prId") Long prId) {
+        List<PrCommentResponse> res = prCommentService.getComments(prId);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, res));
+    }
+
+    @Operation(summary = "pr 게시글 댓글 조회 ", description = "pr 게시글 댓글 조회, 페이징 처리 X")
+    @GetMapping("reply")
+    public ResponseEntity<ResponseDataDto<List<PrCommentResponse>>> getCommentReplys(@PathVariable("prId") Long prId) {
+        List<PrCommentResponse> res = prCommentService.getComments(prId);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, res));
     }
 
@@ -51,7 +59,7 @@ public class PrCommentController {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ResponseMessageDto> deletetComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                              @PathVariable("commentId") Long commentId) {
-        prCommentService.deletetComment(userDetails.getUser(), commentId);
+        prCommentService.deleteComment(userDetails.getUser(), commentId);
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.SUCCESS));
     }
 }
