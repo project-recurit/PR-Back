@@ -4,14 +4,10 @@ import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 
-import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Getter
 @Entity
 public class PrComment extends Timestamped {
@@ -34,13 +30,36 @@ public class PrComment extends Timestamped {
     @JoinColumn(name = "parent_id")
     private PrComment parent;
 
-    @BatchSize(size = 20)
-    @OrderBy(value = "id asc")
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PrComment> reply;
+    private int replyCount;
+
+    @Builder
+    public PrComment(Long id, User user, Pr pr, String content, PrComment parent, Integer replyCount) {
+        this.id = id;
+        this.user = user;
+        this.pr = pr;
+        this.content = content;
+        this.parent = parent;
+        this.replyCount = replyCount == null? 0 : replyCount;
+    }
 
     public PrComment(Long id) {
         this.id = id;
+    }
+
+    public void increaseCount() {
+        pr.increaseCommentCount();
+        if (parent == null) {
+            return;
+        }
+        parent.replyCount++;
+    }
+
+    public void decreaseCount() {
+        pr.decreaseCommentCount();
+        if (parent == null) {
+            return;
+        }
+        parent.replyCount--;
     }
 
     public void contentUpdate(String content) {
@@ -50,4 +69,5 @@ public class PrComment extends Timestamped {
     public boolean isOwner(Long userId) {
         return Objects.equals(user.getId(), userId);
     }
+
 }

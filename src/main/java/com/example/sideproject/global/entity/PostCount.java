@@ -2,10 +2,12 @@ package com.example.sideproject.global.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
+@Getter
 public final class PostCount {
     private int viewCount;
     private int commentCount;
