@@ -32,6 +32,7 @@ public class RecruitmentCommentService {
      * 파라미터에 parentId 값 x  -> 댓글
      * 파라미터에 parentId 값 o  -> 대댓글
      */
+    @Transactional
     public void createComment(Long recruitmentId, User user, RecruitmentCommentRequestDto requestDto) {
 
         final Recruitment recruitment = recruitmentService.findRecruitment(recruitmentId);
