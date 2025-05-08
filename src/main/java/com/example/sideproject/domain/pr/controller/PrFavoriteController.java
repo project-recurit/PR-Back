@@ -15,23 +15,23 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "pr 관심목록 api")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/prs/{prId}/favorites")
+@RequestMapping("/api/v1/favorites")
 public class PrFavoriteController {
     private final PrFavoriteService prFavoriteService;
 
     @Operation(summary = "pr 관심 목록 저장", description = "관심 목록에 해당하는 pr 저장")
-    @PostMapping
+    @PostMapping("/prs/{prId}")
     public ResponseEntity<ResponseDataDto<Long>> savePrFavorite(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                               @PathVariable("prId") Long prId) {
-        Long id = prFavoriteService.savePrFavorite(userDetails.getUser(), prId);
+                                                                @PathVariable("prId") Long prId) {
+        Long id = prFavoriteService.saveFavorite(userDetails.getUser(), prId);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, id));
     }
 
     @Operation(summary = "pr 관심 목록 삭제", description = "관심 목록에 해당하는 pr 삭제")
-    @DeleteMapping("/{favoriteId}")
+    @DeleteMapping("/{favoriteId}/pr")
     public ResponseEntity<Void> removePrFavorite(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                  @PathVariable("favoriteId") Long favoriteId) {
-        prFavoriteService.removePrFavorite(userDetails.getUser(), favoriteId);
+        prFavoriteService.deleteFavorite(userDetails.getUser(), favoriteId);
         return ResponseEntity.noContent().build();
     }
 }
