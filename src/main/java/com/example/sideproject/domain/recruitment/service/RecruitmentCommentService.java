@@ -2,7 +2,6 @@ package com.example.sideproject.domain.recruitment.service;
 
 import com.example.sideproject.domain.recruitment.dto.RecruitmentCommentRequestDto;
 import com.example.sideproject.domain.recruitment.dto.RecruitmentCommentResponseDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentRequestDto;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentComment;
 import com.example.sideproject.domain.recruitment.repository.RecruitmentCommentRepository;
@@ -37,6 +36,12 @@ public class RecruitmentCommentService {
 
         final Recruitment recruitment = recruitmentService.findRecruitment(recruitmentId);
         final RecruitmentComment comment = requestDto.toEntity(user, recruitment);
+
+        RecruitmentComment parent = null;
+        if(requestDto.parentId() != null) {
+            parent = findComment(requestDto.parentId());
+            parent.increaseReplyCount();
+        }
         recruitment.addCommentCount();
 
         commentRepository.save(comment);
@@ -47,7 +52,6 @@ public class RecruitmentCommentService {
      * 상세조회는 필요 없어서 바로 전체 조회
      */
     public Page<RecruitmentCommentResponseDto> getComments(Long recruitmentId, int page) {
-
         final Pageable pageable = PageRequest.of(page - 1, 20);
         return commentQueryRepository.getComments(recruitmentId, pageable);
     }
@@ -56,7 +60,6 @@ public class RecruitmentCommentService {
      * 대댓글 전체 조회
      */
     public List<RecruitmentCommentResponseDto> getReply(Long commentId) {
-
         return commentQueryRepository.getReply(commentId);
     }
 
@@ -80,6 +83,7 @@ public class RecruitmentCommentService {
      * 댓글 삭제
      * commentId나 user의 값이 하나라도 일치 안하면 에러
      */
+    @Transactional
     public void deleteComment(Long commentId, User user) {
 
         final RecruitmentComment comment = findComment(commentId);
@@ -88,6 +92,7 @@ public class RecruitmentCommentService {
             throw new CustomException(ErrorType.NOT_USER_COMMENT);
         }
 
+        comment.getRecruitment().downCommentCount();
         commentRepository.deleteById(commentId);
     }
 

@@ -10,4 +10,12 @@ public class RecruitmentPositionRequestDto {
     private int capacity;
     @NotNull
     private Position position;
+
+    public RecruitmentPositionRequestDto() {
+    }
+
+    public RecruitmentPositionRequestDto(int capacity, Position position) {
+        this.capacity = capacity;
+        this.position = position;
+    }
 }

@@ -29,15 +29,23 @@ public class RecruitmentComment extends Timestamped {
     @JoinColumn(name = "recruitment_id", nullable = false)
     private Recruitment recruitment;
 
+    @Column(name = "reply_count")
+    private int replyCount;
+
     @Builder
-    public RecruitmentComment(String content, Long parentId, User user, Recruitment recruitment) {
+    public RecruitmentComment(String content, Long parentId, User user, Recruitment recruitment, int replyCount) {
         this.content = content;
         this.parentId = parentId;
         this.user = user;
         this.recruitment = recruitment;
+        this.replyCount = replyCount;
     }
 
     public void update(String content) {
         this.content = content;
+    }
+
+    public void increaseReplyCount() {
+        this.replyCount = this.replyCount + 1;
     }
 }

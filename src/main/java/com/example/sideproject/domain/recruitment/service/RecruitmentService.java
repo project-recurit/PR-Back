@@ -1,12 +1,10 @@
 package com.example.sideproject.domain.recruitment.service;
 
 import com.example.sideproject.domain.notification.service.RecruitmentNotificationService;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentDetailResponseDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentRequestDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentUpdateDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentsResponseDto;
+import com.example.sideproject.domain.recruitment.dto.*;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentImage;
+import com.example.sideproject.domain.recruitment.entity.RecruitmentPosition;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentTechStack;
 import com.example.sideproject.domain.recruitment.repository.RecruitmentRepository;
 import com.example.sideproject.domain.recruitment.repository.query.RecruitmentQueryRepository;
@@ -22,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,15 +30,14 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class RecruitmentService {
+public class
+RecruitmentService {
     private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentNotificationService recruitmentNotificationService; //알림
-    private final RecruitmentTechStackService recruitmentTechStackService; // 모집공고 기술스택
     private final RecruitmentImageService recruitmentImageService; // 모집공고 이미지
     private final TechStackRepository techStackRepository; // 임시
     private final RecruitmentQueryRepository recruitmentQueryRepository; // 동적쿼리
-    private final RecruitmentPositionService recruitmentPositionService; // 모집공고 포지션
 //    private final SearchService searchService;
 //    private final SearchProjectRepository searchProjectRepository;
 
@@ -49,52 +45,59 @@ public class RecruitmentService {
      * 프로젝트 구인 글 생성
      */
     @Transactional
-    public void createRecruitment(RecruitmentRequestDto requestDto, User user) {
+    public void createRecruitment(RecruitmentRequestDto requestDto, List<MultipartFile> files,
+                                  List<RecruitmentPositionRequestDto> positions, User user) {
 
         final User foundUser = validateActiveUser(user);
-        final Recruitment recruitment = requestDto.toEntity(foundUser);
+        final Recruitment recruitment = Recruitment.builder()
+                .title(requestDto.getTitle())
+                .content(requestDto.getContent())
+                .deadLine(requestDto.getDeadLine())
+                .estimatedDuration(requestDto.getEstimatedDuration())
+                .workType(requestDto.getWorkType())
+                .recruitmentCategory(requestDto.getRecruitmentCategory())
+                .isCommercial(requestDto.isCommercial())
+                .isRecruiting(true)
+                .user(foundUser)
+                .viewCount(0)
+                .commentCount(0)
+                .favoriteCount(0)
+                .build();
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-//        searchService.saveRecruitment(savedRecruitment);
 
-        List<TechStack> techStacks = new ArrayList<>();
-        List<Long> techStackIds = new ArrayList<>();
 
-        if (!requestDto.recruitmentTechStacks().isEmpty()) {
+        // 1. 직무 추가
+        for (RecruitmentPositionRequestDto positionDto : positions) {
 
-            // 테크스텍 있는거만 검증 한 후 List 반환
-            // findAllById는 쿼리를 직접짠거랑 많이 다른게 없어서 적용
-            techStacks = techStackRepository.findAllById(requestDto.recruitmentTechStacks());
-            List<RecruitmentTechStack> recruitmentTechStacks = new ArrayList<>();
-
-            for (TechStack techStack : techStacks) {
-                // 배열에 미리 넣어두기
-                recruitmentTechStacks.add(
-                        RecruitmentTechStack.builder()
-                                .techStack(techStack)
-                                .recruitment(recruitment)
-                                .build()
-                );
-                techStackIds.add(techStack.getId());
-            }
-            // 이 메서드 안에 saveAll
-            recruitmentTechStackService.createRecruitmentTechStack(recruitmentTechStacks);
+            RecruitmentPosition position = RecruitmentPosition.builder()
+                    .recruitment(recruitment)
+                    .capacity(positionDto.getCapacity())
+                    .position(positionDto.getPosition())
+                    .build();
+            recruitment.addPosition(position); // 연관관계 설정
         }
 
-        // 구인공고 이미지
-        if (requestDto.files() != null) {
-            for (MultipartFile url : requestDto.files()) {
+        // 2. 기술 스택 처리
+        List<TechStack> techStacks = techStackRepository.findAllById(requestDto.getTechStackIds());
+        for (TechStack techStack : techStacks) {
+            recruitment.addRecruitmentTechStacks(
+                    RecruitmentTechStack.builder()
+                            .techStack(techStack)
+                            .recruitment(recruitment)
+                            .build()
+            );
+        }
+
+        // 3. 구인공고 이미지
+        if (files != null) {
+            for (MultipartFile url : files) {
                 recruitmentImageService.createRecruitmentImage(recruitment, url);
             }
         }
 
-        // 구인공고 직무
-        if (!requestDto.positions().isEmpty()) {
-            recruitmentPositionService.createPosition(recruitment,requestDto.positions());
-        }
-
-        // 기술스택에 해당하는 유저를 조회 (알림)
+        // 4. 알림
         List<User> users = findUserByTechStacks(techStacks);
-        recruitmentNotificationService.notice(recruitment, users, techStackIds);
+        recruitmentNotificationService.notice(savedRecruitment, users, techStacks.stream().map(TechStack::getId).toList());
     }
 
     public List<User> findUserByTechStacks(List<TechStack> techStacks) {
@@ -163,7 +166,7 @@ public class RecruitmentService {
         }
 
         Recruitment updateRecruitment = requestDto.update(user, recruitmentId, recruitmentTechStacks, existImageUrls);
-        Recruitment savedRecruitment = recruitmentRepository.save(updateRecruitment);
+//        Recruitment savedRecruitment = recruitmentRepository.save(updateRecruitment);
 //        searchService.saveRecruitment(savedRecruitment);
     }
 

@@ -25,7 +25,7 @@ public class RecruitmentPosition extends Timestamped {
     @Comment(value = "직무당 모집인원")
     private int capacity;
     
-    @Column(name = "position", nullable = false)
+    @Column(name = "position", nullable = false, columnDefinition = "position_enum")
     @Enumerated(EnumType.STRING)
     @Comment(value = "직무명")
     private Position position;
@@ -33,4 +33,8 @@ public class RecruitmentPosition extends Timestamped {
     @JoinColumn(name = "recruitment_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Recruitment recruitment;
+
+    public void setRecruitment(Recruitment recruitment){
+        this.recruitment = recruitment;
+    }
 }
