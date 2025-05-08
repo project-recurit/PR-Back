@@ -18,7 +18,6 @@ public class FavoriteListener {
 
     @EventListener
     @Async
-    @Transactional
     public void updateFavoriteCount(FavoriteEvent event) {
         FavoriteDomain domain = event.domain();
         Long id = event.prId();
@@ -37,9 +36,10 @@ public class FavoriteListener {
     }
 
     private void updateRecruitment(Long id, FavoriteMode mode) {
+        // todo count 증가해주는 함수 연동 필요
         switch (mode) {
-            case ADD -> prService.increaseFavoriteCount(id);
-            case REMOVE -> prService.decrementFavoriteCount(id);
+            case ADD -> {}
+            case REMOVE -> {}
         }
     }
 

@@ -1,0 +1,19 @@
+### 구인 글 관심 목록 등록
+POST {{host}}/api/v1/favorites/recruitments/36
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### 구인 글 관심 목록 삭제
+DELETE {{host}}/api/v1/favorites/2/recruitment
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### PR 관심 목록 등록
+POST {{host}}/api/v1/favorites/prs/2
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### PR 글 관심 목록 삭제
+DELETE {{host}}/api/v1/favorites/6/pr
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}

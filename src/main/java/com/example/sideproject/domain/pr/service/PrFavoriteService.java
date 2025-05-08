@@ -22,12 +22,12 @@ public class PrFavoriteService extends FavoriteService<PrFavorite> {
     }
 
     @Override
-    protected PrFavorite save(User user, Long typeId) {
-        if (prFavoriteRepository.existsByUserAndPr_Id(user, typeId)) {
+    protected PrFavorite save(User user, Long targetId) {
+        if (prFavoriteRepository.existsByUserAndPr_Id(user, targetId)) {
             throw new CustomException(ErrorType.ALREADY_EXIST_FAVORITE);
         }
 
-        Pr pr = prService.getPr(typeId);
+        Pr pr = prService.getPr(targetId);
         PrFavorite favorite = PrFavorite.builder()
                 .pr(pr)
                 .user(user)
@@ -47,8 +47,8 @@ public class PrFavoriteService extends FavoriteService<PrFavorite> {
     }
 
     @Override
-    public PrFavorite getFavorite(Long favoriteId) {
-        return prFavoriteRepository.findById(favoriteId).orElseThrow(
+    public PrFavorite getFavorite(Long id) {
+        return prFavoriteRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorType.PR_FAVORITE_NOT_FOUND)
         );
     }

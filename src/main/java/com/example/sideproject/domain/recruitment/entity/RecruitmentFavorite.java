@@ -1,35 +1,31 @@
-package com.example.sideproject.domain.pr.entity;
+package com.example.sideproject.domain.recruitment.entity;
 
 import com.example.sideproject.domain.favorite.Favorite;
 import com.example.sideproject.domain.user.entity.User;
-import com.example.sideproject.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Getter
 @Entity
-public class PrFavorite extends Timestamped implements Favorite {
+public class RecruitmentFavorite implements Favorite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pr_favorite_id")
-    private Long id;
+    @Column(name = "recruitment_favorite_id")
+    Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    User user;
 
-    @ManyToOne
-    @JoinColumn(name = "pr_id")
-    private Pr pr;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruitment_id")
+    Recruitment recruitment;
 
     @Override
     public Long getTargetId() {
-        return pr.getId();
+        return recruitment.getId();
     }
-
 }
