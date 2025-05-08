@@ -28,11 +28,11 @@ public class RecruitmentController {
     private final RecruitmentService recruitmentService;
 
     // 팀 모집 생성
-    @Operation(summary = "프로젝트 구인 글 생성", description = "contact 제외 모두 필수 값")
+    @Operation(summary = "프로젝트 구인 글 생성")
     @PostMapping()
     public ResponseEntity<ResponseMessageDto> createRecruitment(@RequestPart(name = "recruitment") RecruitmentRequestDto recruitment,
-                                                                @RequestPart(name = "files",required = false) List<MultipartFile> files,
-                                                                @RequestPart(name = "positions",required = false) List<RecruitmentPositionRequestDto> positions,
+                                                                @RequestPart(name = "files", required = false) List<MultipartFile> files,
+                                                                @RequestPart(name = "positions", required = false) List<RecruitmentPositionRequestDto> positions,
                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
         recruitmentService.createRecruitment(recruitment, files, positions, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_TEAM_RECRUIT_SUCCESS));
@@ -56,12 +56,14 @@ public class RecruitmentController {
     }
 
     // 팀 모집 수정
-    @Operation(summary = "프로젝트 구인 글 수정", description = "contact와 existFiles를 제외한 모든 필드 넣어야함, 다른 유저가 시도할 시 에러")
+    @Operation(summary = "프로젝트 구인 글 수정", description = "유저가 시도할 시 에러")
     @PutMapping("/{recruitmentId}")
     public ResponseEntity<ResponseMessageDto> updateRecruitment(@PathVariable("recruitmentId") Long recruitmentId,
-                                                                @ModelAttribute RecruitmentUpdateDto requestDto,
+                                                                @RequestPart(name = "recruitment") RecruitmentUpdateDto recruitment,
+                                                                @RequestPart(name = "files", required = false) List<MultipartFile> files,
+                                                                @RequestPart(name = "positions", required = false) List<RecruitmentPositionRequestDto> positions,
                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        recruitmentService.updateRecruitment(recruitmentId, requestDto, userDetails.getUser());
+        recruitmentService.updateRecruitment(recruitmentId, recruitment, files, positions, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.UPDATE_TEAM_RECRUIT_SUCCESS));
     }
 

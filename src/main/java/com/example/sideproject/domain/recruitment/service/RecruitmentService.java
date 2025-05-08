@@ -6,7 +6,9 @@ import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentImage;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentPosition;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentTechStack;
+import com.example.sideproject.domain.recruitment.repository.RecruitmentPositionRepository;
 import com.example.sideproject.domain.recruitment.repository.RecruitmentRepository;
+import com.example.sideproject.domain.recruitment.repository.RecruitmentTechStackRepository;
 import com.example.sideproject.domain.recruitment.repository.query.RecruitmentQueryRepository;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.techstack.repository.TechStackRepository;
@@ -38,6 +40,8 @@ RecruitmentService {
     private final RecruitmentImageService recruitmentImageService; // 모집공고 이미지
     private final TechStackRepository techStackRepository; // 임시
     private final RecruitmentQueryRepository recruitmentQueryRepository; // 동적쿼리
+    private final RecruitmentPositionRepository recruitmentPositionRepository;
+    private final RecruitmentTechStackRepository recruitmentTechStackRepository;
 //    private final SearchService searchService;
 //    private final SearchProjectRepository searchProjectRepository;
 
@@ -64,7 +68,6 @@ RecruitmentService {
                 .favoriteCount(0)
                 .build();
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-
 
         // 1. 직무 추가
         for (RecruitmentPositionRequestDto positionDto : positions) {
@@ -127,7 +130,7 @@ RecruitmentService {
      * 게시글 수정
      */
     @Transactional
-    public void updateRecruitment(Long recruitmentId, RecruitmentUpdateDto requestDto, User user) {
+    public void updateRecruitment(Long recruitmentId, RecruitmentUpdateDto requestDto, List<MultipartFile> newFiles, List<RecruitmentPositionRequestDto> positions, User user) {
 
         User foundUser = validateActiveUser(user);
         Recruitment recruitment = findRecruitment(recruitmentId);
@@ -139,20 +142,22 @@ RecruitmentService {
 
         // 기존 이미지중 삭제된거 있는 지 확인 후 삭제하기
         if (!existImageUrls.isEmpty() && existImageUrls.size() != requestDto.existFiles().size()) {
-            existImageUrls.removeIf(recruitmentImage -> !requestDto.existFiles().contains(recruitmentImage.getId()));
+            existImageUrls.removeIf(
+                    recruitmentImage -> !requestDto.existFiles().contains(recruitmentImage.getId()));
         }
 
         // 새로운 파일이 존재하면 추가
-        if (requestDto.newFiles() != null && !requestDto.newFiles().isEmpty()) {
-            for (MultipartFile file : requestDto.newFiles()) {
+        if (newFiles != null && !newFiles.isEmpty()) {
+            for (MultipartFile file : newFiles) {
                 RecruitmentImage recruitmentImage = recruitmentImageService.createRecruitmentImage(recruitment, file);
                 existImageUrls.add(recruitmentImage);
             }
         }
 
         // ---------------------------------------- techStack --------------------------------------
+        recruitmentTechStackRepository.deleteByRecruitment(recruitment);
         List<RecruitmentTechStack> recruitmentTechStacks = new ArrayList<>();
-        List<TechStack> techStacks = techStackRepository.findAllById(requestDto.recruitmentTechStacks());
+        List<TechStack> techStacks = techStackRepository.findAllById(requestDto.techStackIds());
 
         // 모듈화 필요해보임
         for (TechStack techStack : techStacks) {
@@ -165,8 +170,24 @@ RecruitmentService {
             );
         }
 
-        Recruitment updateRecruitment = requestDto.update(user, recruitmentId, recruitmentTechStacks, existImageUrls);
-//        Recruitment savedRecruitment = recruitmentRepository.save(updateRecruitment);
+        // ---------------------------------------- position --------------------------------------
+        recruitmentPositionRepository.deleteByRecruitment(recruitment); // 기존 포지션 삭제
+
+        List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
+        if (!positions.isEmpty()) {
+            for (RecruitmentPositionRequestDto position : positions) {
+                recruitmentPositions.add(
+                        RecruitmentPosition.builder()
+                                .position(position.getPosition())
+                                .capacity(position.getCapacity())
+                                .recruitment(recruitment)
+                                .build()
+                );
+            }
+        } // 다시 인서트
+
+        Recruitment updateRecruitment = requestDto.update(user, recruitmentId, recruitmentTechStacks, existImageUrls, recruitmentPositions);
+        recruitmentRepository.save(updateRecruitment);
 //        searchService.saveRecruitment(savedRecruitment);
     }
 

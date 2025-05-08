@@ -99,7 +99,7 @@ public class Recruitment extends Timestamped {
                        EstimatedDuration estimatedDuration, boolean isRecruiting,
                        WorkType workType, User user, List<RecruitmentTechStack> recruitmentTechStacks,
                        List<RecruitmentImage> recruitmentImages, int viewCount, int commentCount, int favoriteCount, Long id,
-                       boolean isCommercial, RecruitmentCategory recruitmentCategory) {
+                       boolean isCommercial, RecruitmentCategory recruitmentCategory, List<RecruitmentPosition> positions) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -115,6 +115,7 @@ public class Recruitment extends Timestamped {
         this.favoriteCount = favoriteCount;
         this.isCommercial = isCommercial;
         this.recruitmentCategory = recruitmentCategory;
+        this.positions = positions;
     }
 
     public void addCommentCount() {
