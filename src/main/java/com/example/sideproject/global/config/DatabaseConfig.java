@@ -16,7 +16,8 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
         "com.example.sideproject.domain.chat.repository",
         "com.example.sideproject.domain.notification.repository",
         "com.example.sideproject.domain.pr.repository",
-        "com.example.sideproject.domain.resume.repository"
+        "com.example.sideproject.domain.resume.repository",
+        "com.example.sideproject.domain.project.repository"
 })
 @EnableJpaAuditing
 public class DatabaseConfig {
