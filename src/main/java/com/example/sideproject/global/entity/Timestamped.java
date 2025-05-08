@@ -2,12 +2,10 @@ package com.example.sideproject.global.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -15,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Timestamped {
+    public static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @CreatedDate
     @Column(updatable = false)
@@ -27,17 +26,14 @@ public abstract class Timestamped {
     private LocalDateTime modifiedAt;
 
     public static LocalDateTime toLocalDateTime(String str) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        return LocalDateTime.parse(str, formatter);
+        return LocalDateTime.parse(str, FORMATTER);
     }
 
-    public String getCreatedAt() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        return createdAt.format(formatter);
+    public String getCreatedAtToString() {
+        return createdAt.format(FORMATTER);
     }
 
-    public String getModifiedAt() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        return modifiedAt.format(formatter);
+    public String getModifiedAtToString() {
+        return modifiedAt.format(FORMATTER);
     }
 }

@@ -30,8 +30,8 @@ public class PrResponse extends PostResponseDto {
 
     public PrResponse(Pr pr) {
         this(pr.getId(), pr.getUser().getNickname(), pr.getUser().getProfileUrl(), pr.getPosition(), pr.getTitle(), pr.getIntroduce(),
-             pr.getWorkType(), pr.getCount().getViewCount(), pr.getCount().getCommentCount(), pr.getCount().getFavoriteCount(), pr.getCreatedAt(),
-             pr.getModifiedAt());
+             pr.getWorkType(), pr.getCount().getViewCount(), pr.getCount().getCommentCount(), pr.getCount().getFavoriteCount(), pr.getCreatedAtToString(),
+             pr.getModifiedAtToString());
         setTechStacks(pr.getTechStacks());
         setExperiences(pr.getExperiences());
     }

@@ -23,8 +23,8 @@ public record PrExperienceResponse(
         @Schema(description = "프로젝트 문서 링크 등")
         String documentUrl,
         @Schema(description = "생성일")
-        String createdAt,
+        LocalDateTime createdAt,
         @Schema(description = "수정일")
-        String modifiedAt
+        LocalDateTime modifiedAt
 ) {
 }
