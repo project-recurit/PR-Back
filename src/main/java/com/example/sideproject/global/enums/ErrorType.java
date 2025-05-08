@@ -128,6 +128,7 @@ public enum ErrorType implements ErrorCode {
     NOT_YOUR_POST(HttpStatus.NOT_ACCEPTABLE, "작성자가 아닙니다."),
 
     PROJECT_RECRUIT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트 구인 게시글입니다."),
+    PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트입니다."),
 
     RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "이력서가 존재하지 않습니다. 먼저 이력서를 등록해주세요."),
     PR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 PR을 찾을 수 없습니다."),

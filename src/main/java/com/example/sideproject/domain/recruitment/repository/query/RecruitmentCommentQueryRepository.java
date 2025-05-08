@@ -32,8 +32,8 @@ public class RecruitmentCommentQueryRepository {
                         comment.user.nickname,
                         comment.user.profileUrl,
                         comment.replyCount,
-                        comment.createdAt,
-                        comment.modifiedAt
+                        comment.createdAt.stringValue(),
+                        comment.modifiedAt.stringValue()
                 ))
                 .from(comment)
                 .where(comment.recruitment.id.eq(recruitmentId).and(comment.parentId.isNull())) // 부모 댓글만 가져오기

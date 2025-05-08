@@ -117,7 +117,7 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
     }
 
-    private User findActiveUser(Long id) {
+    public User findActiveUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
         

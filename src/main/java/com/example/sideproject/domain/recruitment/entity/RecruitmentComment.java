@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
+@Table(name = "recruitment_comment")
 public class RecruitmentComment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
