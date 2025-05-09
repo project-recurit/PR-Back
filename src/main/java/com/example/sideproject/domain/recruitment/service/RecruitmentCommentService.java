@@ -37,7 +37,7 @@ public class RecruitmentCommentService {
         final Recruitment recruitment = recruitmentService.findRecruitment(recruitmentId);
         final RecruitmentComment comment = requestDto.toEntity(user, recruitment);
 
-        if(requestDto.parentId() != null) {
+        if(requestDto.parentId() != null && requestDto.parentId() > 0) {
             RecruitmentComment parent = findComment(requestDto.parentId());
             parent.increaseReplyCount();
         }
@@ -92,7 +92,7 @@ public class RecruitmentCommentService {
         }
         comment.getRecruitment().downCommentCount();
 
-        if(comment.getParentId() != null) {
+        if(comment.getParentId() != null && comment.getParentId() > 0) {
             RecruitmentComment parentComment = findComment(comment.getParentId());
             parentComment.decreaseReplyCount(); // 부모댓글 대댓글 카운트 1감소
         }
