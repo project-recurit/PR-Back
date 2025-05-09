@@ -1,5 +1,7 @@
 package com.example.sideproject.domain.pr.service;
 
+import com.example.sideproject.domain.favorite.Favorite;
+import com.example.sideproject.domain.favorite.FavoriteDomain;
 import com.example.sideproject.domain.favorite.FavoriteService;
 import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.pr.entity.PrFavorite;
@@ -23,10 +25,6 @@ public class PrFavoriteService extends FavoriteService<PrFavorite> {
 
     @Override
     protected PrFavorite save(User user, Long targetId) {
-        if (prFavoriteRepository.existsByUserAndPr_Id(user, targetId)) {
-            throw new CustomException(ErrorType.ALREADY_EXIST_FAVORITE);
-        }
-
         Pr pr = prService.getPr(targetId);
         PrFavorite favorite = PrFavorite.builder()
                 .pr(pr)
@@ -36,14 +34,13 @@ public class PrFavoriteService extends FavoriteService<PrFavorite> {
     }
 
     @Override
-    protected Long delete(User user, Long id) {
-        PrFavorite prFavorite = getFavorite(id);
-        if (!prFavorite.isOwn(user.getId())) {
-            throw new CustomException(ErrorType.NOT_OWNER);
-        }
-        Long prId = prFavorite.getPr().getId();
-        prFavoriteRepository.delete(prFavorite);
-        return prId;
+    protected void delete(Favorite favorite) {
+        prFavoriteRepository.delete((PrFavorite) favorite);
+    }
+
+    @Override
+    protected boolean exists(User user, Long targetId) {
+        return prFavoriteRepository.existsByUserAndPr_Id(user, targetId);
     }
 
     @Override
@@ -51,5 +48,10 @@ public class PrFavoriteService extends FavoriteService<PrFavorite> {
         return prFavoriteRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorType.PR_FAVORITE_NOT_FOUND)
         );
+    }
+
+    @Override
+    protected FavoriteDomain getDomain() {
+        return FavoriteDomain.PR;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.sideproject.domain.recruitment.service;
 
+import com.example.sideproject.domain.favorite.Favorite;
+import com.example.sideproject.domain.favorite.FavoriteDomain;
 import com.example.sideproject.domain.favorite.FavoriteService;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentFavorite;
@@ -24,9 +26,6 @@ public class RecruitmentFavoriteService extends FavoriteService<RecruitmentFavor
 
     @Override
     protected RecruitmentFavorite save(User user, Long targetId) {
-        if (recruitmentRepository.existsByUserAndRecruitment_Id(user, targetId)) {
-            throw new CustomException(ErrorType.ALREADY_EXIST_FAVORITE);
-        }
         Recruitment recruitment = recruitmentService.findRecruitment(targetId);
         RecruitmentFavorite favorite = RecruitmentFavorite.builder()
                 .user(user)
@@ -36,14 +35,13 @@ public class RecruitmentFavoriteService extends FavoriteService<RecruitmentFavor
     }
 
     @Override
-    protected Long delete(User user, Long id) {
-        RecruitmentFavorite favorite = getFavorite(id);
-        if (!favorite.isOwn(user.getId())) {
-            throw new CustomException(ErrorType.NOT_OWNER);
-        }
-        Long targetId = favorite.getTargetId();
-        recruitmentRepository.delete(favorite);
-        return targetId;
+    protected void delete(Favorite favorite) {
+        recruitmentRepository.delete((RecruitmentFavorite) favorite);
+    }
+
+    @Override
+    protected boolean exists(User user, Long targetId) {
+        return recruitmentRepository.existsByUserAndRecruitment_Id(user, targetId);
     }
 
     @Override
@@ -51,5 +49,10 @@ public class RecruitmentFavoriteService extends FavoriteService<RecruitmentFavor
         return recruitmentRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorType.RECRUITMENT_FAVORITE_NOT_FOUND)
         );
+    }
+
+    @Override
+    protected FavoriteDomain getDomain() {
+        return FavoriteDomain.RECRUITMENT;
     }
 }
