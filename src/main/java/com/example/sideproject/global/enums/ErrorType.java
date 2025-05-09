@@ -135,6 +135,9 @@ public enum ErrorType implements ErrorCode {
     NOT_OWNER(HttpStatus.FORBIDDEN, "작성자가 아닙니다."),
     PR_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 댓글을 찾을 수 없습니다."),
     REPLY_COMMENT_EXIST(HttpStatus.NOT_FOUND, "대댓글이 존재하여 삭제할 수 없습니다."),
+    PR_FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 PR 관심목록을 찾을 수 없습니다"),
+    RECRUITMENT_FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 모집공고 관심목록을 찾을 수 없습니다"),
+    ALREADY_EXIST_FAVORITE(HttpStatus.BAD_REQUEST, "이미 관심목록에 추가된 게시글입니다."),
 
     APPLICANT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지원서입니다."),
     DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST, "이미 지원한 사용자입니다."),

@@ -43,4 +43,7 @@ Authorization: Bearer {{accessToken}}
 
 ### 개발자 PR 게시글 목록 조회
 GET localhost:8080/api/v1/recruitment
-Content-Type: application/json 
+Content-Type: application/json
+
+
+
