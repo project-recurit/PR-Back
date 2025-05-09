@@ -79,12 +79,31 @@ public class Recruitment extends Timestamped {
     @Comment(value = "카테고리")
     private RecruitmentCategory recruitmentCategory;
 
+    @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Comment(value = "직무")
+    private List<RecruitmentPosition> positions = new ArrayList<>();
+
+    public void addPosition(RecruitmentPosition position) {
+        this.positions.add(position);
+        position.setRecruitment(this);
+    }
+
+    public void addRecruitmentTechStacks(RecruitmentTechStack recruitmentTechStack) {
+        this.recruitmentTechStacks.add(recruitmentTechStack);
+        recruitmentTechStack.setRecruitment(this);
+    }
+
+    public void clearList() {
+        this.positions.clear();
+        this.recruitmentTechStacks.clear();
+    }
+
     @Builder
     public Recruitment(String title, String content, String deadLine,
                        EstimatedDuration estimatedDuration, boolean isRecruiting,
                        WorkType workType, User user, List<RecruitmentTechStack> recruitmentTechStacks,
                        List<RecruitmentImage> recruitmentImages, int viewCount, int commentCount, int favoriteCount, Long id,
-                       boolean isCommercial, RecruitmentCategory recruitmentCategory) {
+                       boolean isCommercial, RecruitmentCategory recruitmentCategory, List<RecruitmentPosition> positions) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -100,6 +119,7 @@ public class Recruitment extends Timestamped {
         this.favoriteCount = favoriteCount;
         this.isCommercial = isCommercial;
         this.recruitmentCategory = recruitmentCategory;
+        this.positions = positions;
     }
 
     public void addCommentCount() {

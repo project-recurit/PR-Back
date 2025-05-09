@@ -25,4 +25,8 @@ public class RecruitmentTechStack {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitment_id", nullable = false)
     private Recruitment recruitment;
+
+    public void setRecruitment(Recruitment recruitment){
+        this.recruitment = recruitment;
+    }
 }

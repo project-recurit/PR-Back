@@ -3,45 +3,41 @@ package com.example.sideproject.domain.recruitment.dto;
 import com.example.sideproject.domain.recruitment.entity.EstimatedDuration;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentCategory;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
+import com.example.sideproject.global.dto.PostResponseDto;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
-public class RecruitmentDetailResponseDto {
-    private final Long id;
-    private final String title;
+public class RecruitmentDetailResponseDto extends PostResponseDto {
     private final String content;
     private final EstimatedDuration estimatedDuration;
-    private final int viewCount;
-    private final int commentCount;
-    private final String userNickname;
     private final String deadLine;
     private final boolean isRecruiting;
-    private final String modifiedAt;
     private final String workType;
     private final RecruitmentCategory recruitmentCategory;
     private final boolean isCommercial;
-    private List<RecruitmentImageResponseDto> fileUrls; // 변경 해야하는 값이어서 final x
+
+    private List<RecruitmentImageResponseDto> fileUrls; // 변경 필요 값
     private List<TechStackDto> techStacks;
-    private List<RecruitmentPositionResponseDto> positionResponseDtos;
+    private List<RecruitmentPositionResponseDto> positions;
     private String estimatedDurationDetail;
 
     @QueryProjection
-    public RecruitmentDetailResponseDto(Long id, String title, String content, EstimatedDuration estimatedDuration, int viewCount,
-                                        int commentCount, String userNickname, String deadLine, boolean isRecruiting,
-                                        String modifiedAt, String workType, RecruitmentCategory recruitmentCategory, boolean isCommercial) {
-        this.id = id;
-        this.title = title;
+    public RecruitmentDetailResponseDto(
+            Long id, String title, String nickname, String profileUrl,
+            int viewCount, int commentCount, int favoriteCount,
+            String createdAt, String modifiedAt,
+            String content, EstimatedDuration estimatedDuration,
+            String deadLine, boolean isRecruiting,
+            String workType, RecruitmentCategory recruitmentCategory, boolean isCommercial) {
+
+        super(id, title, nickname, profileUrl, viewCount, commentCount, favoriteCount, createdAt, modifiedAt);
         this.content = content;
         this.estimatedDuration = estimatedDuration;
-        this.viewCount = viewCount;
-        this.commentCount = commentCount;
-        this.userNickname = userNickname;
         this.deadLine = deadLine;
         this.isRecruiting = isRecruiting;
-        this.modifiedAt = modifiedAt;
         this.workType = workType;
         this.recruitmentCategory = recruitmentCategory;
         this.isCommercial = isCommercial;
@@ -59,7 +55,7 @@ public class RecruitmentDetailResponseDto {
         this.techStacks = techStacks;
     }
 
-    public void setRecruitPositions(List<RecruitmentPositionResponseDto> positionResponseDto) {
-        this.positionResponseDtos = positionResponseDto;
+    public void setRecruitPositions(List<RecruitmentPositionResponseDto> positions) {
+        this.positions = positions;
     }
 }

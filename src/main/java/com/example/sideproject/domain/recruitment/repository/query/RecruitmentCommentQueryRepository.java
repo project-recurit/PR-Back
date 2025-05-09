@@ -22,7 +22,7 @@ public class RecruitmentCommentQueryRepository {
     QRecruitmentComment comment = QRecruitmentComment.recruitmentComment;
     QRecruitment recruitment = QRecruitment.recruitment;
 
-    public Page<RecruitmentCommentResponseDto> getComments(Long projectId, Pageable pageable) {
+    public Page<RecruitmentCommentResponseDto> getComments(Long recruitmentId, Pageable pageable) {
         // 부모 댓글 목록 조회
         List<RecruitmentCommentResponseDto> comments = queryFactory
                 .select(Projections.constructor(
@@ -30,10 +30,13 @@ public class RecruitmentCommentQueryRepository {
                         comment.id,
                         comment.content,
                         comment.user.nickname,
-                        comment.modifiedAt
+                        comment.user.profileUrl,
+                        comment.replyCount,
+                        comment.createdAt.stringValue(),
+                        comment.modifiedAt.stringValue()
                 ))
                 .from(comment)
-                .where(comment.recruitment.id.eq(projectId).and(comment.parentId.isNull())) // 부모 댓글만 가져오기
+                .where(comment.recruitment.id.eq(recruitmentId).and(comment.parentId.isNull())) // 부모 댓글만 가져오기
                 .orderBy(comment.modifiedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -49,6 +52,9 @@ public class RecruitmentCommentQueryRepository {
                         comment.id,
                         comment.content,
                         comment.user.nickname,
+                        comment.user.profileUrl,
+                        comment.replyCount,
+                        comment.createdAt,
                         comment.modifiedAt
                 )).from(comment)
                 .where(comment.parentId.eq(commentId))

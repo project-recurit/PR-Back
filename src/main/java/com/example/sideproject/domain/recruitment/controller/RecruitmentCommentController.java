@@ -27,19 +27,19 @@ public class RecruitmentCommentController {
     private final RecruitmentCommentService commentService;
 
     @Operation(summary = "구인 글 댓글 작성", description = "대댓글 작성시 parentId 항목에 부모댓글 Id 기입")
-    @PostMapping("/recruitment/{projectId}/comment")
-    public ResponseEntity<ResponseMessageDto> createComment(@PathVariable("projectId") Long projectId,
+    @PostMapping("/recruitment/{recruitmentId}/comment")
+    public ResponseEntity<ResponseMessageDto> createComment(@PathVariable("recruitmentId") Long recruitmentId,
                                                             @RequestBody @Valid RecruitmentCommentRequestDto requestDto,
                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        commentService.createComment(projectId, userDetails.getUser(), requestDto);
+        commentService.createComment(recruitmentId, userDetails.getUser(), requestDto);
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_SUCCESS_COMMENT));
     }
 
     @Operation(summary = "구인 글 댓글 조회", description = "사이즈 20개 제한")
-    @GetMapping("/recruitment/{projectId}/comments")
-    public ResponseEntity<ResponseDataDto<Page<RecruitmentCommentResponseDto>>> getComments(@PathVariable("projectId") Long projectId,
+    @GetMapping("/recruitment/{recruitmentId}/comments")
+    public ResponseEntity<ResponseDataDto<Page<RecruitmentCommentResponseDto>>> getComments(@PathVariable("recruitmentId") Long recruitmentId,
                                                                                  @RequestParam(value = "page", defaultValue = "1") int page) {
-        Page<RecruitmentCommentResponseDto> comments = commentService.getComments(projectId, page);
+        Page<RecruitmentCommentResponseDto> comments = commentService.getComments(recruitmentId, page);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.READ_SUCCESS_COMMENT, comments));
     }
 

@@ -44,19 +44,22 @@ public class RecruitmentQueryRepository {
         RecruitmentDetailResponseDto detail = queryFactory // 구인 글 정보 조회
                 .select(Projections.constructor(
                         RecruitmentDetailResponseDto.class,
-                        recruitment.id.as("id"),
-                        recruitment.title.as("title"),
-                        recruitment.content.as("content"),
-                        recruitment.estimatedDuration.as("estimatedDuration"),
-                        recruitment.viewCount.as("viewCount"),
-                        recruitment.commentCount.as("commentCount"),
-                        user.nickname.as("userNickname"),
-                        recruitment.deadLine.as("deadLine"),
-                        recruitment.isRecruiting.as("isRecruiting"),
-                        recruitment.modifiedAt.as("modifiedAt"),
-                        recruitment.workType.stringValue().as("workType"),
-                        recruitment.recruitmentCategory.as("recruitmentCategory"),
-                        recruitment.isCommercial.as("isCommercial")
+                        recruitment.id,
+                        recruitment.title,
+                        user.nickname,           // nickname
+                        user.profileUrl,         // profileUrl
+                        recruitment.viewCount,
+                        recruitment.commentCount,
+                        recruitment.favoriteCount,
+                        recruitment.createdAt.stringValue(), // createdAt
+                        recruitment.modifiedAt.stringValue(), // modifiedAt
+                        recruitment.content,
+                        recruitment.estimatedDuration,
+                        recruitment.deadLine.stringValue(),   // deadLine
+                        recruitment.isRecruiting,
+                        recruitment.workType.stringValue(),
+                        recruitment.recruitmentCategory,
+                        recruitment.isCommercial
                 ))
                 .from(recruitment)
                 .join(recruitment.user, user)

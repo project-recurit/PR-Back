@@ -1,9 +1,7 @@
 package com.example.sideproject.domain.recruitment.controller;
 
-import com.example.sideproject.domain.recruitment.dto.RecruitmentDetailResponseDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentRequestDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentUpdateDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentsResponseDto;
+import com.example.sideproject.domain.recruitment.dto.*;
+import com.example.sideproject.domain.recruitment.entity.RecruitmentImage;
 import com.example.sideproject.domain.recruitment.service.RecruitmentService;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
@@ -16,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @Tag(name = "프로젝트 구인 api")
@@ -27,11 +28,13 @@ public class RecruitmentController {
     private final RecruitmentService recruitmentService;
 
     // 팀 모집 생성
-    @Operation(summary = "프로젝트 구인 글 생성", description = "contact 제외 모두 필수 값")
-    @PostMapping
-    public ResponseEntity<ResponseMessageDto> createRecruitment(@ModelAttribute RecruitmentRequestDto requestDto,
-                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        recruitmentService.createRecruitment(requestDto, userDetails.getUser());
+    @Operation(summary = "프로젝트 구인 글 생성")
+    @PostMapping()
+    public ResponseEntity<ResponseMessageDto> createRecruitment(@RequestPart(name = "recruitment") RecruitmentRequestDto recruitment,
+                                                                @RequestPart(name = "files", required = false) List<MultipartFile> files,
+                                                                @RequestPart(name = "positions", required = false) List<RecruitmentPositionRequestDto> positions,
+                                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        recruitmentService.createRecruitment(recruitment, files, positions, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.CREATE_TEAM_RECRUIT_SUCCESS));
     }
 
@@ -53,12 +56,14 @@ public class RecruitmentController {
     }
 
     // 팀 모집 수정
-    @Operation(summary = "프로젝트 구인 글 수정", description = "contact와 existFiles를 제외한 모든 필드 넣어야함, 다른 유저가 시도할 시 에러")
+    @Operation(summary = "프로젝트 구인 글 수정", description = "유저가 시도할 시 에러")
     @PutMapping("/{recruitmentId}")
     public ResponseEntity<ResponseMessageDto> updateRecruitment(@PathVariable("recruitmentId") Long recruitmentId,
-                                                                @ModelAttribute RecruitmentUpdateDto requestDto,
+                                                                @RequestPart(name = "recruitment") RecruitmentUpdateDto recruitment,
+                                                                @RequestPart(name = "files", required = false) List<MultipartFile> files,
+                                                                @RequestPart(name = "positions", required = false) List<RecruitmentPositionRequestDto> positions,
                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        recruitmentService.updateRecruitment(recruitmentId, requestDto, userDetails.getUser());
+        recruitmentService.updateRecruitment(recruitmentId, recruitment, files, positions, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.UPDATE_TEAM_RECRUIT_SUCCESS));
     }
 

@@ -1,14 +1,14 @@
 package com.example.sideproject.domain.recruitment.service;
 
 import com.example.sideproject.domain.notification.service.RecruitmentNotificationService;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentDetailResponseDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentRequestDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentUpdateDto;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentsResponseDto;
+import com.example.sideproject.domain.recruitment.dto.*;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentImage;
+import com.example.sideproject.domain.recruitment.entity.RecruitmentPosition;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentTechStack;
+import com.example.sideproject.domain.recruitment.repository.RecruitmentPositionRepository;
 import com.example.sideproject.domain.recruitment.repository.RecruitmentRepository;
+import com.example.sideproject.domain.recruitment.repository.RecruitmentTechStackRepository;
 import com.example.sideproject.domain.recruitment.repository.query.RecruitmentQueryRepository;
 import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.techstack.repository.TechStackRepository;
@@ -22,7 +22,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,15 +32,16 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class RecruitmentService {
+public class
+RecruitmentService {
     private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentNotificationService recruitmentNotificationService; //알림
-    private final RecruitmentTechStackService recruitmentTechStackService; // 모집공고 기술스택
     private final RecruitmentImageService recruitmentImageService; // 모집공고 이미지
     private final TechStackRepository techStackRepository; // 임시
     private final RecruitmentQueryRepository recruitmentQueryRepository; // 동적쿼리
-    private final RecruitmentPositionService recruitmentPositionService; // 모집공고 포지션
+    private final RecruitmentPositionRepository recruitmentPositionRepository;
+    private final RecruitmentTechStackRepository recruitmentTechStackRepository;
 //    private final SearchService searchService;
 //    private final SearchProjectRepository searchProjectRepository;
 
@@ -49,52 +49,57 @@ public class RecruitmentService {
      * 프로젝트 구인 글 생성
      */
     @Transactional
-    public void createRecruitment(RecruitmentRequestDto requestDto, User user) {
+    public void createRecruitment(RecruitmentRequestDto requestDto, List<MultipartFile> files,
+                                  List<RecruitmentPositionRequestDto> positions, User user) {
 
         final User foundUser = validateActiveUser(user);
-        final Recruitment recruitment = requestDto.toEntity(foundUser);
+        final Recruitment recruitment = Recruitment.builder()
+                .title(requestDto.getTitle())
+                .content(requestDto.getContent())
+                .deadLine(requestDto.getDeadLine())
+                .estimatedDuration(requestDto.getEstimatedDuration())
+                .workType(requestDto.getWorkType())
+                .recruitmentCategory(requestDto.getRecruitmentCategory())
+                .isCommercial(requestDto.isCommercial())
+                .isRecruiting(true)
+                .user(foundUser)
+                .viewCount(0)
+                .commentCount(0)
+                .favoriteCount(0)
+                .build();
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-//        searchService.saveRecruitment(savedRecruitment);
 
-        List<TechStack> techStacks = new ArrayList<>();
-        List<Long> techStackIds = new ArrayList<>();
-
-        if (!requestDto.recruitmentTechStacks().isEmpty()) {
-
-            // 테크스텍 있는거만 검증 한 후 List 반환
-            // findAllById는 쿼리를 직접짠거랑 많이 다른게 없어서 적용
-            techStacks = techStackRepository.findAllById(requestDto.recruitmentTechStacks());
-            List<RecruitmentTechStack> recruitmentTechStacks = new ArrayList<>();
-
-            for (TechStack techStack : techStacks) {
-                // 배열에 미리 넣어두기
-                recruitmentTechStacks.add(
-                        RecruitmentTechStack.builder()
-                                .techStack(techStack)
-                                .recruitment(recruitment)
-                                .build()
-                );
-                techStackIds.add(techStack.getId());
-            }
-            // 이 메서드 안에 saveAll
-            recruitmentTechStackService.createRecruitmentTechStack(recruitmentTechStacks);
+        // 1. 직무 추가
+        for (RecruitmentPositionRequestDto positionDto : positions) {
+            RecruitmentPosition position = RecruitmentPosition.builder()
+                    .recruitment(recruitment)
+                    .capacity(positionDto.getCapacity())
+                    .position(positionDto.getPosition())
+                    .build();
+            recruitment.addPosition(position); // 연관관계 설정
         }
 
-        // 구인공고 이미지
-        if (requestDto.files() != null) {
-            for (MultipartFile url : requestDto.files()) {
+        // 2. 기술 스택 처리
+        List<TechStack> techStacks = techStackRepository.findAllById(requestDto.getTechStackIds());
+        for (TechStack techStack : techStacks) {
+            recruitment.addRecruitmentTechStacks(
+                    RecruitmentTechStack.builder()
+                            .techStack(techStack)
+                            .recruitment(recruitment)
+                            .build()
+            );
+        }
+
+        // 3. 구인공고 이미지
+        if (files != null) {
+            for (MultipartFile url : files) {
                 recruitmentImageService.createRecruitmentImage(recruitment, url);
             }
         }
 
-        // 구인공고 직무
-        if (!requestDto.positions().isEmpty()) {
-            recruitmentPositionService.createPosition(recruitment,requestDto.positions());
-        }
-
-        // 기술스택에 해당하는 유저를 조회 (알림)
+        // 4. 알림
         List<User> users = findUserByTechStacks(techStacks);
-        recruitmentNotificationService.notice(recruitment, users, techStackIds);
+        recruitmentNotificationService.notice(savedRecruitment, users, techStacks.stream().map(TechStack::getId).toList());
     }
 
     public List<User> findUserByTechStacks(List<TechStack> techStacks) {
@@ -124,7 +129,7 @@ public class RecruitmentService {
      * 게시글 수정
      */
     @Transactional
-    public void updateRecruitment(Long recruitmentId, RecruitmentUpdateDto requestDto, User user) {
+    public void updateRecruitment(Long recruitmentId, RecruitmentUpdateDto requestDto, List<MultipartFile> newFiles, List<RecruitmentPositionRequestDto> positions, User user) {
 
         User foundUser = validateActiveUser(user);
         Recruitment recruitment = findRecruitment(recruitmentId);
@@ -136,20 +141,23 @@ public class RecruitmentService {
 
         // 기존 이미지중 삭제된거 있는 지 확인 후 삭제하기
         if (!existImageUrls.isEmpty() && existImageUrls.size() != requestDto.existFiles().size()) {
-            existImageUrls.removeIf(recruitmentImage -> !requestDto.existFiles().contains(recruitmentImage.getId()));
+            existImageUrls.removeIf(
+                    recruitmentImage -> !requestDto.existFiles().contains(recruitmentImage.getId()));
         }
 
         // 새로운 파일이 존재하면 추가
-        if (requestDto.newFiles() != null && !requestDto.newFiles().isEmpty()) {
-            for (MultipartFile file : requestDto.newFiles()) {
+        if (newFiles != null && !newFiles.isEmpty()) {
+            for (MultipartFile file : newFiles) {
                 RecruitmentImage recruitmentImage = recruitmentImageService.createRecruitmentImage(recruitment, file);
                 existImageUrls.add(recruitmentImage);
             }
         }
 
+        // 기존 포지션, 기술스택 리스트 삭제
+        recruitment.clearList();
         // ---------------------------------------- techStack --------------------------------------
         List<RecruitmentTechStack> recruitmentTechStacks = new ArrayList<>();
-        List<TechStack> techStacks = techStackRepository.findAllById(requestDto.recruitmentTechStacks());
+        List<TechStack> techStacks = techStackRepository.findAllById(requestDto.techStackIds());
 
         // 모듈화 필요해보임
         for (TechStack techStack : techStacks) {
@@ -162,8 +170,23 @@ public class RecruitmentService {
             );
         }
 
-        Recruitment updateRecruitment = requestDto.update(user, recruitmentId, recruitmentTechStacks, existImageUrls);
-        Recruitment savedRecruitment = recruitmentRepository.save(updateRecruitment);
+        // ---------------------------------------- position --------------------------------------
+
+        List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
+        if (!positions.isEmpty()) {
+            for (RecruitmentPositionRequestDto position : positions) {
+                recruitmentPositions.add(
+                        RecruitmentPosition.builder()
+                                .position(position.getPosition())
+                                .capacity(position.getCapacity())
+                                .recruitment(recruitment)
+                                .build()
+                );
+            }
+        } // 다시 인서트
+
+        Recruitment updateRecruitment = requestDto.update(user, recruitmentId, recruitmentTechStacks, existImageUrls, recruitmentPositions);
+        recruitmentRepository.save(updateRecruitment);
 //        searchService.saveRecruitment(savedRecruitment);
     }
 
