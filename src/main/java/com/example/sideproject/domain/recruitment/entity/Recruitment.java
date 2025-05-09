@@ -93,6 +93,10 @@ public class Recruitment extends Timestamped {
         recruitmentTechStack.setRecruitment(this);
     }
 
+    public void clearList() {
+        this.positions.clear();
+        this.recruitmentTechStacks.clear();
+    }
 
     @Builder
     public Recruitment(String title, String content, String deadLine,

@@ -71,7 +71,6 @@ RecruitmentService {
 
         // 1. 직무 추가
         for (RecruitmentPositionRequestDto positionDto : positions) {
-
             RecruitmentPosition position = RecruitmentPosition.builder()
                     .recruitment(recruitment)
                     .capacity(positionDto.getCapacity())
@@ -154,8 +153,9 @@ RecruitmentService {
             }
         }
 
+        // 기존 포지션, 기술스택 리스트 삭제
+        recruitment.clearList();
         // ---------------------------------------- techStack --------------------------------------
-        recruitmentTechStackRepository.deleteByRecruitment(recruitment);
         List<RecruitmentTechStack> recruitmentTechStacks = new ArrayList<>();
         List<TechStack> techStacks = techStackRepository.findAllById(requestDto.techStackIds());
 
@@ -171,7 +171,6 @@ RecruitmentService {
         }
 
         // ---------------------------------------- position --------------------------------------
-        recruitmentPositionRepository.deleteByRecruitment(recruitment); // 기존 포지션 삭제
 
         List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
         if (!positions.isEmpty()) {
