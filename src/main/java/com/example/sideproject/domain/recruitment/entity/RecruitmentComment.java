@@ -49,4 +49,8 @@ public class RecruitmentComment extends Timestamped {
     public void increaseReplyCount() {
         this.replyCount = this.replyCount + 1;
     }
+
+    public void decreaseReplyCount() {
+        this.replyCount = this.replyCount - 1;
+    }
 }

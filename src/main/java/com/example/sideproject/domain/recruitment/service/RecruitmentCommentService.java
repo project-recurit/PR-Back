@@ -37,9 +37,8 @@ public class RecruitmentCommentService {
         final Recruitment recruitment = recruitmentService.findRecruitment(recruitmentId);
         final RecruitmentComment comment = requestDto.toEntity(user, recruitment);
 
-        RecruitmentComment parent = null;
-        if(requestDto.parentId() != null) {
-            parent = findComment(requestDto.parentId());
+        if(requestDto.parentId() != null && requestDto.parentId() > 0) {
+            RecruitmentComment parent = findComment(requestDto.parentId());
             parent.increaseReplyCount();
         }
         recruitment.addCommentCount();
@@ -91,8 +90,12 @@ public class RecruitmentCommentService {
         if(user.getId() != comment.getUser().getId()) {
             throw new CustomException(ErrorType.NOT_USER_COMMENT);
         }
-
         comment.getRecruitment().downCommentCount();
+
+        if(comment.getParentId() != null && comment.getParentId() > 0) {
+            RecruitmentComment parentComment = findComment(comment.getParentId());
+            parentComment.decreaseReplyCount(); // 부모댓글 대댓글 카운트 1감소
+        }
         commentRepository.deleteById(commentId);
     }
 
