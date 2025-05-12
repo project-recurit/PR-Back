@@ -56,7 +56,8 @@ public class Project extends Timestamped{
     private List<ProjectMember> projectMembers = new ArrayList<>();
 
     @Builder
-    public Project(Long id, User user, String title, String description, String projectUrl, int teamCount, LocalDateTime startDate, LocalDateTime endDate) {
+    public Project(Long id, User user, String title, String description, String projectUrl,
+                   int teamCount, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -65,5 +66,14 @@ public class Project extends Timestamped{
         this.teamCount = teamCount;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public void addMembers(ProjectMember projectMember) {
+        this.projectMembers.add(projectMember);
+        projectMember.setProject(this);
+    }
+
+    public void clearMembers() {
+        projectMembers.clear();
     }
 }

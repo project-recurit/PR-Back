@@ -28,4 +28,8 @@ public class ProjectMember {
         this.user = user;
         this.project = project;
     }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 }

@@ -15,18 +15,18 @@ public class ProjectResponseDto {
     private final int teamCount;          // 참여인원
     private final LocalDateTime startDate; // 시작 날짜
     private final LocalDateTime endDate;   // 종료 날짜 (nullable)
-    private final String userNickname;
     private final List<ProjectMember> projectMemberList;
 
     @Builder
-    public ProjectResponseDto(String title, String description, String projectUrl, int teamCount, LocalDateTime startDate, LocalDateTime endDate, String userNickname, List<ProjectMember> projectMemberList) {
+    public ProjectResponseDto(String title, String description, String projectUrl,
+                              int teamCount, LocalDateTime startDate, LocalDateTime endDate,
+                              List<ProjectMember> projectMemberList) {
         this.title = title;
         this.description = description;
         this.projectUrl = projectUrl;
         this.teamCount = teamCount;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.userNickname = userNickname;
         this.projectMemberList = projectMemberList;
     }
 }

@@ -3,6 +3,7 @@ package com.example.sideproject.domain.project.service;
 import com.example.sideproject.domain.project.dto.ProjectRequestDto;
 import com.example.sideproject.domain.project.dto.ProjectResponseDto;
 import com.example.sideproject.domain.project.entity.Project;
+import com.example.sideproject.domain.project.entity.ProjectMember;
 import com.example.sideproject.domain.project.repository.ProjectRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.service.UserService;
@@ -32,6 +33,17 @@ public class ProjectService {
                 .teamCount(requestDto.getTeamCount())
                 .user(existUser)
                 .build();
+
+        for (Long member : requestDto.getMemberList()) {
+            User projectMember = userService.findActiveUser(member);
+            project.addMembers(
+                    ProjectMember.builder()
+                            .project(project)
+                            .user(projectMember)
+                            .build()
+            );
+        }
+
         projectRepository.save(project);
     }
 
@@ -48,9 +60,45 @@ public class ProjectService {
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .teamCount(project.getTeamCount())
-                .userNickname(project.getUser().getNickname())
                 .projectMemberList(project.getProjectMembers())
                 .build();
+    }
+
+    /**
+     * 프로젝트 수정
+     */
+    public void updateProject(ProjectRequestDto requestDto, User user) {
+
+        final User existUser = userService.findActiveUser(user.getId());
+        final Project project = Project.builder()
+                .title(requestDto.getTitle())
+                .description(requestDto.getDescription())
+                .startDate(requestDto.getStartDate())
+                .endDate(requestDto.getEndDate())
+                .teamCount(requestDto.getTeamCount())
+                .user(existUser)
+                .build();
+
+        project.clearMembers(); // 기존 멤버들 삭제
+
+        for (Long member : requestDto.getMemberList()) {
+            User projectMember = userService.findActiveUser(member);
+            project.addMembers(
+                    ProjectMember.builder()
+                            .project(project)
+                            .user(projectMember)
+                            .build()
+            );
+        } // 인서트
+
+        projectRepository.save(project);
+    }
+
+    /**
+     * 프로젝트 삭제
+     */
+    public void deleteProject(Long projectId) {
+        projectRepository.deleteById(projectId);
     }
 
     public Project findProject(Long projectId) {
