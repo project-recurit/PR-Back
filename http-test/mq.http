@@ -1,0 +1,10 @@
+### mq test
+POST {{host}}/v1/api/mq/direct
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "userId": 2,
+  "title": "title11",
+  "body": "body22"
+}
