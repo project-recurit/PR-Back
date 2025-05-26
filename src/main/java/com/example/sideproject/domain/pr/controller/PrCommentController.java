@@ -21,12 +21,12 @@ import java.util.List;
 @Tag(name = "pr 댓글 api")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/prs/{prId}/comments")
+@RequestMapping("/api/v1/prs")
 public class PrCommentController {
     private final PrCommentService prCommentService;
 
     @Operation(summary = "pr 게시글 댓글 작성", description = "pr 게시글 댓글 작성")
-    @PostMapping
+    @PostMapping("/{prId}/comment")
     public ResponseEntity<ResponseDataDto<Long>> saveComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                              @PathVariable("prId") Long prId,
                                                              @RequestBody PrCommentRequest prCommentRequest) {
@@ -35,7 +35,7 @@ public class PrCommentController {
     }
 
     @Operation(summary = "pr 게시글 댓글 조회 ", description = "pr 게시글 댓글 조회")
-    @GetMapping
+    @GetMapping("/{prId}/comments")
     public ResponseEntity<ResponseDataDto<PagedModel<PrCommentResponse>>> getComments(@PathVariable("prId") Long prId,
                                                                                       Pageable page) {
         PagedModel<PrCommentResponse> res = prCommentService.getComments(prId, page);
@@ -43,7 +43,7 @@ public class PrCommentController {
     }
 
     @Operation(summary = "pr 대댓글 조회", description = "pr 게시글 댓글 조회, 페이징 처리 X")
-    @GetMapping("/{parentId}/reply")
+    @GetMapping("/comment/{parentId}/reply")
     public ResponseEntity<ResponseDataDto<List<PrCommentResponse>>> getReply(@PathVariable("parentId") Long parentId,
                                                                              Pageable page) {
         List<PrCommentResponse> res = prCommentService.getReplys(parentId, page);
@@ -51,7 +51,7 @@ public class PrCommentController {
     }
 
     @Operation(summary = "pr 게시글 댓글 수정", description = "pr 게시글 댓글 작성")
-    @PutMapping("/{commentId}")
+    @PutMapping("/comment/{commentId}")
     public ResponseEntity<ResponseDataDto<Long>> updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                @PathVariable("commentId") Long commentId,
                                                                @RequestBody PrCommentRequest prCommentRequest) {
@@ -60,7 +60,7 @@ public class PrCommentController {
     }
 
     @Operation(summary = "pr 게시글 댓글 삭제", description = "pr 게시글 댓글 삭제")
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<ResponseMessageDto> deletetComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                              @PathVariable("commentId") Long commentId) {
         prCommentService.deleteComment(userDetails.getUser(), commentId);
