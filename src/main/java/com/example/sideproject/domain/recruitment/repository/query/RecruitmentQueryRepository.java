@@ -119,7 +119,7 @@ public class RecruitmentQueryRepository {
                                 RecruitmentsResponseDto.class,
                                 recruitment.id.as("id"),
                                 recruitment.title.as("title"),
-                                user.nickname.as("userNickname"),
+                                user.nickname.as("nickname"),
                                 recruitment.viewCount.as("viewCount"),
                                 recruitment.commentCount.as("commentCount"),
                                 recruitment.modifiedAt.as("modifiedAt"),

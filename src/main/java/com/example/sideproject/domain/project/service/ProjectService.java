@@ -48,7 +48,7 @@ public class ProjectService {
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .teamCount(project.getTeamCount())
-                .userNickname(project.getUser().getNickname())
+                .nickname(project.getUser().getNickname())
                 .projectMemberList(project.getProjectMembers())
                 .build();
     }
