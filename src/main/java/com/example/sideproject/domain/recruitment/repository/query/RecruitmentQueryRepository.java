@@ -157,7 +157,7 @@ public class RecruitmentQueryRepository {
                 .map(recruitment -> new RecruitmentsResponseDto(
                         recruitment.getId(),
                         recruitment.getTitle(),
-                        recruitment.getUserNickname(),
+                        recruitment.getNickname(),
                         recruitment.getViewCount(),
                         recruitment.getCommentCount(),
                         recruitment.getModifiedAt(),
