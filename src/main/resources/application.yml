@@ -37,3 +37,8 @@ spring:
     port: ${RABBITMQ_PORT}
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
+
+api:
+  server:
+    notification:
+      url: ${NOTIFICATION_SERVER_URL}

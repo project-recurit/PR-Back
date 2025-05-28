@@ -1,0 +1,17 @@
+### fcm 토큰 저장
+POST {{host}}/v1/api/fcm
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "token": "e-E9MFzDZnvNawnmOkh7H:APA91bE6G5MWyiutlkL3nuBFnw8kOQuNYKSY3n59O-woyeY0xcknQBW4lX4STorPu3qIUzEk-H_tnsSKHg81xyf3BcfGBaWmEGz3HnVB6M4jbQ7NTqxxXqI"
+}
+
+### fcm 토큰 조회
+GET {{host}}/v1/api/fcm
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### fcm 토큰 삭제
+DELETE {{host}}/v1/api/fcm?token=e-E9MFzDZnvNtawnmOkh7H:APA91bE6G5MWyiutlkL3nuBFnw8kOQuNYKSY3n59O-woyeY0xcknQBW4lX4STorPu3qIUzEk-H_tnsSKHg81xyf3BcfGBaWmEGz3HnVB6M4jbQ7NTqxxXqI
+Authorization: Bearer {{accessToken}}

@@ -1,4 +1,4 @@
-package com.example.sideproject.mq;
+package com.example.sideproject.domain.fcm.dto.payload;
 
 public record NotificationMessage(
         Long userId,
