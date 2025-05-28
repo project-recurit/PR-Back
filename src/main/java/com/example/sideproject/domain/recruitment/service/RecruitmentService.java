@@ -49,7 +49,7 @@ RecruitmentService {
      * 프로젝트 구인 글 생성
      */
     @Transactional
-    public void createRecruitment(RecruitmentRequestDto requestDto, List<MultipartFile> files,
+    public Long createRecruitment(RecruitmentRequestDto requestDto, List<MultipartFile> files,
                                   List<RecruitmentPositionRequestDto> positions, User user) {
 
         final User foundUser = validateActiveUser(user);
@@ -100,6 +100,7 @@ RecruitmentService {
         // 4. 알림
         List<User> users = findUserByTechStacks(techStacks);
         recruitmentNotificationService.notice(savedRecruitment, users, techStacks.stream().map(TechStack::getId).toList());
+        return savedRecruitment.getId();
     }
 
     public List<User> findUserByTechStacks(List<TechStack> techStacks) {

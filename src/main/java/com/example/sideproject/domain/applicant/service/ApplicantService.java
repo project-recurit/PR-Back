@@ -50,7 +50,8 @@ public class ApplicantService {
                 recruitmentId,
                 recruitment.getTitle(),
                 applicant.getPosition(),
-                recruitment.getUser().getId()
+                recruitment.getUser().getId(),
+                recruitment.getUser().isPushAllowed()
         );
 
         return applicantRepository.save(applicant).getId();
@@ -76,7 +77,8 @@ public class ApplicantService {
                     recruitmentId,
                     recruitment.getTitle(),
                     status,
-                    applicant.getUser().getId()
+                    applicant.getUser().getId(),
+                    applicant.getUser().isPushAllowed()
             );
         }
     }

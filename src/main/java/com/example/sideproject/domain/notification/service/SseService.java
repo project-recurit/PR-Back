@@ -20,9 +20,15 @@ public class SseService {
         log.debug("{} 알림 서비스 접속", userId);
         SseEmitter session = emitterRepository.connect(userId);
 
-        EventDto data = new EventDto(userId, userId, "connect", NotificationType.CONNECT, 0L);
+        EventDto data = EventDto.builder()
+                .to(userId)
+                .from(userId)
+                .title("SSE Connect")
+                .msg("Success")
+                .type(NotificationType.CONNECT)
+                .relatedId(0L)
+                .build();
         send(userId, data, session);
-
         return session;
     }
 

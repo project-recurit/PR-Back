@@ -1,5 +1,5 @@
 ### mq test
-POST {{host}}/v1/api/mq/direct
+POST {{host}}/v1/api/push/direct
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 

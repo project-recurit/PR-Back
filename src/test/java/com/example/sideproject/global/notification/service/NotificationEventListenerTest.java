@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @SpringBootTest
-class EventServiceTest {
+class NotificationEventListenerTest {
 
     @Autowired
     SseService sseService;

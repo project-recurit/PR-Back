@@ -23,7 +23,8 @@ public class ApplicantNotificationService {
      * @param leaderId 팀장
      */
     @NotifyOn
-    public EventListDto registerApplicant(Long projectId, String projectTitle, Position position, Long leaderId) {
+    public EventListDto registerApplicant(Long projectId, String projectTitle,
+                                          Position position, Long leaderId, boolean isPushAllowed) {
         String msg = """
                 \'$_projectTitle\'의 \'[$_position]\'에 새로운 지원자가 있어요!
                 """
@@ -34,6 +35,8 @@ public class ApplicantNotificationService {
                 .msg(msg)
                 .relatedId(projectId)
                 .type(NotificationType.PROJECT_APPLICANT)
+                .needToPush(true)
+                .pushAllowed(isPushAllowed)
                 .build();
         return new EventListDto(List.of(eventDto));
     }
@@ -46,7 +49,9 @@ public class ApplicantNotificationService {
      * @param userId 지원자
      */
     @NotifyOn
-    public EventListDto changeApplicantStatus(Long projectId, String projectTitle, ApplicationStatus status, Long userId) {
+    public EventListDto changeApplicantStatus(Long projectId, String projectTitle,
+                                              ApplicationStatus status, Long userId,
+                                              boolean isPushAllowed) {
         String msg = """
                 \'$_projectTitle\'에 \'$_status\'됐어요.
                 """
@@ -57,6 +62,8 @@ public class ApplicantNotificationService {
                 .msg(msg)
                 .relatedId(projectId)
                 .type(NotificationType.APPLICATION_RESULT)
+                .needToPush(true)
+                .pushAllowed(isPushAllowed)
                 .build();
         return new EventListDto(List.of(eventDto));
     }

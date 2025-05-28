@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class RabbitMqService {
+public class FcmNotificationSender {
     private final RabbitTemplate rabbitTemplate;
     private final String DIRECT_EXCHANGE_NAME = "fcm";
     private final String DIRECT_QUEUE_ROUTING_KEY = "fcm.notification";

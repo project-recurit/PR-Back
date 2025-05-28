@@ -60,6 +60,8 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private Position position;
 
+    private boolean pushAllowed;
+
     // 북마크 관련 필드 추가
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();

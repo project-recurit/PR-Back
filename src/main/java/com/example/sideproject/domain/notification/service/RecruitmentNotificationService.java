@@ -8,6 +8,8 @@ import com.example.sideproject.domain.notification.aop.annotation.NotifyOn;
 import com.example.sideproject.domain.notification.dto.EventDto;
 import com.example.sideproject.domain.notification.dto.EventListDto;
 import com.example.sideproject.domain.notification.entity.NotificationType;
+import com.example.sideproject.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,16 +30,24 @@ public class RecruitmentNotificationService {
     public EventListDto notice(Recruitment recruitment, List<User> users, List<Long> recruitmentTechStackIds) {
         String msg = "\'" + recruitment.getTitle() + "\' 가 등록되었습니다.";
         return new EventListDto(users.stream()
-                .map(user -> new EventDto(
-                        user.getId(),
-                        recruitment.getUser().getId(),
-                        getMatchingTechStacks(
-                                user.getUserTechStacks().stream().map(UserTechStack::getTechStack).toList(),
-                                recruitmentTechStackIds) + " $| " + msg,
-                        NotificationType.PROJECT_REGISTRATION,
-                        recruitment.getId())
-                ).toList()
+                .map(user -> getEventDto(recruitment, recruitmentTechStackIds, user, msg)).toList()
         );
+    }
+
+    private EventDto getEventDto(Recruitment recruitment, List<Long> recruitmentTechStackIds, User user, String msg) {
+        String resultMsg = getMatchingTechStacks(
+                user.getUserTechStacks().stream().map(UserTechStack::getTechStack).toList(),
+                recruitmentTechStackIds) + " $| " + msg;
+
+        return EventDto.builder()
+                .to(user.getId())
+                .from(recruitment.getUser().getId())
+                .msg(resultMsg)
+                .type(NotificationType.PROJECT_REGISTRATION)
+                .relatedId(recruitment.getId())
+                .needToPush(true)
+                .pushAllowed(user.isPushAllowed())
+                .build();
     }
 
     /**
@@ -53,4 +63,5 @@ public class RecruitmentNotificationService {
                 .filter(name -> !name.isEmpty())
                 .collect(Collectors.joining(","));
     }
+
 }
