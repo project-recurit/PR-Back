@@ -15,6 +15,7 @@ public class FcmNotificationSender {
     private final String DIRECT_QUEUE_ROUTING_KEY = "fcm.notification";
 
     public void send(NotificationMessage notificationMessage) {
+        log.info("routing key={}", DIRECT_QUEUE_ROUTING_KEY);
         rabbitTemplate.convertAndSend(DIRECT_EXCHANGE_NAME, DIRECT_QUEUE_ROUTING_KEY, notificationMessage);
     }
 }

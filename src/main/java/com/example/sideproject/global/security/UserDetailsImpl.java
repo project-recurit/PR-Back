@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.domain.user.entity.UserRole;
 import com.example.sideproject.domain.user.entity.UserStatus;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,10 +37,9 @@ public class UserDetailsImpl implements UserDetails {
     //사용자 권한 정하는 메서드
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        UserStatus statusEnum = user.getUserStatus();
-        String status = statusEnum.getStatus();
+        UserRole userRole = user.getUserRole();
 
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(status);
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(userRole.getAuthority());
 
         Collection<GrantedAuthority> authorities = new ArrayList<>();
 

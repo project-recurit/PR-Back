@@ -1,6 +1,8 @@
 package com.example.sideproject.domain.fcm.controller;
 
 import com.example.sideproject.domain.fcm.dto.FcmTokenRequest;
+import com.example.sideproject.domain.fcm.dto.payload.NotificationMessage;
+import com.example.sideproject.domain.fcm.service.FcmNotificationSender;
 import com.example.sideproject.domain.fcm.service.FcmService;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +24,7 @@ import java.util.List;
 @RequestMapping("/v1/api/fcm")
 public class FcmController {
     private final FcmService fcmService;
+    private final FcmNotificationSender fcmNotificationSender;
 
     @Operation(summary = "fcm token 조회", description = "유저의 fcm token을 조회한다.")
     @GetMapping
@@ -43,5 +47,12 @@ public class FcmController {
                                                           String token) {
         fcmService.deleteToken(userDetails.getUser(), token);
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.SUCCESS));
+    }
+
+    @Operation(summary = "push 메시지 전송", description = "[관리자] 푸시 메시지를 전송합니다. userId를 검증하지 않습니다.")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/direct")
+    public void sendDirectExchange(@RequestBody NotificationMessage notificationMessage) {
+        fcmNotificationSender.send(notificationMessage);
     }
 }
