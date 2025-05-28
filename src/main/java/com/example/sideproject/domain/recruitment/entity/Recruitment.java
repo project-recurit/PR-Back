@@ -81,9 +81,12 @@ public class Recruitment extends Timestamped {
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     @Comment(value = "직무")
-    private List<RecruitmentPosition> positions = new ArrayList<>();
+    private List<RecruitmentPosition> positions;
 
     public void addPosition(RecruitmentPosition position) {
+        if (this.positions == null) {
+            this.positions = new ArrayList<>();
+        }
         this.positions.add(position);
         position.setRecruitment(this);
     }

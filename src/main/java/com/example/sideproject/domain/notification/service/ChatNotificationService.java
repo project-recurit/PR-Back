@@ -18,7 +18,7 @@ public class ChatNotificationService {
      * @param receiverId 알림 받을 유저
      */
     @NotifyOn
-    public EventListDto createRoom(String senderName, Long relatedId ,Long receiverId) {
+    public EventListDto createRoom(String senderName, Long relatedId, Long receiverId, boolean isPushAllowed) {
         String msg = """
                 \'$_senderName\'님과 새로운 채팅이 시작됐어요.
                 """
@@ -28,6 +28,8 @@ public class ChatNotificationService {
                 .msg(msg)
                 .relatedId(relatedId)
                 .type(NotificationType.CHAT_START)
+                .needToPush(true)
+                .pushAllowed(isPushAllowed)
                 .build();
         return new EventListDto(List.of(eventDto));
     }

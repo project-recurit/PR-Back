@@ -9,7 +9,8 @@ public record NotificationDto(
         Long userId,
         String type,
         String message,
-        Long relatedId
+        Long relatedId,
+        boolean isRead
 ) {
     public static NotificationDto of(Notification notification) {
         return NotificationDto.builder()
@@ -18,6 +19,7 @@ public record NotificationDto(
                 .type(notification.getType().name())
                 .message(notification.getMessage())
                 .relatedId(notification.getRelatedId())
+                .isRead(notification.isRead())
                 .build();
     }
 }
