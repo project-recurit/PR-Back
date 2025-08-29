@@ -4,7 +4,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "token": "e-E9MFzDZnvNtawnmOkh7H:APA91bE6G5MWyiutlkL3nuBFnw8kOQuNYKSY3n59O-woyeY0xcknQBW4lX4STorPu3qIUzEk-H_tnsSKHg81xyf3BcfGBaWmEGz3HnVB6M4jbQ7NTqxxXqI"
+  "token": "dV8BG-i_vrXDxU833zT-iQ:APA91bHT5JNm6DTyEOSPpNmXP6HpJm-pSBtToGI-0V7Y-Q5zQAtbIqu0o-PVrTV1PS1TDelU9atztX7qi8jpc7YdR9itZOq7uxAHFymzHjeGoE8kkMfIZ8o"
 }
 
 ### fcm 토큰 조회
@@ -13,7 +13,7 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 ### fcm 토큰 삭제
-DELETE {{host}}/v1/api/fcm?token=e-E9MFzDZnvNawnmOkh7H:APA91bE6G5MWyiutlkL3nuBFnw8kOQuNYKSY3n59O-woyeY0xcknQBW4lX4STorPu3qIUzEk-H_tnsSKHg81xyf3BcfGBaWmEGz3HnVB6M4jbQ7NTqxxXqI
+DELETE {{host}}/v1/api/fcm?token=dV8BG-i_vrXDxU833zT-iQ:APA91bHKA-ExN_OSiuGkhxlXyyCICJ2KMY2ge8B2mZ-21KbVp6fz44S4Xq4PbHMrwdnXB6GSNsp6bhwAmQ358o_DYhywGs21vNMz7XIuhgEohlnzFyJvcSQ
 Authorization: Bearer {{accessToken}}
 
 ### mq test
@@ -23,6 +23,6 @@ Authorization: Bearer {{accessToken}}
 
 {
   "userId": 2,
-  "title": "title11",
+  "title": "title11gd",
   "body": "body22"
 }
