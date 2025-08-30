@@ -1,24 +1,69 @@
 services:
   db:
-    image: mysql
+    image: postgres
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
-  es:
-    image: elasticsearch:8.11.0
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      discovery.type: single-node
-      xpack.security.enabled: false
+      POSTGRES_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DATABASE: ${DB_DATABASE}
+#  es:
+#    image: elasticsearch:8.11.0
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#    environment:
+#      discovery.type: single-node
+#      xpack.security.enabled: false
   rq:
     image: rabbitmq:management
     ports:
       - "5672:5672"
       - "15672:15672"
 #    restart: unless-stopped
+
+  grafana:
+#    container_name: grafana
+    image: grafana/grafana:latest
+    restart: always
+    ports:
+      - "3000:3000"
+#    volumes:
+#      - ./grafana/data:/var/lib/grafana
+    networks:
+      - app-net
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    restart: always
+    ports:
+      - "3100:3100"
+    command:
+      - -config.file=/etc/loki/loki-config.yaml
+      - -validation.allow-structured-metadata=false
+    volumes:
+      - ./monitoring-conf/loki-config.yaml:/etc/loki/loki-config.yaml
+      - ./loki/data:/loki
+    networks:
+      - app-net
+
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:latest
+    restart: always
+    ports:
+      - "9080:9080"
+    volumes:
+      - ./logs:/logs
+      - ./monitoring-conf/promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - app-net
+    depends_on:
+      - loki
+
+networks:
+  app-net:
+    external: true
