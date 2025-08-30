@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "socialId": "167050754",
-  "position": "Backend",
+  "position": "BACKEND",
   "techStackIds": [105, 108, 99],
   "nickname": "test-silica12"
 }
