@@ -16,7 +16,7 @@ public record NotificationRequestDto(
         return Notification.builder()
                 .to(new User(to))
                 .type(type)
-                .message(message)
+                .message(message.toString())
                 .relatedId(relatedId)
                 .build();
     }

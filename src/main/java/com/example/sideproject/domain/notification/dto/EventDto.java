@@ -2,6 +2,7 @@ package com.example.sideproject.domain.notification.dto;
 
 import com.example.sideproject.domain.notification.entity.NotificationType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.Builder;
 
 @Builder
