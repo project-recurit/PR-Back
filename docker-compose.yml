@@ -4,10 +4,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DATABASE: ${DB_DATABASE}
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: db1
 #  es:
 #    image: elasticsearch:8.11.0
 #    ports:

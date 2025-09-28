@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import com.example.sideproject.domain.bookmark.entity.TeamRecruitBookmark;
-
 @Entity
 @Getter
 @NoArgsConstructor
@@ -61,10 +59,6 @@ public class User extends Timestamped {
     private Position position;
 
     private boolean pushAllowed;
-
-    // 북마크 관련 필드 추가
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TeamRecruitBookmark> bookmarks = new HashSet<>();
 
     public void updateRegisterInfo(Position position, String nickname, List<TechStack> techStacks) {
         this.position = position;

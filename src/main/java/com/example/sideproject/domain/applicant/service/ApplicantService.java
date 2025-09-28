@@ -10,6 +10,7 @@ import com.example.sideproject.domain.applicant.repository.query.ApplicantQueryR
 import com.example.sideproject.domain.notification.publisher.ApplicantNotification;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.service.RecruitmentService;
+import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
@@ -104,4 +105,9 @@ public class ApplicantService {
     public List<ApplicantResponseDto> getApplicants(User user, Long recruitmentId, SearchApplicantDto searchDto) {
         return applicantQueryRepository.findApplicants(user.getId(), recruitmentId, searchDto);
     }
+
+    public List<StatusApplicantResponseDto> getMyApplications(User user) {
+        return applicantQueryRepository.findApplications(user.getId());
+    }
+
 }

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record TechStackDto(
-        @Schema(name = "기술스택 고유번호")
+        @Schema(description = "기술스택 고유번호")
         Long id,
-        @Schema(name = "기술스택 명")
+        @Schema(description = "기술스택 명")
         String name
 ) {
     public static TechStackDto of(TechStack techStack) {
