@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.notification.service;
+package com.example.sideproject.domain.notification.publisher;
 
 import com.example.sideproject.domain.notification.dto.recruitment.RecruitmentNotificationDto;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
@@ -8,20 +8,19 @@ import com.example.sideproject.domain.user.entity.UserTechStack;
 import com.example.sideproject.domain.notification.dto.EventDto;
 import com.example.sideproject.domain.notification.dto.EventListDto;
 import com.example.sideproject.domain.notification.entity.NotificationType;
-import com.example.sideproject.global.component.Converter;
+import com.example.sideproject.global.component.ObjectConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RecruitmentNotification {
     private final ApplicationEventPublisher publisher;
-    private final Converter converter;
+    private final ObjectConverter objectConverter;
 
     /**
      * 해당하는 유저에게 알림 메시지를 전달한다.
@@ -84,7 +83,7 @@ public class RecruitmentNotification {
         return EventDto.builder()
                 .to(user.getId())
                 .from(recruitment.getUser().getId())
-                .msg(converter.toString(notificationDto))
+                .msg(objectConverter.toString(notificationDto))
                 .type(notificationType)
                 .relatedId(recruitment.getId())
                 .needToPush(notificationType.isNeedToPush())

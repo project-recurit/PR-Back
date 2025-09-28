@@ -1,6 +1,6 @@
-package com.example.sideproject.domain.fcm.service;
+package com.example.sideproject.domain.notification.fcm.service;
 
-import com.example.sideproject.domain.fcm.dto.DeviceDto;
+import com.example.sideproject.domain.notification.fcm.dto.DeviceDto;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 

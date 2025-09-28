@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.notification.service;
+package com.example.sideproject.domain.notification.publisher;
 
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.notification.dto.EventDto;
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import static com.example.sideproject.domain.notification.entity.NotificationType.APPLICATION_RESULT;
 import static com.example.sideproject.domain.notification.entity.NotificationType.PROJECT_APPLICANT;
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 

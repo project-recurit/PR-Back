@@ -5,7 +5,7 @@ import com.example.sideproject.domain.chat.entity.*;
 import com.example.sideproject.domain.chat.repository.ChatMessageRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomMemberRepository;
 import com.example.sideproject.domain.chat.repository.ChatRoomRepository;
-import com.example.sideproject.domain.notification.service.ChatNotification;
+import com.example.sideproject.domain.notification.publisher.ChatNotification;
 import com.example.sideproject.domain.pr.repository.PrRepository;
 import com.example.sideproject.domain.recruitment.repository.RecruitmentRepository;
 import com.example.sideproject.domain.user.entity.User;

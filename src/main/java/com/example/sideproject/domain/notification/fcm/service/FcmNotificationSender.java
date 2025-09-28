@@ -1,6 +1,6 @@
-package com.example.sideproject.domain.fcm.service;
+package com.example.sideproject.domain.notification.fcm.service;
 
-import com.example.sideproject.domain.fcm.dto.payload.NotificationMessage;
+import com.example.sideproject.domain.notification.fcm.dto.payload.NotificationMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

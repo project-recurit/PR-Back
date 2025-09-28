@@ -3,16 +3,15 @@ package com.example.sideproject.global.component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class Converter {
+public class ObjectConverter {
     private final ObjectMapper objectMapper;
 
-    public Converter() {
+    public ObjectConverter() {
         objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_CHAR_ARRAYS_AS_JSON_ARRAYS, false);
     }

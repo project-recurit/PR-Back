@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.notification.service;
+package com.example.sideproject.domain.notification.publisher;
 
 import com.example.sideproject.domain.notification.dto.EventDto;
 import com.example.sideproject.domain.notification.dto.EventListDto;
@@ -8,8 +8,7 @@ import com.example.sideproject.domain.techstack.entity.TechStack;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserTechStack;
 import com.example.sideproject.fake.FakeApplicationEventPublisher;
-import com.example.sideproject.global.component.Converter;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.sideproject.global.component.ObjectConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,9 +25,9 @@ class RecruitmentNotificationTest {
     @BeforeEach
     void setUp() {
         fakePublisher = new FakeApplicationEventPublisher();
-        Converter converter = new Converter();
+        ObjectConverter objectConverter = new ObjectConverter();
 
-        recruitmentNotification = new RecruitmentNotification(fakePublisher, converter);
+        recruitmentNotification = new RecruitmentNotification(fakePublisher, objectConverter);
     }
 
     @DisplayName("프로젝트 등록 시 매칭되는 기술스택을 가진 유저들에게만 알림이 발송된다")

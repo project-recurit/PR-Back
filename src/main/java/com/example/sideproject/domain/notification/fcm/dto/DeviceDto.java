@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.fcm.dto;
+package com.example.sideproject.domain.notification.fcm.dto;
 
 public record DeviceDto(
         Long userId,

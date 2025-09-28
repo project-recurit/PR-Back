@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.notification.service;
+package com.example.sideproject.domain.notification.publisher;
 
 import com.example.sideproject.domain.notification.dto.EventDto;
 import com.example.sideproject.domain.notification.dto.EventListDto;

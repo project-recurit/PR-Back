@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.recruitment.service;
 
-import com.example.sideproject.domain.notification.service.RecruitmentNotification;
+import com.example.sideproject.domain.notification.publisher.RecruitmentNotification;
 import com.example.sideproject.domain.recruitment.dto.*;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentImage;

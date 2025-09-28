@@ -7,7 +7,7 @@ import com.example.sideproject.domain.applicant.entity.Applicant;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.repository.ApplicantRepository;
 import com.example.sideproject.domain.applicant.repository.query.ApplicantQueryRepository;
-import com.example.sideproject.domain.notification.service.ApplicantNotification;
+import com.example.sideproject.domain.notification.publisher.ApplicantNotification;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.service.RecruitmentService;
 import com.example.sideproject.domain.user.entity.User;
