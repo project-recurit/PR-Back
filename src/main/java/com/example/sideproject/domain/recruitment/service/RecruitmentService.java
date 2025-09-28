@@ -1,6 +1,6 @@
 package com.example.sideproject.domain.recruitment.service;
 
-import com.example.sideproject.domain.notification.service.RecruitmentNotificationService;
+import com.example.sideproject.domain.notification.publisher.RecruitmentNotification;
 import com.example.sideproject.domain.recruitment.dto.*;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentImage;
@@ -36,7 +36,7 @@ public class
 RecruitmentService {
     private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
-    private final RecruitmentNotificationService recruitmentNotificationService; //알림
+    private final RecruitmentNotification recruitmentNotification; //알림
     private final RecruitmentImageService recruitmentImageService; // 모집공고 이미지
     private final TechStackRepository techStackRepository; // 임시
     private final RecruitmentQueryRepository recruitmentQueryRepository; // 동적쿼리
@@ -99,7 +99,7 @@ RecruitmentService {
 
         // 4. 알림
         List<User> users = findUserByTechStacks(techStacks);
-        recruitmentNotificationService.notice(savedRecruitment, users, techStacks.stream().map(TechStack::getId).toList());
+        recruitmentNotification.notice(savedRecruitment, users, techStacks.stream().map(TechStack::getId).toList());
         return savedRecruitment.getId();
     }
 

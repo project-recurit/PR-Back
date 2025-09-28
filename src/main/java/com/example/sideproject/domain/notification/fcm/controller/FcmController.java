@@ -1,9 +1,9 @@
-package com.example.sideproject.domain.fcm.controller;
+package com.example.sideproject.domain.notification.fcm.controller;
 
-import com.example.sideproject.domain.fcm.dto.FcmTokenRequest;
-import com.example.sideproject.domain.fcm.dto.payload.NotificationMessage;
-import com.example.sideproject.domain.fcm.service.FcmNotificationSender;
-import com.example.sideproject.domain.fcm.service.FcmService;
+import com.example.sideproject.domain.notification.fcm.dto.FcmTokenRequest;
+import com.example.sideproject.domain.notification.fcm.dto.payload.NotificationMessage;
+import com.example.sideproject.domain.notification.fcm.service.FcmNotificationSender;
+import com.example.sideproject.domain.notification.fcm.service.FcmService;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.enums.ResponseStatus;

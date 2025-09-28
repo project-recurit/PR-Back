@@ -7,7 +7,7 @@ import com.example.sideproject.domain.applicant.entity.Applicant;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.repository.ApplicantRepository;
 import com.example.sideproject.domain.applicant.repository.query.ApplicantQueryRepository;
-import com.example.sideproject.domain.notification.service.ApplicantNotificationService;
+import com.example.sideproject.domain.notification.publisher.ApplicantNotification;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.service.RecruitmentService;
 import com.example.sideproject.domain.user.entity.User;
@@ -25,7 +25,7 @@ public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final RecruitmentService recruitmentService;
     private final ApplicantQueryRepository applicantQueryRepository;
-    private final ApplicantNotificationService applicantNotificationService;
+    private final ApplicantNotification applicantNotification;
 
     /**
      * 프로젝트 지원
@@ -46,7 +46,7 @@ public class ApplicantService {
                 .status(ApplicationStatus.unviewed)
                 .build();
 
-        applicantNotificationService.registerApplicant(
+        applicantNotification.registerApplicant(
                 recruitmentId,
                 recruitment.getTitle(),
                 applicant.getPosition(),
@@ -73,7 +73,7 @@ public class ApplicantService {
         applicant.updateStatus(status);
 
         if (status.isNotify()) {
-            applicantNotificationService.changeApplicantStatus(
+            applicantNotification.changeApplicantStatus(
                     recruitmentId,
                     recruitment.getTitle(),
                     status,
