@@ -1,4 +1,4 @@
-package com.example.sideproject.domain.project.entity;
+package com.example.sideproject.domain.status.project.entity;
 
 import com.example.sideproject.domain.user.entity.User;
 import jakarta.persistence.*;
