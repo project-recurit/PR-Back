@@ -23,6 +23,7 @@ import java.util.List;
 public class ApplicantStatusController {
     private final ApplicantService applicantService;
 
+    // TODO 지원 검색(최신순, 상태)
     @Operation(summary = "내 프로젝트 지원 현황 조회", description = "로그인한 사용자의 프로젝트 지원 현황을 조회한다.")
     @GetMapping
     public ResponseEntity<ResponseDataDto<List<StatusApplicantResponseDto>>> getMyApplications(@AuthenticationPrincipal UserDetailsImpl userDetails) {

@@ -3,13 +3,16 @@
 
     <!--로그 파일 저장 위치-->
     <property name="LOGS_PATH" value="./logs"/>
+    <property name="LOG_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n"/>
 
+    <!-- Console Appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %magenta(${PID:- }) --- [%15.15thread] %cyan(%-40.40logger{39}) : %msg%n</pattern>
         </encoder>
     </appender>
 
+    <!-- Rolling File Appender 공통 설정 -->
     <appender name="INFO_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS_PATH}/info.log</file>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -18,7 +21,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOGS_PATH}/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
@@ -32,7 +35,7 @@
     <appender name="ALL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS_PATH}/all.log</file>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOGS_PATH}/all.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
@@ -43,47 +46,34 @@
         </rollingPolicy>
     </appender>
 
-    <appender name="WARN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS_PATH}/warn.log</file>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOGS_PATH}/warn.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>100MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-    </appender>
+    <!-- Hibernate SQL Logger -->
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
 
     <!--  로컬 서버  -->
     <springProfile name="local">
         <root level="INFO">
-            <appender-ref ref="STDOUT" />
+            <appender-ref ref="STDOUT"/>
         </root>
-        <logger name="org.hibernate.SQL" level="DEBUG"></logger>
-        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+        <logger name="org.springframework.web.socket.config.WebSocketMessageBrokerStats" level="INFO"/>
     </springProfile>
 
     <!--  개발 서버  -->
     <springProfile name="dev">
         <root level="INFO">
-            <appender-ref ref="STDOUT" />
-            <appender-ref ref="INFO_LOG" />
-            <appender-ref ref="ALL_LOG" />
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="INFO_LOG"/>
+            <appender-ref ref="ALL_LOG"/>
         </root>
-        <logger name="org.hibernate.SQL" level="DEBUG"></logger>
-        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+        <logger name="org.springframework.web.socket.config.WebSocketMessageBrokerStats" level="WARN"/>
     </springProfile>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 
 </configuration>
