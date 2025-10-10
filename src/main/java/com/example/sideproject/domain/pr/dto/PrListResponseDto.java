@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 public class PrListResponseDto extends PostResponseDto {
@@ -22,7 +23,7 @@ public class PrListResponseDto extends PostResponseDto {
     }
 
     public PrListResponseDto addTechStacks(List<PrTechStackResponse> techStacks) {
-        this.techStacks = techStacks;
+        this.techStacks = Objects.requireNonNullElse(techStacks, List.of());
         return this;
     }
 
