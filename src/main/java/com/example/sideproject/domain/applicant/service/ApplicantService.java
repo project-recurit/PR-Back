@@ -11,10 +11,16 @@ import com.example.sideproject.domain.notification.publisher.ApplicantNotificati
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.service.RecruitmentService;
 import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
+import com.example.sideproject.domain.status.project.dto.StatusSearchRequest;
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.global.dto.DateSort;
+import com.example.sideproject.global.dto.PageDto;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,8 +112,14 @@ public class ApplicantService {
         return applicantQueryRepository.findApplicants(user.getId(), recruitmentId, searchDto);
     }
 
-    public List<StatusApplicantResponseDto> getMyApplications(User user) {
-        return applicantQueryRepository.findApplications(user.getId());
+    public List<StatusApplicantResponseDto> getMyApplications(User user, StatusSearchRequest searchRequest) {
+        DateSort dateSort = searchRequest.dateSort();
+        PageDto pageDto = searchRequest.pageDto();
+
+        Sort sort = Sort.by(Sort.Order.desc(dateSort.getOrder()));
+        PageRequest pageRequest = pageDto.toPageRequest(sort);
+
+        return applicantQueryRepository.findApplications(pageRequest, user.getId(), searchRequest);
     }
 
 }

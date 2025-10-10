@@ -2,6 +2,7 @@ package com.example.sideproject.domain.pr.controller;
 
 import com.example.sideproject.domain.pr.dto.*;
 import com.example.sideproject.domain.pr.service.PrService;
+import com.example.sideproject.global.dto.DateSort;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.enums.ResponseStatus;
@@ -32,9 +33,9 @@ public class PrController {
     @Operation(summary = "pr 게시글 리스트 조회", description = "해당하는 pr 게시글 조회")
     @GetMapping
     public ResponseEntity<ResponseDataDto<PagedModel<PrListResponseDto>>> getPrs(Pageable pageable,
-                                                                                 PrSort prSort,
+                                                                                 DateSort dateSort,
                                                                                  PrSearchRequest prSearchRequest) {
-        PagedModel<PrListResponseDto> prs = prService.getPrs(pageable, prSort, prSearchRequest);
+        PagedModel<PrListResponseDto> prs = prService.getPrs(pageable, dateSort, prSearchRequest);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, prs));
     }
 
