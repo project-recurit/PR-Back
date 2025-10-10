@@ -39,7 +39,7 @@ GET {{host}}/api/v1/post/pr/2
 Content-Type: application/json
 
 ### PR 게시글 수정
-PUT {{host}}/api/v1/post/pr/2
+PUT {{host}}/api/v1/post/pr/3
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 

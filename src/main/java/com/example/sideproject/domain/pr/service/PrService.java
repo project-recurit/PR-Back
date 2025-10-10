@@ -5,6 +5,7 @@ import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.pr.repository.PrRepository;
 import com.example.sideproject.domain.pr.repository.query.PrQueryRepository;
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.global.dto.DateSort;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -58,11 +59,11 @@ public class PrService {
         prRepository.delete(pr);
     }
 
-    public PagedModel<PrListResponseDto> getPrs(Pageable pageable, PrSort prSort, PrSearchRequest prSearchRequest) {
-        if (prSort == null) {
-            prSort = PrSort.modifiedAt;
+    public PagedModel<PrListResponseDto> getPrs(Pageable pageable, DateSort dateSort, PrSearchRequest prSearchRequest) {
+        if (dateSort == null) {
+            dateSort = DateSort.basicSort();
         }
-        Sort sort = Sort.by(Sort.Order.desc(prSort.getOrder()));
+        Sort sort = Sort.by(Sort.Order.desc(dateSort.getOrder()));
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         Page<PrListResponseDto> prs = prQueryRepository.getPrs(pageRequest, prSearchRequest);
         return new PagedModel<>(prs);

@@ -4,6 +4,7 @@ import com.example.sideproject.domain.recruitment.entity.RecruitmentCategory;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.global.entity.Timestamped;
 import com.querydsl.core.annotations.QueryProjection;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -22,7 +23,7 @@ public class RecruitmentsResponseDto {
     private final String modifiedAt;
     private final RecruitmentCategory recruitmentCategory;
     private final boolean isCommercial;
-    private final List<TechStackDto> techStacks;
+    private List<TechStackDto> techStacks;
 
     @QueryProjection
     public RecruitmentsResponseDto(Long id, String title, String nickname, int viewCount, int commentCount, LocalDateTime modifiedAt, RecruitmentCategory recruitmentCategory, boolean isCommercial) {
@@ -46,6 +47,10 @@ public class RecruitmentsResponseDto {
         this.modifiedAt = modifiedAt;
         this.recruitmentCategory = recruitmentCategory;
         this.isCommercial = isCommercial;
+        this.techStacks = techStacks;
+    }
+
+    public void setTechStacks(List<TechStackDto> techStacks) {
         this.techStacks = techStacks;
     }
 }

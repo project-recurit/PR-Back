@@ -16,7 +16,7 @@ import org.hibernate.annotations.Comment;
 @Builder
 @Table(name = "recruitment_position")
 public class RecruitmentPosition extends Timestamped {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +25,7 @@ public class RecruitmentPosition extends Timestamped {
     @Comment(value = "직무당 모집인원")
     private int capacity;
     
-    @Column(name = "position", nullable = false, columnDefinition = "position_enum")
+    @Column(name = "position", nullable = false)
     @Enumerated(EnumType.STRING)
     @Comment(value = "직무명")
     private Position position;
