@@ -27,6 +27,10 @@ Authorization: Bearer {{accessToken}}
 }
 
 ### PR 게시글 리스트 조회
+GET {{host}}/api/v1/post/pr
+Content-Type: application/json
+
+### PR 게시글 리스트 조회
 GET {{host}}/api/v1/post/pr?page=0&size=20&workTypes=OFFLINE&positions=FRONTEND,BACKEND&techStackIds=1
 Content-Type: application/json
 
@@ -35,7 +39,7 @@ GET {{host}}/api/v1/post/pr/2
 Content-Type: application/json
 
 ### PR 게시글 수정
-PUT {{host}}/api/v1/post/pr/2
+PUT {{host}}/api/v1/post/pr/3
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 

@@ -76,6 +76,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // kotlin-jupyter(test)
+    developmentOnly("org.jetbrains.kotlinx:kotlin-jupyter-spring-starter:0.12.0-439")
 }
 
 tasks.withType(JavaCompile).configureEach {
