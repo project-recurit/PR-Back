@@ -37,11 +37,11 @@ public class PrResponse extends PostResponseDto {
     }
 
     public PrResponse setTechStacks(List<PrTechStack> techStacks) {
-        this.techStacks = of(techStacks);
+        this.techStacks = toPrTechStackResponse(techStacks);
         return this;
     }
 
-    private List<PrTechStackResponse> of(List<PrTechStack> techStacks) {
+    private List<PrTechStackResponse> toPrTechStackResponse(List<PrTechStack> techStacks) {
         return techStacks.stream()
                 .map(t -> new PrTechStackResponse(
                         t.getTechStack().getId(),
