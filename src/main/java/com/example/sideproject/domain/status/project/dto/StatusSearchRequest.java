@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springdoc.core.annotations.ParameterObject;
 
+import java.util.Objects;
+
 @ParameterObject
 public record StatusSearchRequest(
         @Parameter(description = "날짜 정렬", schema = @Schema(implementation = DateSort.class))
@@ -19,6 +21,8 @@ public record StatusSearchRequest(
         PageDto pageDto
 ) {
     public StatusSearchRequest {
+        pageDto = Objects.requireNonNullElse(pageDto, PageDto.create());
+
         if (dateSort == null) {
             dateSort = DateSort.basicSort();
         }
