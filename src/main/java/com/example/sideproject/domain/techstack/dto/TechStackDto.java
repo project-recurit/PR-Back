@@ -23,6 +23,10 @@ public record TechStackDto(
     }
 
     public static List<TechStackDto> from(List<TechStackMapping> mappings) {
+        if (mappings == null) {
+            return List.of();
+        }
+
         return mappings.stream()
                 .map(t -> new TechStackDto(t.id(), t.name()))
                 .toList();

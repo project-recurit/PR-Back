@@ -3,6 +3,7 @@ package com.example.sideproject.domain.recruitment.dto;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentCategory;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.techstack.dto.TechStackMapping;
+import com.example.sideproject.domain.techstack.dto.TechStackResponse;
 import com.example.sideproject.global.entity.Timestamped;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class RecruitmentsResponseDto {
+public class RecruitmentsResponseDto implements TechStackResponse {
     private final Long id;
     private final String title;
     private final String nickname;
@@ -51,7 +52,13 @@ public class RecruitmentsResponseDto {
         this.techStacks = techStacks;
     }
 
-    public void setTechStacks(List<TechStackMapping> techStacks) {
+    public TechStackResponse setTechStacks(List<TechStackMapping> techStacks) {
         this.techStacks = TechStackDto.from(techStacks);
+        return this;
+    }
+
+    @Override
+    public Long getTargetId() {
+        return id;
     }
 }
