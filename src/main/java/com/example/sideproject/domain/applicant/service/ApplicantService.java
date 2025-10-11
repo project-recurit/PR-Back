@@ -18,9 +18,10 @@ import com.example.sideproject.global.dto.PageDto;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,14 +113,15 @@ public class ApplicantService {
         return applicantQueryRepository.findApplicants(user.getId(), recruitmentId, searchDto);
     }
 
-    public List<StatusApplicantResponseDto> getMyApplications(User user, StatusSearchRequest searchRequest) {
-        DateSort dateSort = searchRequest.dateSort();
-        PageDto pageDto = searchRequest.pageDto();
+    public PagedModel<StatusApplicantResponseDto> getMyApplications(User user, StatusSearchRequest searchRequest) {
+        DateSort dateSort = searchRequest.searchDto().dateSort();
+        PageDto pageDto = searchRequest.searchDto().pageDto();
 
         Sort sort = Sort.by(Sort.Order.desc(dateSort.getOrder()));
         PageRequest pageRequest = pageDto.toPageRequest(sort);
 
-        return applicantQueryRepository.findApplications(pageRequest, user.getId(), searchRequest);
+        Page<StatusApplicantResponseDto> applications = applicantQueryRepository.findApplications(pageRequest, user.getId(), searchRequest);
+        return new PagedModel<>(applications);
     }
 
 }

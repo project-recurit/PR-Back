@@ -32,10 +32,8 @@ public class PrController {
 
     @Operation(summary = "pr 게시글 리스트 조회", description = "해당하는 pr 게시글 조회")
     @GetMapping
-    public ResponseEntity<ResponseDataDto<PagedModel<PrListResponseDto>>> getPrs(Pageable pageable,
-                                                                                 DateSort dateSort,
-                                                                                 PrSearchRequest prSearchRequest) {
-        PagedModel<PrListResponseDto> prs = prService.getPrs(pageable, dateSort, prSearchRequest);
+    public ResponseEntity<ResponseDataDto<PagedModel<PrListResponseDto>>> getPrs(PrSearchRequest prSearchRequest) {
+        PagedModel<PrListResponseDto> prs = prService.getPrs(prSearchRequest);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, prs));
     }
 

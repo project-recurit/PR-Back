@@ -15,6 +15,7 @@ import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.config.QuerydslConfig;
 import com.example.sideproject.global.dto.DateSort;
 import com.example.sideproject.global.dto.PageDto;
+import com.example.sideproject.global.dto.SearchDto;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.enums.WorkType;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,15 +25,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -157,34 +161,32 @@ class ApplicantQueryRepositoryTest {
     @Test
     void findApplications() {
         StatusSearchRequest searchRequest = new StatusSearchRequest(
-                null,
-                null,
-                new PageDto(5, 0)
+                SearchDto.create(),
+                null
         );
 
-        PageDto pageDto = searchRequest.pageDto();
+        PageDto pageDto = searchRequest.searchDto().pageDto();
         PageRequest pageRequest = pageDto.toPageRequest();
 
-        List<StatusApplicantResponseDto> applications = applicantQueryRepository.findApplications(pageRequest, user2.getId(), searchRequest);
-        assertThat(applications).hasSize(2);
+        Page<StatusApplicantResponseDto> applications = applicantQueryRepository.findApplications(pageRequest, user2.getId(), searchRequest);
+        assertThat(applications.getTotalElements()).isEqualTo(2);
     }
 
     @DisplayName("내 지원 현황을 필터링 하여 조회한다")
     @Test
     void searchApplications() {
         StatusSearchRequest searchRequest = new StatusSearchRequest(
-                DateSort.createdAt,
-                ApplicationStatus.viewed,
-                new PageDto(5, 0)
+                SearchDto.create(),
+                ApplicationStatus.viewed
         );
 
-        DateSort dateSort = searchRequest.dateSort();
-        PageDto pageDto = searchRequest.pageDto();
+        DateSort dateSort = searchRequest.searchDto().dateSort();
+        PageDto pageDto = searchRequest.searchDto().pageDto();
 
         Sort sort = Sort.by(Sort.Order.desc(dateSort.getOrder()));
         PageRequest pageRequest = pageDto.toPageRequest(sort);
 
-        List<StatusApplicantResponseDto> applications = applicantQueryRepository.findApplications(pageRequest, user2.getId(), searchRequest);
-        assertThat(applications).hasSize(1);
+        Page<StatusApplicantResponseDto> applications = applicantQueryRepository.findApplications(pageRequest, user2.getId(), searchRequest);
+        assertThat(applications.getTotalElements()).isEqualTo(1);
     }
 }

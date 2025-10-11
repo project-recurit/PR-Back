@@ -75,7 +75,7 @@ public class PrQueryRepository {
         List<PrListResponseDto> result = prs.stream()
                 .map(pr -> pr.addTechStacks(techStackMap.get(pr.getId()))).toList();
 
-        return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());
+        return PageableExecutionUtils.getPage(result, pageable, () -> countQuery(prSearchCondition(prSearchRequest)).fetchOne());
     }
 
     private BooleanExpression prSearchCondition(PrSearchRequest prSearchRequest) {
@@ -151,8 +151,9 @@ public class PrQueryRepository {
         return orders.toArray(OrderSpecifier[]::new);
     }
 
-    private JPAQuery<Long> countQuery() {
+    private JPAQuery<Long> countQuery(BooleanExpression searchExpression) {
         return jpaQueryFactory.select(qPr.count())
-                .from(qPr);
+                .from(qPr)
+                .where(searchExpression);
     }
 }

@@ -5,8 +5,6 @@ import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
 import com.example.sideproject.domain.applicant.entity.Applicant;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.entity.QApplicant;
-import com.example.sideproject.domain.pr.entity.Pr;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentTechStackDto;
 import com.example.sideproject.domain.recruitment.dto.RecruitmentsResponseDto;
 import com.example.sideproject.domain.recruitment.entity.QRecruitment;
 import com.example.sideproject.domain.recruitment.entity.QRecruitmentTechStack;
@@ -15,6 +13,7 @@ import com.example.sideproject.domain.status.project.dto.StatusSearchRequest;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.example.sideproject.global.enums.Position;
+import com.example.sideproject.global.util.QueryUtil;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -23,6 +22,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -41,7 +41,7 @@ public class ApplicantQueryRepository {
     private QRecruitment qRecruitment = QRecruitment.recruitment;
     private QRecruitmentTechStack qRecruitmentTechStack = QRecruitmentTechStack.recruitmentTechStack;
 
-    public List<StatusApplicantResponseDto> findApplications(Pageable pageable, Long userId, StatusSearchRequest searchRequest) {
+    public Page<StatusApplicantResponseDto> findApplications(Pageable pageable, Long userId, StatusSearchRequest searchRequest) {
         List<StatusApplicantResponseDto> applications = jpaQueryFactory.select(Projections.constructor(
                         StatusApplicantResponseDto.class,
                         Projections.constructor(
@@ -60,12 +60,11 @@ public class ApplicantQueryRepository {
                 .join(qApplicant.recruitment)
                 .join(qApplicant.user)
                 .where(
-                        eqApplicationUserId(userId),
-                        eqApplicationStatus(searchRequest.status())
+                        statusSearchCondition(userId, searchRequest)
                 )
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
-                .orderBy(getOrderSpecifier(pageable.getSort()))
+                .orderBy(QueryUtil.createOrderSpecifiers(pageable.getSort(), qApplicant))
                 .fetch();
 
 
@@ -79,7 +78,7 @@ public class ApplicantQueryRepository {
                 .map(it -> it.setTechStacks(techStacks.get(it.getRecruitment().getId())))
                 .toList();
 
-        return result;
+        return QueryUtil.createPage(jpaQueryFactory, qApplicant, result, pageable, statusSearchCondition(userId, searchRequest));
     }
 
     public List<ApplicantResponseDto> findApplicants(Long userId, Long recruitmentId, SearchApplicantDto searchDto) {
@@ -102,6 +101,10 @@ public class ApplicantQueryRepository {
                 ).fetch();
 
         return result;
+    }
+
+    private BooleanExpression statusSearchCondition(Long userId, StatusSearchRequest searchRequest) {
+        return Expressions.allOf(eqApplicationUserId(userId), eqApplicationStatus(searchRequest.status()));
     }
 
     private BooleanExpression createSearchCondition(SearchApplicantDto searchDto) {
@@ -154,13 +157,4 @@ public class ApplicantQueryRepository {
         return qApplicant.status.eq(status);
     }
 
-    private OrderSpecifier<?>[] getOrderSpecifier(Sort sort) {
-        List<OrderSpecifier<?>> orders = new ArrayList<>();
-        sort.stream().forEach(order -> {
-            Order direction = order.isAscending() ? Order.ASC : Order.DESC;
-            PathBuilder<?> expression = new PathBuilder<>(Applicant.class, "applicant");
-            orders.add(new OrderSpecifier<>(direction, expression.get(order.getProperty(), Comparable.class)));
-        });
-        return orders.toArray(OrderSpecifier[]::new);
-    }
 }
