@@ -5,4 +5,7 @@ public record TechStackMappingDto(
         Long techStackId,
         String name
 ) {
+    public static TechStackDto toTechStackDto(TechStackMappingDto mappingDto) {
+        return new TechStackDto(mappingDto.techStackId(), mappingDto.name());
+    }
 }

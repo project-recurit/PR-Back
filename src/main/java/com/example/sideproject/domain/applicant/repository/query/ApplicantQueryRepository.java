@@ -5,12 +5,15 @@ import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
 import com.example.sideproject.domain.applicant.entity.Applicant;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.entity.QApplicant;
+import com.example.sideproject.domain.recruitment.dto.RecruitmentTechStackDto;
 import com.example.sideproject.domain.recruitment.dto.RecruitmentsResponseDto;
 import com.example.sideproject.domain.recruitment.entity.QRecruitment;
 import com.example.sideproject.domain.recruitment.entity.QRecruitmentTechStack;
 import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
 import com.example.sideproject.domain.status.project.dto.StatusSearchRequest;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
+import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryParam;
 import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.util.QueryUtil;
@@ -68,15 +71,18 @@ public class ApplicantQueryRepository {
                 .fetch();
 
 
-        List<Long> recruitmentIds = applications.stream()
-                .map(it -> it.getRecruitment().getId())
-                .toList();
+        TechStackQueryParam<TechStackMappingDto> queryParam = TechStackQueryParam.builder()
+                .idPath(qRecruitmentTechStack.recruitment.id)
+                .selectExpressions(
+                        List.of(qRecruitmentTechStack.recruitment.id,
+                                qRecruitmentTechStack.techStack.id,
+                                qRecruitmentTechStack.techStack.name)
+                )
+                .entityPath(qRecruitmentTechStack)
+                .joinPath(qRecruitmentTechStack.techStack)
+                .build();
 
-        Map<Long, List<TechStackDto>> techStacks = techStackQueryRepository.getTechStacks(recruitmentIds, qRecruitmentTechStack);
-
-        List<StatusApplicantResponseDto> result = applications.stream()
-                .map(it -> it.setTechStacks(techStacks.get(it.getRecruitment().getId())))
-                .toList();
+        List<StatusApplicantResponseDto> result = techStackQueryRepository.withTechStacks(queryParam, applications);
 
         return QueryUtil.createPage(jpaQueryFactory, qApplicant, result, pageable, statusSearchCondition(userId, searchRequest));
     }

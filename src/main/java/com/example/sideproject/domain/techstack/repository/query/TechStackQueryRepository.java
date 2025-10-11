@@ -1,12 +1,11 @@
 package com.example.sideproject.domain.techstack.repository.query;
 
-import com.example.sideproject.domain.pr.dto.PrTechStackResponse;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentTechStackDto;
-import com.example.sideproject.domain.recruitment.entity.QRecruitment;
-import com.example.sideproject.domain.recruitment.entity.QRecruitmentTechStack;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
-import com.example.sideproject.domain.techstack.entity.QTechStack;
-import com.querydsl.core.types.Projections;
+import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
+import com.example.sideproject.domain.techstack.dto.TechStackResponse;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,26 +20,56 @@ import java.util.stream.Collectors;
 public class TechStackQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Map<Long, List<TechStackDto>> getTechStacks(List<Long> recruitmentIds, QRecruitmentTechStack recruitmentTechStack) {
-        List<RecruitmentTechStackDto> techStacks = queryFactory
-                .select(Projections.constructor(
-                        RecruitmentTechStackDto.class,
-                        recruitmentTechStack.recruitment.id,
-                        recruitmentTechStack.techStack.id,
-                        recruitmentTechStack.techStack.name
-                ))
-                .from(recruitmentTechStack)
-                .join(recruitmentTechStack.techStack)
-                .where(recruitmentTechStack.recruitment.id.in(recruitmentIds))
+    /**
+     * 조회 결과에 각 id에 해당하는 기술 스택 데이터를 넣어 반환한다.
+     * @param param 기술 스택을 조회하기 위한 정보
+     * @param queryResults 기술 스택 데이터를 넣을 조회 결과
+     * @return 기술 스택 데이터를 추가한 조회 결과
+     * @param <T> 기술 스택 조회를 위한 매핑 객체 타입
+     * @param <R> 리턴 타입
+     */
+    public <T extends TechStackMappingDto, R extends TechStackResponse> List<R> withTechStacks(
+            TechStackQueryParam<T> param,
+            List<R> queryResults
+    ) {
+        Map<Long, List<TechStackDto>> techStackMap = getTechStackMap(
+                param.idPath(),
+                getIds(queryResults),
+                param.getSelectExpression(),
+                param.entityPath(),
+                param.joinPath(),
+                param.resultMapper()
+        );
+
+        queryResults.forEach(it -> it.setTechStacks(techStackMap.get(it.getTargetId())));
+
+        return queryResults;
+    }
+
+    private <T extends TechStackMappingDto> Map<Long, List<TechStackDto>> getTechStackMap(
+            NumberPath<Long> idPath,
+            List<Long> ids,
+            Expression<T> selectExpression,
+            EntityPathBase<?> entityPath,
+            EntityPathBase<?> joinPath,
+            Function<T, TechStackDto> resultMapper
+    ) {
+        List<T> techStacks = queryFactory.select(selectExpression)
+                .from(entityPath)
+                .join(joinPath)
+                .where(idPath.in(ids))
                 .fetch();
 
         return techStacks.stream()
                 .collect(Collectors.groupingBy(
-                        RecruitmentTechStackDto::getRecruitmentId,
-                        Collectors.mapping(
-                                entry -> new TechStackDto(entry.getTechStackId(), entry.getName()),
-                                Collectors.toList()
-                        ))
-                );
+                        TechStackMappingDto::id,
+                        Collectors.mapping(resultMapper, Collectors.toList())
+                ));
+    }
+
+    private <R extends TechStackResponse> List<Long> getIds(List<R> queryResults) {
+        return queryResults.stream()
+                .map(TechStackResponse::getTargetId)
+                .toList();
     }
 }
