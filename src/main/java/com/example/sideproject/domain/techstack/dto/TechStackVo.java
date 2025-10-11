@@ -1,11 +1,13 @@
 package com.example.sideproject.domain.techstack.dto;
 
-public record TechStackMappingDto(
+public record TechStackVo(
         Long id,
         Long techStackId,
         String name
-) {
-    public static TechStackDto toTechStackDto(TechStackMappingDto mappingDto) {
+) implements TechStackMapping, BasicTechStack {
+
+    public static <T extends BasicTechStack> TechStackMapping toBasicDto(T mappingDto) {
         return new TechStackDto(mappingDto.techStackId(), mappingDto.name());
     }
+
 }

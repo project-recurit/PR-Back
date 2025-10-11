@@ -2,11 +2,15 @@ package com.example.sideproject.domain.pr.repository.query;
 
 import com.example.sideproject.domain.pr.dto.PrListResponseDto;
 import com.example.sideproject.domain.pr.dto.PrSearchRequest;
-import com.example.sideproject.domain.pr.dto.PrTechStackMapping;
+import com.example.sideproject.domain.pr.dto.PrTechStackVo;
 import com.example.sideproject.domain.pr.dto.PrTechStackResponse;
 import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.pr.entity.QPr;
 import com.example.sideproject.domain.pr.entity.QPrTechStack;
+import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
+import com.example.sideproject.domain.techstack.dto.BasicTechStack;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryParam;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.enums.WorkType;
 import com.querydsl.core.types.Order;
@@ -33,7 +37,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PrQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
+    private final TechStackQueryRepository techStackQueryRepository;
+
     private final QPr qPr = QPr.pr;
+    private final QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
 
     public Page<PrListResponseDto> getPrs(Pageable pageable, PrSearchRequest prSearchRequest) {
         List<PrListResponseDto> prs = jpaQueryFactory.select(Projections.constructor(
@@ -56,24 +63,20 @@ public class PrQueryRepository {
                 .orderBy(getOrderSpecifier(pageable.getSort()))
                 .fetch();
 
-        List<Long> prIds = prs.stream()
-                .map(PrListResponseDto::getId)
-                .toList();
+        TechStackQueryParam<BasicTechStack> queryParam = TechStackQueryParam.builder()
+                .idPath(qPrTechStack.pr.id)
+                .mappingClass(PrTechStackVo.class)
+                .selectExpressions(
+                        List.of(qPrTechStack.pr.id,
+                                qPrTechStack.techStack.id,
+                                qPrTechStack.techStack.name,
+                                qPrTechStack.level))
+                .entityPath(qPrTechStack)
+                .joinPath(qPrTechStack.techStack)
+                .resultMapper(entry -> new PrTechStackResponse((PrTechStackVo) entry))
+                .build();
 
-        List<PrTechStackMapping> techStacks = getTechStacks(prIds);
-
-        Map<Long, List<PrTechStackResponse>> techStackMap = techStacks.stream().collect(
-                Collectors.groupingBy(
-                        PrTechStackMapping::prId,
-                        Collectors.mapping(
-                                PrTechStackResponse::new,
-                                Collectors.toList()
-                        )
-                )
-        );
-
-        List<PrListResponseDto> result = prs.stream()
-                .map(pr -> pr.addTechStacks(techStackMap.get(pr.getId()))).toList();
+        List<PrListResponseDto> result = techStackQueryRepository.withTechStacks(queryParam, prs);
 
         return PageableExecutionUtils.getPage(result, pageable, () -> countQuery(prSearchCondition(prSearchRequest)).fetchOne());
     }
@@ -115,7 +118,6 @@ public class PrQueryRepository {
             return null;
         }
 
-        QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
 
         return jpaQueryFactory.selectDistinct(qPrTechStack.pr.id)
                 .from(qPrTechStack)
@@ -123,11 +125,9 @@ public class PrQueryRepository {
                 .fetch();
     }
 
-    private List<PrTechStackMapping> getTechStacks(List<Long> prIds) {
-        QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
-
-        List<PrTechStackMapping> techStacks = jpaQueryFactory.select(Projections.constructor(
-                        PrTechStackMapping.class,
+    private List<PrTechStackVo> getTechStacks(List<Long> prIds) {
+        List<PrTechStackVo> techStacks = jpaQueryFactory.select(Projections.constructor(
+                        PrTechStackVo.class,
                         qPrTechStack.pr.id,
                         qPrTechStack.techStack.id,
                         qPrTechStack.techStack.name,

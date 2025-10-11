@@ -2,6 +2,7 @@ package com.example.sideproject.domain.recruitment.dto;
 
 import com.example.sideproject.domain.recruitment.entity.RecruitmentCategory;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
+import com.example.sideproject.domain.techstack.dto.TechStackMapping;
 import com.example.sideproject.global.entity.Timestamped;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,7 +51,7 @@ public class RecruitmentsResponseDto {
         this.techStacks = techStacks;
     }
 
-    public void setTechStacks(List<TechStackDto> techStacks) {
-        this.techStacks = techStacks;
+    public void setTechStacks(List<TechStackMapping> techStacks) {
+        this.techStacks = TechStackDto.from(techStacks);
     }
 }

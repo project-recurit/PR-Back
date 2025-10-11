@@ -1,5 +1,6 @@
 package com.example.sideproject.domain.applicant.repository.query;
 
+import com.example.RepositoryTest;
 import com.example.sideproject.domain.applicant.entity.Applicant;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.repository.ApplicantRepository;
@@ -12,7 +13,6 @@ import com.example.sideproject.domain.techstack.repository.query.TechStackQueryR
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserStatus;
 import com.example.sideproject.domain.user.repository.UserRepository;
-import com.example.sideproject.global.config.QuerydslConfig;
 import com.example.sideproject.global.dto.DateSort;
 import com.example.sideproject.global.dto.PageDto;
 import com.example.sideproject.global.dto.SearchDto;
@@ -22,28 +22,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({ApplicantQueryRepository.class, QuerydslConfig.class, TechStackQueryRepository.class})
-@Transactional
-class ApplicantQueryRepositoryTest {
+@Import({ApplicantQueryRepository.class, TechStackQueryRepository.class})
+class ApplicantQueryRepositoryTest extends RepositoryTest {
     @Autowired
     ApplicantQueryRepository applicantQueryRepository;
 
@@ -169,7 +161,10 @@ class ApplicantQueryRepositoryTest {
         PageRequest pageRequest = pageDto.toPageRequest();
 
         Page<StatusApplicantResponseDto> applications = applicantQueryRepository.findApplications(pageRequest, user2.getId(), searchRequest);
+        PagedModel<StatusApplicantResponseDto> result = new PagedModel<>(applications);
+
         assertThat(applications.getTotalElements()).isEqualTo(2);
+        assertThat(result.getContent().get(0).getRecruitment().getTechStacks()).isNotNull();
     }
 
     @DisplayName("내 지원 현황을 필터링 하여 조회한다")
@@ -187,6 +182,8 @@ class ApplicantQueryRepositoryTest {
         PageRequest pageRequest = pageDto.toPageRequest(sort);
 
         Page<StatusApplicantResponseDto> applications = applicantQueryRepository.findApplications(pageRequest, user2.getId(), searchRequest);
+        PagedModel<StatusApplicantResponseDto> result = new PagedModel<>(applications);
         assertThat(applications.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getRecruitment().getTechStacks()).isNotNull();
     }
 }

@@ -81,8 +81,8 @@ public class Pr extends Timestamped {
             this.documentUrl = String.join(",", documentUrl);
         }
         this.count = count == null? PostCount.init() : count;
-        this.experiences = experiences;
-        this.techStacks = techStacks;
+        this.experiences = Objects.requireNonNullElse(experiences, List.of());
+        this.techStacks = Objects.requireNonNullElse(techStacks, List.of());
         addExperiences();
         addTechStacks();
     }

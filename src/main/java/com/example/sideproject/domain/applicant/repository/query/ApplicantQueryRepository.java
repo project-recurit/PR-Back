@@ -2,37 +2,30 @@ package com.example.sideproject.domain.applicant.repository.query;
 
 import com.example.sideproject.domain.applicant.dto.ApplicantResponseDto;
 import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
-import com.example.sideproject.domain.applicant.entity.Applicant;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.entity.QApplicant;
-import com.example.sideproject.domain.recruitment.dto.RecruitmentTechStackDto;
 import com.example.sideproject.domain.recruitment.dto.RecruitmentsResponseDto;
 import com.example.sideproject.domain.recruitment.entity.QRecruitment;
 import com.example.sideproject.domain.recruitment.entity.QRecruitmentTechStack;
 import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
 import com.example.sideproject.domain.status.project.dto.StatusSearchRequest;
-import com.example.sideproject.domain.techstack.dto.TechStackDto;
-import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
+import com.example.sideproject.domain.techstack.dto.BasicTechStack;
+import com.example.sideproject.domain.techstack.dto.TechStackMapping;
+import com.example.sideproject.domain.techstack.dto.TechStackVo;
 import com.example.sideproject.domain.techstack.repository.query.TechStackQueryParam;
 import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.util.QueryUtil;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,9 +33,9 @@ public class ApplicantQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private final TechStackQueryRepository techStackQueryRepository;
 
-    private QApplicant qApplicant = QApplicant.applicant;
-    private QRecruitment qRecruitment = QRecruitment.recruitment;
-    private QRecruitmentTechStack qRecruitmentTechStack = QRecruitmentTechStack.recruitmentTechStack;
+    private final QApplicant qApplicant = QApplicant.applicant;
+    private final QRecruitment qRecruitment = QRecruitment.recruitment;
+    private final QRecruitmentTechStack qRecruitmentTechStack = QRecruitmentTechStack.recruitmentTechStack;
 
     public Page<StatusApplicantResponseDto> findApplications(Pageable pageable, Long userId, StatusSearchRequest searchRequest) {
         List<StatusApplicantResponseDto> applications = jpaQueryFactory.select(Projections.constructor(
@@ -71,7 +64,7 @@ public class ApplicantQueryRepository {
                 .fetch();
 
 
-        TechStackQueryParam<TechStackMappingDto> queryParam = TechStackQueryParam.builder()
+        TechStackQueryParam<BasicTechStack> queryParam = TechStackQueryParam.builder()
                 .idPath(qRecruitmentTechStack.recruitment.id)
                 .selectExpressions(
                         List.of(qRecruitmentTechStack.recruitment.id,

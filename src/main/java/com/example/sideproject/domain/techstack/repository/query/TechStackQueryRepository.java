@@ -1,8 +1,6 @@
 package com.example.sideproject.domain.techstack.repository.query;
 
-import com.example.sideproject.domain.techstack.dto.TechStackDto;
-import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
-import com.example.sideproject.domain.techstack.dto.TechStackResponse;
+import com.example.sideproject.domain.techstack.dto.*;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.NumberPath;
@@ -28,11 +26,11 @@ public class TechStackQueryRepository {
      * @param <T> 기술 스택 조회를 위한 매핑 객체 타입
      * @param <R> 리턴 타입
      */
-    public <T extends TechStackMappingDto, R extends TechStackResponse> List<R> withTechStacks(
+    public <T extends BasicTechStack, R extends TechStackResponse> List<R> withTechStacks(
             TechStackQueryParam<T> param,
             List<R> queryResults
     ) {
-        Map<Long, List<TechStackDto>> techStackMap = getTechStackMap(
+        Map<Long, List<TechStackMapping>> techStackMap = getTechStackMap(
                 param.idPath(),
                 getIds(queryResults),
                 param.getSelectExpression(),
@@ -46,13 +44,13 @@ public class TechStackQueryRepository {
         return queryResults;
     }
 
-    private <T extends TechStackMappingDto> Map<Long, List<TechStackDto>> getTechStackMap(
+    private <T extends BasicTechStack> Map<Long, List<TechStackMapping>> getTechStackMap(
             NumberPath<Long> idPath,
             List<Long> ids,
             Expression<T> selectExpression,
             EntityPathBase<?> entityPath,
             EntityPathBase<?> joinPath,
-            Function<T, TechStackDto> resultMapper
+            Function<T, TechStackMapping> resultMapper
     ) {
         List<T> techStacks = queryFactory.select(selectExpression)
                 .from(entityPath)
@@ -62,7 +60,7 @@ public class TechStackQueryRepository {
 
         return techStacks.stream()
                 .collect(Collectors.groupingBy(
-                        TechStackMappingDto::id,
+                        BasicTechStack::id,
                         Collectors.mapping(resultMapper, Collectors.toList())
                 ));
     }
