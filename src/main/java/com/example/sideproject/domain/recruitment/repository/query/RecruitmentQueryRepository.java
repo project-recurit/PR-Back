@@ -80,8 +80,6 @@ public class RecruitmentQueryRepository {
 
         List<RecruitmentDetailResponseDto> withTechStacks = getResponseListWithTechStacks(List.of(detail));
 
-//        return QueryUtil.createPage(jpaQueryFactory, qApplicant, result, pageable, statusSearchCondition(userId, searchRequest));
-
         List<RecruitmentImageResponseDto> recruitmentImages = queryFactory // 구인 글 이미지 url 조회
                 .select(Projections.constructor(
                         RecruitmentImageResponseDto.class,
