@@ -2,13 +2,18 @@ package com.example.sideproject.domain.pr.repository.query;
 
 import com.example.sideproject.domain.pr.dto.PrListResponseDto;
 import com.example.sideproject.domain.pr.dto.PrSearchRequest;
-import com.example.sideproject.domain.pr.dto.PrTechStackMapping;
+import com.example.sideproject.domain.pr.dto.PrTechStackVo;
 import com.example.sideproject.domain.pr.dto.PrTechStackResponse;
 import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.pr.entity.QPr;
 import com.example.sideproject.domain.pr.entity.QPrTechStack;
+import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
+import com.example.sideproject.domain.techstack.dto.BasicTechStack;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryParam;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.enums.WorkType;
+import com.example.sideproject.global.util.QueryUtil;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -33,7 +38,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PrQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
+    private final TechStackQueryRepository techStackQueryRepository;
+
     private final QPr qPr = QPr.pr;
+    private final QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
 
     public Page<PrListResponseDto> getPrs(Pageable pageable, PrSearchRequest prSearchRequest) {
         List<PrListResponseDto> prs = jpaQueryFactory.select(Projections.constructor(
@@ -53,29 +61,25 @@ public class PrQueryRepository {
                 .where(prSearchCondition(prSearchRequest))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
-                .orderBy(getOrderSpecifier(pageable.getSort()))
+                .orderBy(QueryUtil.createOrderSpecifiers(pageable.getSort(), qPr))
                 .fetch();
 
-        List<Long> prIds = prs.stream()
-                .map(PrListResponseDto::getId)
-                .toList();
+        TechStackQueryParam<BasicTechStack> queryParam = TechStackQueryParam.builder()
+                .idPath(qPrTechStack.pr.id)
+                .mappingClass(PrTechStackVo.class)
+                .selectExpressions(
+                        List.of(qPrTechStack.pr.id,
+                                qPrTechStack.techStack.id,
+                                qPrTechStack.techStack.name,
+                                qPrTechStack.level))
+                .entityPath(qPrTechStack)
+                .joinPath(qPrTechStack.techStack)
+                .resultMapper(entry -> new PrTechStackResponse((PrTechStackVo) entry))
+                .build();
 
-        List<PrTechStackMapping> techStacks = getTechStacks(prIds);
+        List<PrListResponseDto> result = techStackQueryRepository.withTechStacks(queryParam, prs);
 
-        Map<Long, List<PrTechStackResponse>> techStackMap = techStacks.stream().collect(
-                Collectors.groupingBy(
-                        PrTechStackMapping::prId,
-                        Collectors.mapping(
-                                PrTechStackResponse::new,
-                                Collectors.toList()
-                        )
-                )
-        );
-
-        List<PrListResponseDto> result = prs.stream()
-                .map(pr -> pr.addTechStacks(techStackMap.get(pr.getId()))).toList();
-
-        return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());
+        return QueryUtil.createPage(jpaQueryFactory, qPr, result, pageable, prSearchCondition(prSearchRequest));
     }
 
     private BooleanExpression prSearchCondition(PrSearchRequest prSearchRequest) {
@@ -103,7 +107,7 @@ public class PrQueryRepository {
         return Expressions.allOf(positionIn, workTypeIn, idIn, containsBySearchText(prSearchRequest.searchText()));
     }
 
-    private BooleanExpression containsBySearchText(String searchText){
+    private BooleanExpression containsBySearchText(String searchText) {
         if (searchText == null) {
             return null;
         }
@@ -115,44 +119,10 @@ public class PrQueryRepository {
             return null;
         }
 
-        QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
 
         return jpaQueryFactory.selectDistinct(qPrTechStack.pr.id)
                 .from(qPrTechStack)
                 .where(qPrTechStack.techStack.id.in(techStackIds))
                 .fetch();
-    }
-
-    private List<PrTechStackMapping> getTechStacks(List<Long> prIds) {
-        QPrTechStack qPrTechStack = QPrTechStack.prTechStack;
-
-        List<PrTechStackMapping> techStacks = jpaQueryFactory.select(Projections.constructor(
-                        PrTechStackMapping.class,
-                        qPrTechStack.pr.id,
-                        qPrTechStack.techStack.id,
-                        qPrTechStack.techStack.name,
-                        qPrTechStack.level
-                ))
-                .from(qPrTechStack)
-                .where(
-                        qPrTechStack.pr.id.in(prIds)
-                )
-                .fetch();
-        return techStacks;
-    }
-
-    private OrderSpecifier<?>[] getOrderSpecifier(Sort sort) {
-        List<OrderSpecifier<?>> orders = new ArrayList<>();
-        sort.stream().forEach(order -> {
-            Order direction = order.isAscending() ? Order.ASC : Order.DESC;
-            PathBuilder<?> expression = new PathBuilder<>(Pr.class, "pr");
-            orders.add(new OrderSpecifier<>(direction, expression.get(order.getProperty(), Comparable.class)));
-        });
-        return orders.toArray(OrderSpecifier[]::new);
-    }
-
-    private JPAQuery<Long> countQuery() {
-        return jpaQueryFactory.select(qPr.count())
-                .from(qPr);
     }
 }

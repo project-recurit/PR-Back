@@ -3,6 +3,8 @@ package com.example.sideproject.domain.recruitment.dto;
 import com.example.sideproject.domain.recruitment.entity.EstimatedDuration;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentCategory;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
+import com.example.sideproject.domain.techstack.dto.TechStackMapping;
+import com.example.sideproject.domain.techstack.dto.TechStackResponse;
 import com.example.sideproject.global.dto.PostResponseDto;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
@@ -10,7 +12,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class RecruitmentDetailResponseDto extends PostResponseDto {
+public class RecruitmentDetailResponseDto extends PostResponseDto implements TechStackResponse {
     private final String content;
     private final EstimatedDuration estimatedDuration;
     private final String deadLine;
@@ -51,11 +53,18 @@ public class RecruitmentDetailResponseDto extends PostResponseDto {
         this.fileUrls = urls;
     }
 
-    public void setTechStacks(List<TechStackDto> techStacks) {
-        this.techStacks = techStacks;
-    }
-
     public void setRecruitPositions(List<RecruitmentPositionResponseDto> positions) {
         this.positions = positions;
+    }
+
+    @Override
+    public TechStackResponse setTechStacks(List<TechStackMapping> mappings) {
+        this.techStacks = TechStackDto.from(mappings);
+        return this;
+    }
+
+    @Override
+    public Long getTargetId() {
+        return getId();
     }
 }

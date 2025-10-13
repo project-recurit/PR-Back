@@ -11,7 +11,7 @@ public record TechStackDto(
         Long id,
         @Schema(description = "기술스택 명")
         String name
-) {
+) implements TechStackMapping {
     public static TechStackDto of(TechStack techStack) {
         return new TechStackDto(techStack.getId(), techStack.getName());
     }
@@ -20,5 +20,15 @@ public record TechStackDto(
         return techStacks.stream()
                 .map(TechStackDto::of)
                 .collect(Collectors.toList());
+    }
+
+    public static List<TechStackDto> from(List<TechStackMapping> mappings) {
+        if (mappings == null) {
+            return List.of();
+        }
+
+        return mappings.stream()
+                .map(t -> new TechStackDto(t.id(), t.name()))
+                .toList();
     }
 }

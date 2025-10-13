@@ -2,11 +2,17 @@ package com.example.sideproject.domain.recruitment.repository.query;
 
 import com.example.sideproject.domain.recruitment.dto.*;
 import com.example.sideproject.domain.recruitment.entity.*;
+import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
+import com.example.sideproject.domain.techstack.dto.BasicTechStack;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
+import com.example.sideproject.domain.techstack.dto.TechStackResponse;
 import com.example.sideproject.domain.techstack.entity.QTechStack;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryParam;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.example.sideproject.domain.user.entity.QUser;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
+import com.example.sideproject.global.util.QueryUtil;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -28,6 +34,8 @@ import java.util.stream.Collectors;
 public class RecruitmentQueryRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final TechStackQueryRepository techStackQueryRepository;
+    
     private final QRecruitment recruitment = QRecruitment.recruitment;
     QRecruitmentTechStack recruitmentTechStack = QRecruitmentTechStack.recruitmentTechStack;
     QUser user = QUser.user;
@@ -70,16 +78,7 @@ public class RecruitmentQueryRepository {
             throw new CustomException(ErrorType.PROJECT_RECRUIT_NOT_FOUND);
         }
 
-        List<TechStackDto> techStacks = queryFactory // 구인 글 기술 스택 조회
-                .select(Projections.constructor(
-                        TechStackDto.class,
-                        techStack.id.as("id"),
-                        techStack.name.as("name")
-                ))
-                .from(recruitmentTechStack)
-                .join(recruitmentTechStack.techStack, techStack)
-                .where(recruitmentTechStack.recruitment.id.eq(recruitmentId))
-                .fetch();
+        List<RecruitmentDetailResponseDto> withTechStacks = getResponseListWithTechStacks(List.of(detail));
 
         List<RecruitmentImageResponseDto> recruitmentImages = queryFactory // 구인 글 이미지 url 조회
                 .select(Projections.constructor(
@@ -90,6 +89,7 @@ public class RecruitmentQueryRepository {
                 .from(recruitmentImage)
                 .where(recruitmentImage.recruitment.id.eq(recruitmentId))
                 .fetch();
+        
         List<RecruitmentPositionResponseDto> recruitmentPositions = queryFactory
                 .select(
                         Projections.constructor(
@@ -101,15 +101,30 @@ public class RecruitmentQueryRepository {
                 .where(recruitmentPosition.recruitment.id.eq(recruitmentId))
                 .fetch();
 
+        detail = withTechStacks.get(0);
         detail.setFileUrls(recruitmentImages); // dto 합치기
-        detail.setTechStacks(techStacks);
         detail.setRecruitPositions(recruitmentPositions);
 
-        if (detail != null && detail.getEstimatedDuration() != null) {
+        if (detail.getEstimatedDuration() != null) {
             detail.setEstimatedDurationDetail(detail.getEstimatedDuration().getDescription());
         }
 
         return detail;
+    }
+
+    private <T extends TechStackResponse> List<T> getResponseListWithTechStacks(List<T> detail) {
+        TechStackQueryParam<BasicTechStack> queryParam = TechStackQueryParam.builder()
+                .idPath(recruitmentTechStack.recruitment.id)
+                .selectExpressions(
+                        List.of(recruitmentTechStack.recruitment.id,
+                                recruitmentTechStack.techStack.id,
+                                recruitmentTechStack.techStack.name)
+                )
+                .entityPath(recruitmentTechStack)
+                .joinPath(recruitmentTechStack.techStack)
+                .build();
+
+        return techStackQueryRepository.withTechStacks(queryParam, detail);
     }
 
     public Page<RecruitmentsResponseDto> getRecruitments(Pageable pageable) {
@@ -133,45 +148,9 @@ public class RecruitmentQueryRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        List<Long> recruitmentIds = recruitments.stream().map(RecruitmentsResponseDto::getId).toList();
+        List<RecruitmentsResponseDto> result = getResponseListWithTechStacks(recruitments);
 
-        List<RecruitmentTechStackDto> techStacks = queryFactory
-                .select(Projections.constructor(
-                        RecruitmentTechStackDto.class,
-                        recruitmentTechStack.recruitment.id,
-                        recruitmentTechStack.techStack.id,
-                        recruitmentTechStack.techStack.name
-                ))
-                .from(recruitmentTechStack)
-                .join(recruitmentTechStack.techStack)
-                .where(recruitmentTechStack.recruitment.id.in(recruitmentIds))
-                .fetch();
-
-        Map<Long, List<Map.Entry<Long, String>>> techStackMap = techStacks.stream()
-                .collect(Collectors.groupingBy(
-                        RecruitmentTechStackDto::getRecruitmentId,
-                        Collectors.mapping(dto -> Map.entry(dto.getTechStackId(), dto.getName()), Collectors.toList())
-                ));
-
-        List<RecruitmentsResponseDto> result = recruitments.stream()
-                .map(recruitment -> new RecruitmentsResponseDto(
-                        recruitment.getId(),
-                        recruitment.getTitle(),
-                        recruitment.getNickname(),
-                        recruitment.getViewCount(),
-                        recruitment.getCommentCount(),
-                        recruitment.getModifiedAt(),
-                        recruitment.getRecruitmentCategory(),
-                        recruitment.isCommercial(),
-                        techStackMap.getOrDefault(recruitment.getId(), Collections.emptyList())
-                                .stream()
-                                .map(entry -> new TechStackDto(entry.getKey(), entry.getValue())) // DTO 변환
-                                .toList()
-                ))
-                .toList();
-
-
-        return PageableExecutionUtils.getPage(result, pageable, () -> countQuery().fetchOne());
+        return QueryUtil.createPage(queryFactory, recruitment, result, pageable, null);
     }
 
     private JPAQuery<Long> countQuery() {

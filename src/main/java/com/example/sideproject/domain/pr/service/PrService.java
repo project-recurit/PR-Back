@@ -1,17 +1,20 @@
 package com.example.sideproject.domain.pr.service;
 
-import com.example.sideproject.domain.pr.dto.*;
+import com.example.sideproject.domain.pr.dto.PrListResponseDto;
+import com.example.sideproject.domain.pr.dto.PrRequest;
+import com.example.sideproject.domain.pr.dto.PrResponse;
+import com.example.sideproject.domain.pr.dto.PrSearchRequest;
 import com.example.sideproject.domain.pr.entity.Pr;
 import com.example.sideproject.domain.pr.repository.PrRepository;
 import com.example.sideproject.domain.pr.repository.query.PrQueryRepository;
 import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.dto.DateSort;
+import com.example.sideproject.global.dto.PageDto;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -59,12 +62,13 @@ public class PrService {
         prRepository.delete(pr);
     }
 
-    public PagedModel<PrListResponseDto> getPrs(Pageable pageable, DateSort dateSort, PrSearchRequest prSearchRequest) {
-        if (dateSort == null) {
-            dateSort = DateSort.basicSort();
-        }
+    public PagedModel<PrListResponseDto> getPrs(PrSearchRequest prSearchRequest) {
+        DateSort dateSort = prSearchRequest.searchDto().dateSort();
+        PageDto pageDto = prSearchRequest.searchDto().pageDto();
+
         Sort sort = Sort.by(Sort.Order.desc(dateSort.getOrder()));
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        PageRequest pageRequest = pageDto.toPageRequest(sort);
+
         Page<PrListResponseDto> prs = prQueryRepository.getPrs(pageRequest, prSearchRequest);
         return new PagedModel<>(prs);
     }

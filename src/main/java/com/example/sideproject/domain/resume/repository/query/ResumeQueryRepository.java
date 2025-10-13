@@ -3,7 +3,7 @@ package com.example.sideproject.domain.resume.repository.query;
 import com.example.sideproject.domain.resume.dto.ResumeListResponse;
 import com.example.sideproject.domain.resume.entity.QResume;
 import com.example.sideproject.domain.resume.entity.QResumeTechStack;
-import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
+import com.example.sideproject.domain.techstack.dto.TechStackVo;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -37,20 +37,20 @@ public class ResumeQueryRepository {
                 .map(ResumeListResponse::getId)
                 .toList();
 
-        List<TechStackMappingDto> techStacks = getTechStacks(resumeIds);
+        List<TechStackVo> techStacks = getTechStacks(resumeIds);
 
-        Map<Long, List<TechStackMappingDto>> techStackMap = techStacks.stream()
-                .collect(Collectors.groupingBy(TechStackMappingDto::id));
+        Map<Long, List<TechStackVo>> techStackMap = techStacks.stream()
+                .collect(Collectors.groupingBy(TechStackVo::id));
 
         List<ResumeListResponse> result = resumes.stream().map(resume -> resume.addTechStack(techStackMap.get(resume.getId()))).toList();
         return result;
     }
 
-    private List<TechStackMappingDto> getTechStacks(List<Long> resumeIds) {
+    private List<TechStackVo> getTechStacks(List<Long> resumeIds) {
         QResumeTechStack qResumeTechStack = QResumeTechStack.resumeTechStack;
 
-        List<TechStackMappingDto> techStacks = jpaQueryFactory.select(Projections.constructor(
-                        TechStackMappingDto.class,
+        List<TechStackVo> techStacks = jpaQueryFactory.select(Projections.constructor(
+                        TechStackVo.class,
                         qResumeTechStack.resume.id,
                         qResumeTechStack.techStack.id,
                         qResumeTechStack.techStack.name

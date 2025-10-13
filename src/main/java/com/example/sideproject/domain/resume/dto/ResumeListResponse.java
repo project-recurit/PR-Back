@@ -2,7 +2,7 @@ package com.example.sideproject.domain.resume.dto;
 
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
-import com.example.sideproject.domain.techstack.dto.TechStackMappingDto;
+import com.example.sideproject.domain.techstack.dto.TechStackVo;
 import com.example.sideproject.global.enums.WorkType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -38,7 +38,7 @@ public class ResumeListResponse {
         this.createdAt = createdAt.toString();
     }
 
-    public ResumeListResponse addTechStack(List<TechStackMappingDto> techStacks) {
+    public ResumeListResponse addTechStack(List<TechStackVo> techStacks) {
         this.techStacks = techStacks.stream()
                 .map(t -> new TechStackDto(t.techStackId(), t.name()))
                 .toList();
