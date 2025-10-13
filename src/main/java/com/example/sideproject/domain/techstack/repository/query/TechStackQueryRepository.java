@@ -5,9 +5,11 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -30,38 +32,39 @@ public class TechStackQueryRepository {
             TechStackQueryParam<T> param,
             List<R> queryResults
     ) {
-        Map<Long, List<TechStackMapping>> techStackMap = getTechStackMap(
-                param.idPath(),
-                getIds(queryResults),
-                param.getSelectExpression(),
-                param.entityPath(),
-                param.joinPath(),
-                param.resultMapper()
-        );
+        Map<Long, List<TechStackMapping>> techStackMap = getTechStackMap(param, getIds(queryResults));
 
-        queryResults.forEach(it -> it.setTechStacks(techStackMap.get(it.getTargetId())));
+        return addTechStack(queryResults, techStackMap);
+    }
 
-        return queryResults;
+    private <R extends TechStackResponse> List<R> addTechStack(List<R> queryResults, Map<Long, List<TechStackMapping>> techStackMap) {
+        List<R> result = new ArrayList<>();
+
+        for (R q : queryResults) {
+            if (!techStackMap.containsKey(q.getTargetId())) {
+                continue;
+            }
+            q.setTechStacks(techStackMap.get(q.getTargetId()));
+            result.add(q);
+        }
+
+        return result;
     }
 
     private <T extends BasicTechStack> Map<Long, List<TechStackMapping>> getTechStackMap(
-            NumberPath<Long> idPath,
-            List<Long> ids,
-            Expression<T> selectExpression,
-            EntityPathBase<?> entityPath,
-            EntityPathBase<?> joinPath,
-            Function<T, TechStackMapping> resultMapper
+            TechStackQueryParam<T> param,
+            List<Long> ids
     ) {
-        List<T> techStacks = queryFactory.select(selectExpression)
-                .from(entityPath)
-                .join(joinPath)
-                .where(idPath.in(ids))
+        List<T> techStacks = queryFactory.select(param.getSelectExpression())
+                .from(param.entityPath())
+                .join(param.joinPath())
+                .where(param.idPath().in(ids))
                 .fetch();
 
         return techStacks.stream()
                 .collect(Collectors.groupingBy(
                         BasicTechStack::id,
-                        Collectors.mapping(resultMapper, Collectors.toList())
+                        Collectors.mapping(param.resultMapper(), Collectors.toList())
                 ));
     }
 
