@@ -1,5 +1,7 @@
 package com.example.sideproject.domain.resume.dto;
 
+import com.example.sideproject.domain.techstack.dto.TechStackMapping;
+import com.example.sideproject.domain.techstack.dto.TechStackResponse;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
 import com.example.sideproject.domain.techstack.dto.TechStackVo;
@@ -13,7 +15,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-public class ResumeListResponse {
+public class ResumeListResponse implements TechStackResponse {
     @Schema(description = "이력서 고유번호")
     Long id;
     @Schema(description = "이력서 제목")
@@ -38,10 +40,14 @@ public class ResumeListResponse {
         this.createdAt = createdAt.toString();
     }
 
-    public ResumeListResponse addTechStack(List<TechStackVo> techStacks) {
-        this.techStacks = techStacks.stream()
-                .map(t -> new TechStackDto(t.techStackId(), t.name()))
-                .toList();
+    @Override
+    public TechStackResponse setTechStacks(List<TechStackMapping> techStacks) {
+        this.techStacks = TechStackDto.from(techStacks);
         return this;
+    }
+
+    @Override
+    public Long getTargetId() {
+        return id;
     }
 }
