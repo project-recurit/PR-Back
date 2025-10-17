@@ -6,6 +6,7 @@ import com.example.sideproject.domain.applicant.dto.ApplicantResponseDto;
 import com.example.sideproject.domain.applicant.dto.search.SearchApplicantDto;
 import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.service.ApplicantService;
+import com.example.sideproject.domain.resume.dto.ResumeListResponse;
 import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.enums.ResponseStatus;
@@ -57,6 +58,12 @@ public class ApplicantController {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, applicantService.apply(userDetails.getUser(), recruitmentId, req)));
     }
 
+    @Operation(summary = "프로젝트 지원자의 이력서 조회", description = "프로젝트 지원자의 이력서를 조회한다.")
+    @GetMapping("{applicantId}/resumes")
+    public ResponseEntity<ResponseDataDto<List<ResumeListResponse>>> readResumes(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                                 @PathVariable("applicantId") Long applicantId){
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.SUCCESS, applicantService.readResume(userDetails.getUser(), applicantId)));
+    }
 
     @Operation(summary = "프로젝트 지원 상태 변경", description = "지원한 사람의 지원 상태를 변경한다.")
     @ApiResponses(value = {

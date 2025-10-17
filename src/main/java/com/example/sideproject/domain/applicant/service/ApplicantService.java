@@ -10,6 +10,9 @@ import com.example.sideproject.domain.applicant.repository.query.ApplicantQueryR
 import com.example.sideproject.domain.notification.publisher.ApplicantNotification;
 import com.example.sideproject.domain.recruitment.entity.Recruitment;
 import com.example.sideproject.domain.recruitment.service.RecruitmentService;
+import com.example.sideproject.domain.resume.dto.ResumeListResponse;
+import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
+import com.example.sideproject.domain.resume.service.ResumeService;
 import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
 import com.example.sideproject.domain.status.project.dto.StatusSearchRequest;
 import com.example.sideproject.domain.user.entity.User;
@@ -26,12 +29,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final RecruitmentService recruitmentService;
+    private final ResumeService resumeService;
     private final ApplicantQueryRepository applicantQueryRepository;
     private final ApplicantNotification applicantNotification;
 
@@ -54,6 +59,8 @@ public class ApplicantService {
                 .status(ApplicationStatus.unviewed)
                 .build();
 
+        Long applicantId = applicantRepository.save(applicant).getId();
+
         applicantNotification.registerApplicant(
                 recruitmentId,
                 recruitment.getTitle(),
@@ -62,7 +69,7 @@ public class ApplicantService {
                 recruitment.getUser().isPushAllowed()
         );
 
-        return applicantRepository.save(applicant).getId();
+        return applicantId;
     }
 
     /**
@@ -113,6 +120,9 @@ public class ApplicantService {
         return applicantQueryRepository.findApplicants(user.getId(), recruitmentId, searchDto);
     }
 
+    /**
+     * 페이징 처리한 내 프로젝트 지원 목록 조회
+     */
     public PagedModel<StatusApplicantResponseDto> getMyApplications(User user, StatusSearchRequest searchRequest) {
         DateSort dateSort = searchRequest.searchDto().dateSort();
         PageDto pageDto = searchRequest.searchDto().pageDto();
@@ -124,4 +134,22 @@ public class ApplicantService {
         return new PagedModel<>(applications);
     }
 
+    /**
+     * 프로젝트 지원자의 이력서 조회
+     */
+    public List<ResumeListResponse> readResume(User user, Long applicantId) {
+        Applicant applicant = getApplicant(applicantId);
+
+        if (!applicant.canReadResume(user.getId())) {
+            throw new CustomException(ErrorType.NOT_RECRUITMENT_OWNER);
+        }
+
+        return resumeService.getResumes(applicant.getUser());
+    }
+
+    private Applicant getApplicant(Long applicantId) {
+        return applicantRepository.findById(applicantId).orElseThrow(
+                () -> new CustomException(ErrorType.APPLICANT_NOT_FOUND)
+        );
+    }
 }
