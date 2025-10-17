@@ -37,7 +37,25 @@ public class Applicant extends Timestamped {
         this.status = status;
     }
 
-    public boolean isOwn(Long applicantId) {
-        return Objects.equals(user.getId(), applicantId);
+    public boolean isOwn(Long inputId) {
+        return Objects.equals(user.getId(), inputId);
+    }
+
+    public boolean canReadResume(Long inputId) {
+        // 지원자 본인인 경우 조회 가능
+        if (isOwn(inputId)) {
+            return true;
+        }
+
+        // 모집글 작성인 경우 조회 가능
+        User recruitmentWriter = recruitment.getUser();
+
+        if (recruitmentWriter == null) {
+            return false;
+        }
+
+        Long id = recruitmentWriter.getId();
+
+        return Objects.equals(inputId, id);
     }
 }

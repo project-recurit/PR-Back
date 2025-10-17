@@ -3,7 +3,12 @@ package com.example.sideproject.domain.resume.repository.query;
 import com.example.sideproject.domain.resume.dto.ResumeListResponse;
 import com.example.sideproject.domain.resume.entity.QResume;
 import com.example.sideproject.domain.resume.entity.QResumeTechStack;
+import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
+import com.example.sideproject.domain.techstack.dto.BasicTechStack;
+import com.example.sideproject.domain.techstack.dto.TechStackResponse;
 import com.example.sideproject.domain.techstack.dto.TechStackVo;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryParam;
+import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +22,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ResumeQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
+    private final TechStackQueryRepository techStackQueryRepository;
+
     private final QResume qResume = QResume.resume;
+    private final QResumeTechStack qResumeTechStack = QResumeTechStack.resumeTechStack;
 
     public List<ResumeListResponse> getResumes(Long userId) {
         List<ResumeListResponse> resumes = jpaQueryFactory.select(Projections.constructor(
@@ -33,35 +41,19 @@ public class ResumeQueryRepository {
                 .orderBy(qResume.modifiedAt.desc())
                 .fetch();
 
-        List<Long> resumeIds = resumes.stream()
-                .map(ResumeListResponse::getId)
-                .toList();
+        TechStackQueryParam<BasicTechStack> queryParam = TechStackQueryParam.builder()
+                .idPath(qResumeTechStack.resume.id)
+                .selectExpressions(
+                        List.of(qResumeTechStack.resume.id,
+                                qResumeTechStack.techStack.id,
+                                qResumeTechStack.techStack.name)
+                )
+                .entityPath(qResumeTechStack)
+                .joinPath(qResumeTechStack.techStack)
+                .build();
 
-        List<TechStackVo> techStacks = getTechStacks(resumeIds);
+        List<ResumeListResponse> result = techStackQueryRepository.withTechStacks(queryParam, resumes);
 
-        Map<Long, List<TechStackVo>> techStackMap = techStacks.stream()
-                .collect(Collectors.groupingBy(TechStackVo::id));
-
-        List<ResumeListResponse> result = resumes.stream().map(resume -> resume.addTechStack(techStackMap.get(resume.getId()))).toList();
         return result;
     }
-
-    private List<TechStackVo> getTechStacks(List<Long> resumeIds) {
-        QResumeTechStack qResumeTechStack = QResumeTechStack.resumeTechStack;
-
-        List<TechStackVo> techStacks = jpaQueryFactory.select(Projections.constructor(
-                        TechStackVo.class,
-                        qResumeTechStack.resume.id,
-                        qResumeTechStack.techStack.id,
-                        qResumeTechStack.techStack.name
-                ))
-                .from(qResumeTechStack)
-                .join(qResumeTechStack.techStack)
-                .where(
-                        qResumeTechStack.resume.id.in(resumeIds)
-                )
-                .fetch();
-        return techStacks;
-    }
-
 }

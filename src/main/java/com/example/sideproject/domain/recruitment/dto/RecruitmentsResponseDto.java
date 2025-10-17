@@ -52,6 +52,7 @@ public class RecruitmentsResponseDto implements TechStackResponse {
         this.techStacks = techStacks;
     }
 
+    @Override
     public TechStackResponse setTechStacks(List<TechStackMapping> techStacks) {
         this.techStacks = TechStackDto.from(techStacks);
         return this;

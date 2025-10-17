@@ -140,6 +140,7 @@ public enum ErrorType implements ErrorCode {
 
     APPLICANT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지원서입니다."),
     DUPLICATE_APPLICATION(HttpStatus.BAD_REQUEST, "이미 지원한 사용자입니다."),
+    NOT_RECRUITMENT_OWNER(HttpStatus.FORBIDDEN, "모집글 작성자만 접근할 수 있습니다."),
 
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 알림 데이터를 찾을 수 없습니다."),
     FCM_TOKEN_EXISTS(HttpStatus.BAD_REQUEST, "해당하는 유저에 동일한 FCM 토큰 정보가 있습니다."),
