@@ -8,6 +8,7 @@ import com.example.sideproject.domain.applicant.entity.ApplicationStatus;
 import com.example.sideproject.domain.applicant.service.ApplicantService;
 import com.example.sideproject.domain.resume.dto.ResumeListResponse;
 import com.example.sideproject.domain.resume.dto.ResumeResponseDto;
+import com.example.sideproject.global.dto.ExceptionDto;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.enums.ResponseStatus;
 import com.example.sideproject.global.security.UserDetailsImpl;
@@ -59,6 +60,11 @@ public class ApplicantController {
     }
 
     @Operation(summary = "프로젝트 지원자의 이력서 조회", description = "프로젝트 지원자의 이력서를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "403", description = "모집글 작성자만 접근할 수 있습니다.", content = @Content()),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 지원서입니다.", content = @Content()),
+    })
     @GetMapping("{applicantId}/resumes")
     public ResponseEntity<ResponseDataDto<List<ResumeListResponse>>> readResumes(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                                  @PathVariable("applicantId") Long applicantId){
@@ -83,8 +89,10 @@ public class ApplicantController {
     @Operation(summary = "프로젝트 지원 취소", description = "지원한 프로젝트의 지원을 취소한다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "404", description = "팀 모집글을 찾을 수 없습니다."),
-            @ApiResponse(responseCode = "404-1", description = "존재하지 않는 지원서입니다."),
+            @ApiResponse(responseCode = "404", description = "팀 모집글을 찾을 수 없습니다.",
+                    content = {@Content(schema = @Schema(implementation = Long.class))}),
+            @ApiResponse(responseCode = "404-1", description = "존재하지 않는 지원서입니다.",
+                    content = {@Content(schema = @Schema(implementation = Long.class))}),
     })
     @DeleteMapping("/{applicantId}")
     public ResponseEntity<ResponseDataDto<Void>> cancel(@AuthenticationPrincipal UserDetailsImpl userDetails,
