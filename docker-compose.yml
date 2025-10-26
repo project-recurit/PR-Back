@@ -22,46 +22,68 @@ services:
       - "15672:15672"
 #    restart: unless-stopped
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./monitoring-conf/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "8889:8889"   # Prometheus metrics
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - app-net
+
   grafana:
-#    container_name: grafana
     image: grafana/grafana:latest
     restart: always
     ports:
       - "3000:3000"
-#    volumes:
+    volumes:
+      - ./monitoring-conf/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
 #      - ./grafana/data:/var/lib/grafana
     networks:
       - app-net
 
   loki:
-    container_name: loki
     image: grafana/loki:latest
     restart: always
     ports:
       - "3100:3100"
+      - "9096:9096"   # OTLP gRPC 포트 추가!
     command:
       - -config.file=/etc/loki/loki-config.yaml
-      - -validation.allow-structured-metadata=false
+      - -validation.allow-structured-metadata=true
     volumes:
       - ./monitoring-conf/loki-config.yaml:/etc/loki/loki-config.yaml
-      - ./loki/data:/loki
+      - ./monitoring/loki:/loki
     networks:
       - app-net
 
-  promtail:
-    container_name: promtail
-    image: grafana/promtail:latest
-    restart: always
-    ports:
-      - "9080:9080"
+    # Prometheus (Metrics)
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'           # 7일 보관
+      - '--storage.tsdb.retention.size=2GB'          # 2GB 제한
+      - '--web.enable-remote-write-receiver'
     volumes:
-      - ./logs:/logs
-      - ./monitoring-conf/promtail-config.yaml:/etc/promtail/config.yaml
-    command: -config.file=/etc/promtail/config.yaml
+      - ./monitoring-conf/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
     networks:
       - app-net
-    depends_on:
-      - loki
 
 networks:
   app-net:

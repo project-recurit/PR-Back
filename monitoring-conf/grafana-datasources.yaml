@@ -1,0 +1,42 @@
+apiVersion: 1
+
+datasources:
+#  - name: Tempo # 템포 사용
+#    type: tempo
+#    access: porxy
+#    url: http://tempo:3200
+#    uid: tempo
+#    isDefault: true # 기본 데이터 소스 설정
+#    editable: true  # 데이터 소스 설정 편집 가능 여부
+#    jsonData:
+#      httpMethod: GET
+#      serviceMap:
+#        datasourceUid: 'tempo'
+#      search: # 트레이스 검색 기능 활성화
+#        hide: false
+#      nodeGraph:  # 서비스 간의 관계를 그래프로 표시
+#        enabled: true
+#      spanBar:
+#        type: 'Tag'
+#      tracesToLogs: # 트레이스에서 로그로 연결
+#        datasourceUid: 'tempo'
+
+  # Loki (Logs)
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    isDefault: false
+    editable: true
+    jsonData:
+      maxLines: 1000
+
+  # Prometheus (Metrics)
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: 15s
