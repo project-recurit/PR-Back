@@ -67,7 +67,8 @@ public class SecurityConfig {
                                 "/api/v1/auth/**",  // 새로운 인증 관련 엔드포인트
                                 "/api/v1/users/**",
                                 "/ws-stomp/**",
-                                "/error"
+                                "/error",
+                                "/api/v1/sse/sse-data"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/notifications/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/sse/**").authenticated()

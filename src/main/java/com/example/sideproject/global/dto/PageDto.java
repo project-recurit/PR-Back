@@ -8,10 +8,14 @@ import org.springframework.data.domain.Sort;
 @ParameterObject
 public record PageDto(
         @Schema(name = "page", description = "현재 페이지(0부터 시작), 기본 값 0", type = "integer")
-        int page,
+        Integer page,
         @Schema(name = "size", description = "페이지 크기, 기본 값 10", type = "integer")
-        int size
+        Integer size
 ) {
+    public PageDto {
+        page = (page == null || page < 0) ? 0 : page;
+        size = (size == null || size <= 0) ? 10 : size;
+    }
     public PageRequest toPageRequest(Sort sort) {
         return PageRequest.of(page, size, sort);
     }
