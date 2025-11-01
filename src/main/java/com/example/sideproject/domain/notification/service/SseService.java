@@ -45,7 +45,7 @@ public class SseService {
         send(eventDto.to(), eventDto, session);
     }
 
-    public void send(Long sseId, Object data, SseEmitter session) {
+    private void send(Long sseId, Object data, SseEmitter session) {
         try {
             session.send(SseEmitter.event()
                     .data(data)
