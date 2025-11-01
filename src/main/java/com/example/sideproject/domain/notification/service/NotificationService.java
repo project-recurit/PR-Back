@@ -1,6 +1,7 @@
 package com.example.sideproject.domain.notification.service;
 
 import com.example.sideproject.domain.user.entity.User;
+import com.example.sideproject.global.dto.PageDto;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import com.example.sideproject.domain.notification.dto.NotificationDto;
@@ -8,6 +9,9 @@ import com.example.sideproject.domain.notification.dto.NotificationRequestDto;
 import com.example.sideproject.domain.notification.entity.Notification;
 import com.example.sideproject.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +35,12 @@ public class NotificationService {
         return NotificationDto.of(notification);
     }
 
-    public List<NotificationDto> getNotifications(User to) {
-        List<Notification> notifications = notificationRepository.findByTo(to);
-        List<NotificationDto> results = notifications.stream().map(NotificationDto::of).toList();
-        return results;
+    public PagedModel<NotificationDto> getNotifications(User to, PageDto pageDto) {
+        PageRequest pageRequest = pageDto.toPageRequest();
+        Page<Notification> notifications = notificationRepository.findByTo(to, pageRequest);
+
+        Page<NotificationDto> results = notifications.map(NotificationDto::of);
+        return new PagedModel<>(results);
     }
 
     public void deleteNotification(Long notificationId, User user) {
