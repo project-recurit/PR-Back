@@ -14,6 +14,7 @@ import com.example.sideproject.domain.techstack.entity.QTechStack;
 import com.example.sideproject.domain.techstack.repository.query.TechStackQueryParam;
 import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.example.sideproject.domain.user.entity.QUser;
+import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.enums.WorkType;
@@ -50,10 +51,10 @@ public class RecruitmentQueryRepository {
     QTechStack techStack = QTechStack.techStack;
     QRecruitmentImage recruitmentImage = QRecruitmentImage.recruitmentImage;
     QRecruitmentPosition recruitmentPosition = QRecruitmentPosition.recruitmentPosition;
-
+    QRecruitmentFavorite recruitmentFavorite = QRecruitmentFavorite.recruitmentFavorite;
     private PageableExecutionUtils pageableExecutionUtils;
 
-    public RecruitmentDetailResponseDto getRecruitment(Long recruitmentId) {
+    public RecruitmentDetailResponseDto getRecruitment(Long recruitmentId, User userObject) {
 
         increaseViewCount(recruitmentId); // 조회수 + 1
 
@@ -108,6 +109,18 @@ public class RecruitmentQueryRepository {
                 .from(recruitmentPosition)
                 .where(recruitmentPosition.recruitment.id.eq(recruitmentId))
                 .fetch();
+
+        if(userObject != null) { // User 감지 될때 좋아요 플래그 조회
+            boolean isFavorite = queryFactory
+                    .select(recruitmentFavorite.id)
+                    .from(recruitmentFavorite)
+                    .where(
+                            recruitmentFavorite.recruitment.id.eq(recruitmentId),
+                            recruitmentFavorite.user.id.eq(userObject.getId())
+                    )
+                    .fetchFirst() != null;
+            detail.setIsFavorite(isFavorite);
+        }
 
         detail = withTechStacks.get(0);
         detail.setFileUrls(recruitmentImages); // dto 합치기
