@@ -16,6 +16,8 @@ import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.domain.user.entity.UserStatus;
 import com.example.sideproject.domain.user.repository.UserRepository;
 import com.example.sideproject.global.enums.ErrorType;
+import com.example.sideproject.global.enums.Position;
+import com.example.sideproject.global.enums.WorkType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,8 +44,6 @@ RecruitmentService {
     private final RecruitmentQueryRepository recruitmentQueryRepository; // 동적쿼리
     private final RecruitmentPositionRepository recruitmentPositionRepository;
     private final RecruitmentTechStackRepository recruitmentTechStackRepository;
-//    private final SearchService searchService;
-//    private final SearchProjectRepository searchProjectRepository;
 
     /**
      * 프로젝트 구인 글 생성
@@ -119,11 +119,9 @@ RecruitmentService {
     /**
      * 게시글 전체 조회
      */
-    public Page<RecruitmentsResponseDto> getRecruitments(int page) {
-
+    public Page<RecruitmentsResponseDto> getRecruitments(int page, RecruitmentSearchDto searchDto) {
         final Pageable pageable = PageRequest.of(page - 1, 20);
-
-        return recruitmentQueryRepository.getRecruitments(pageable);
+        return recruitmentQueryRepository.getRecruitments(pageable, searchDto);
     }
 
     /**
