@@ -25,6 +25,7 @@ public class RecruitmentDetailResponseDto extends PostResponseDto implements Tec
     private List<TechStackDto> techStacks;
     private List<RecruitmentPositionResponseDto> positions;
     private String estimatedDurationDetail;
+    private boolean isFavorite;
 
     @QueryProjection
     public RecruitmentDetailResponseDto(
@@ -61,6 +62,11 @@ public class RecruitmentDetailResponseDto extends PostResponseDto implements Tec
     public TechStackResponse setTechStacks(List<TechStackMapping> mappings) {
         this.techStacks = TechStackDto.from(mappings);
         return this;
+    }
+
+    // 2025-11-09 함승완 좋아요 기능 추가
+    public void setIsFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
     }
 
     @Override

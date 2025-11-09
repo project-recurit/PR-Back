@@ -112,8 +112,8 @@ RecruitmentService {
      * 조회 시 viewCount + 1
      */
     @Transactional
-    public RecruitmentDetailResponseDto getRecruitment(Long recruitmentId) {
-        return recruitmentQueryRepository.getRecruitment(recruitmentId);
+    public RecruitmentDetailResponseDto getRecruitment(Long recruitmentId, User user) {
+        return recruitmentQueryRepository.getRecruitment(recruitmentId, user);
     }
 
     /**

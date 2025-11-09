@@ -72,6 +72,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/notifications/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/sse/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/recruitment/**").permitAll() // 2025-11-09 함승완 생성
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
         );

@@ -3,6 +3,7 @@ package com.example.sideproject.domain.recruitment.controller;
 import com.example.sideproject.domain.recruitment.dto.*;
 import com.example.sideproject.domain.recruitment.entity.RecruitmentImage;
 import com.example.sideproject.domain.recruitment.service.RecruitmentService;
+import com.example.sideproject.domain.user.entity.User;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
 import com.example.sideproject.global.enums.Position;
@@ -43,8 +44,12 @@ public class RecruitmentController {
     // 팀 모집 상세 조회
     @Operation(summary = "프로젝트 구인 글 상세 조회", description = "존재하지 않는 id값 조회 시 404에러")
     @GetMapping("/{recruitmentId}")
-    public ResponseEntity<ResponseDataDto<RecruitmentDetailResponseDto>> getRecruitment(@PathVariable("recruitmentId") Long recruitmentId) {
-        RecruitmentDetailResponseDto responseDto = recruitmentService.getRecruitment(recruitmentId);
+    public ResponseEntity<ResponseDataDto<RecruitmentDetailResponseDto>> getRecruitment(@PathVariable("recruitmentId") Long recruitmentId,
+                                                                                        @AuthenticationPrincipal  UserDetailsImpl userDetails) {
+        // 로그인 검증
+        User user = userDetails == null ? null : userDetails.getUser();
+        
+        RecruitmentDetailResponseDto responseDto = recruitmentService.getRecruitment(recruitmentId, user);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.GET_TEAM_RECRUIT_SUCCESS, responseDto));
     }
 
