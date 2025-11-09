@@ -5,7 +5,9 @@ import com.example.sideproject.domain.recruitment.entity.RecruitmentImage;
 import com.example.sideproject.domain.recruitment.service.RecruitmentService;
 import com.example.sideproject.global.dto.ResponseDataDto;
 import com.example.sideproject.global.dto.ResponseMessageDto;
+import com.example.sideproject.global.enums.Position;
 import com.example.sideproject.global.enums.ResponseStatus;
+import com.example.sideproject.global.enums.WorkType;
 import com.example.sideproject.global.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,8 +52,19 @@ public class RecruitmentController {
     @Operation(summary = "프로젝트 구인 글 전체 조회", description = "페이지 기본 값 = 1, 없는 페이지 조회하면 content 부분 빈 배열나옴.")
     @GetMapping
     public ResponseEntity<ResponseDataDto<Page<RecruitmentsResponseDto>>> getRecruitments(
-            @RequestParam(required = false, defaultValue = "1", name = "page") int page) {
-        Page<RecruitmentsResponseDto> responseDto = recruitmentService.getRecruitments(page);
+            @RequestParam(required = false, defaultValue = "1", name = "page") int page,
+            @RequestParam(required = false, defaultValue = "", name = "techStacks") List<Long> techStacks,
+            @RequestParam(required = false, defaultValue = "", name = "positions") List<Position> positions,
+            @RequestParam(required = false, defaultValue = "", name = "workTypes") List<WorkType> workTypes
+    ) {
+        // 검색유형 매핑
+        RecruitmentSearchDto searchDto = RecruitmentSearchDto.builder()
+                .techStacks(techStacks)
+                .positions(positions)
+                .workType(workTypes)
+                .build();
+
+        Page<RecruitmentsResponseDto> responseDto = recruitmentService.getRecruitments(page, searchDto);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.GET_TEAM_RECRUIT_SUCCESS, responseDto));
     }
 

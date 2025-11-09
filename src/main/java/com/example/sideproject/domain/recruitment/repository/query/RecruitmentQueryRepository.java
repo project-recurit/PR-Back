@@ -2,6 +2,10 @@ package com.example.sideproject.domain.recruitment.repository.query;
 
 import com.example.sideproject.domain.recruitment.dto.*;
 import com.example.sideproject.domain.recruitment.entity.*;
+import com.example.sideproject.domain.recruitment.entity.QRecruitment;
+import com.example.sideproject.domain.recruitment.entity.QRecruitmentImage;
+import com.example.sideproject.domain.recruitment.entity.QRecruitmentPosition;
+import com.example.sideproject.domain.recruitment.entity.QRecruitmentTechStack;
 import com.example.sideproject.domain.status.project.dto.StatusApplicantResponseDto;
 import com.example.sideproject.domain.techstack.dto.BasicTechStack;
 import com.example.sideproject.domain.techstack.dto.TechStackDto;
@@ -11,9 +15,13 @@ import com.example.sideproject.domain.techstack.repository.query.TechStackQueryP
 import com.example.sideproject.domain.techstack.repository.query.TechStackQueryRepository;
 import com.example.sideproject.domain.user.entity.QUser;
 import com.example.sideproject.global.enums.ErrorType;
+import com.example.sideproject.global.enums.Position;
+import com.example.sideproject.global.enums.WorkType;
 import com.example.sideproject.global.exception.CustomException;
 import com.example.sideproject.global.util.QueryUtil;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +43,8 @@ public class RecruitmentQueryRepository {
 
     private final JPAQueryFactory queryFactory;
     private final TechStackQueryRepository techStackQueryRepository;
-    
-    private final QRecruitment recruitment = QRecruitment.recruitment;
+
+    QRecruitment recruitment = QRecruitment.recruitment;
     QRecruitmentTechStack recruitmentTechStack = QRecruitmentTechStack.recruitmentTechStack;
     QUser user = QUser.user;
     QTechStack techStack = QTechStack.techStack;
@@ -89,7 +97,7 @@ public class RecruitmentQueryRepository {
                 .from(recruitmentImage)
                 .where(recruitmentImage.recruitment.id.eq(recruitmentId))
                 .fetch();
-        
+
         List<RecruitmentPositionResponseDto> recruitmentPositions = queryFactory
                 .select(
                         Projections.constructor(
@@ -127,7 +135,7 @@ public class RecruitmentQueryRepository {
         return techStackQueryRepository.withTechStacks(queryParam, detail);
     }
 
-    public Page<RecruitmentsResponseDto> getRecruitments(Pageable pageable) {
+    public Page<RecruitmentsResponseDto> getRecruitments(Pageable pageable, RecruitmentSearchDto searchDto) {
 
         List<RecruitmentsResponseDto> recruitments = queryFactory
                 .select(Projections.constructor(
@@ -139,10 +147,12 @@ public class RecruitmentQueryRepository {
                                 recruitment.commentCount.as("commentCount"),
                                 recruitment.modifiedAt.as("modifiedAt"),
                                 recruitment.recruitmentCategory.as("recruitmentCategory"),
-                                recruitment.isCommercial.as("isCommercial")
+                                recruitment.isCommercial.as("isCommercial"),
+                                recruitment.workType.as("workType")
                         )
                 ).from(recruitment)
                 .join(recruitment.user, user)
+                .where(searchRecruitment(searchDto))
                 .orderBy(recruitment.modifiedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -201,5 +211,28 @@ public class RecruitmentQueryRepository {
                 .set(recruitment.viewCount, recruitment.viewCount.add(1))
                 .where(recruitment.id.eq(recruitmentId))
                 .execute();
+    }
+
+    private BooleanExpression searchRecruitment(RecruitmentSearchDto recruitmentSearchDto) {
+        List<Long> techStacks = recruitmentSearchDto.getTechStacks();
+        List<Position> positions = recruitmentSearchDto.getPositions();
+        List<WorkType> workTypes = recruitmentSearchDto.getWorkType();
+
+        BooleanExpression techStacksIn = null;
+        BooleanExpression positionIn = null;
+        BooleanExpression workTypeIn = null;
+
+        if (!techStacks.isEmpty()) {
+            techStacksIn = recruitment.recruitmentTechStacks.any().techStack.id.in(techStacks);
+        }
+
+        if (!positions.isEmpty()) {
+            positionIn = recruitment.positions.any().position.in(positions);
+        }
+
+        if (!workTypes.isEmpty()) {
+            workTypeIn = recruitment.workType.in(workTypes);
+        }
+        return Expressions.allOf(techStacksIn, positionIn, workTypeIn);
     }
 }
