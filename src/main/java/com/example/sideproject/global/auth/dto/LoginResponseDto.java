@@ -10,15 +10,17 @@ public record LoginResponseDto(
         String id,
         String accessToken,
         String refreshToken,
-        boolean isSignUpSuccess
+        boolean isSignUpSuccess,
+        Long userId
 ) {
     // 최초 로그인(회원가입) 응답을 위한 팩토리 메서드
-    public static LoginResponseDto ofSignUp(String id) {
+    public static LoginResponseDto ofSignUp(String id, Long userId) {
         return new LoginResponseDto(
                 id,
                 null,
                 null,
-                true   // isSignUpSuccess
+                true,// isSignUpSuccess
+                userId
         );
     }
 
@@ -26,13 +28,15 @@ public record LoginResponseDto(
     public static LoginResponseDto ofLogin(
             String id,
             String accessToken,
-            String refreshToken
+            String refreshToken,
+            Long userId
     ) {
         return new LoginResponseDto(
                 id,
                 accessToken,
                 refreshToken,
-                false   // isSignUpSuccess
+                false,// isSignUpSuccess
+                userId
         );
     }
 }

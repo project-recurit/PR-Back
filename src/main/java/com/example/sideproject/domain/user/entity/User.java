@@ -60,12 +60,15 @@ public class User extends Timestamped {
 
     private boolean pushAllowed;
 
-    public void updateRegisterInfo(Position position, String nickname, List<TechStack> techStacks) {
+    private String bio; // 한줄소개
+
+    public void updateRegisterInfo(Position position, String nickname, List<TechStack> techStacks, String bio) {
         this.position = position;
         this.nickname = nickname;
         this.lastLoginTime = LocalDateTime.now();
         this.userStatus = UserStatus.ACTIVE_USER;
         this.userTechStacks.clear();
+        this.bio = bio;
         
         if (techStacks != null && !techStacks.isEmpty()) {
             List<UserTechStack> newTechStacks = addTechStack(techStacks);
@@ -75,7 +78,7 @@ public class User extends Timestamped {
 
     @Builder
     public User(Long userId,String username, String password, String email, String nickname,
-                String socialId, String socialProvider, UserStatus userStatus) {
+                String socialId, String socialProvider, UserStatus userStatus, String bio) {
         this.id = userId;
         this.username = username;
         this.password = password;
@@ -86,6 +89,7 @@ public class User extends Timestamped {
         this.uuid = generateType4UUID();
         this.socialId = socialId;
         this.socialProvider = socialProvider;
+        this.bio = bio;
     }
 
     public List<UserTechStack> addTechStack(List<TechStack> techStacks) {
