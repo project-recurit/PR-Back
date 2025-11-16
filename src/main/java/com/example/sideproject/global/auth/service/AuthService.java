@@ -44,14 +44,14 @@ public class AuthService  {
                     requestDto.getProvider()
             );
 
-            userService.register(signUpRequestDto);
-            return LoginResponseDto.ofSignUp(requestDto.getSocialId());
+            User signUpUser = userService.register(signUpRequestDto);
+            return LoginResponseDto.ofSignUp(requestDto.getSocialId(), signUpUser.getId());
         }
 
         User user = optionalUser.get();
 
         if (user.getUserStatus() == UserStatus.INACTIVE_USER) {
-            return LoginResponseDto.ofSignUp(requestDto.getSocialId());
+            return LoginResponseDto.ofSignUp(requestDto.getSocialId(), user.getId());
         }
 
         validateUserStatus(user);
@@ -70,7 +70,8 @@ public class AuthService  {
         return LoginResponseDto.ofLogin(
                 user.getSocialId(),
                 accessToken,
-                refreshToken
+                refreshToken,
+                user.getId()
         );
     }
 

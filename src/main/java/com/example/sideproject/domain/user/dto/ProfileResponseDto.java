@@ -11,11 +11,13 @@ public class ProfileResponseDto {
     private String nickname;
     private String email;
     private String profileUrl;
+    private String bio;
 
     @Builder
     public ProfileResponseDto(User user) {
         this.nickname = user.getNickname();
         this.email = user.getEmail();
         this.profileUrl = user.getProfileUrl();
+        this.bio = user.getBio();
     }
 }

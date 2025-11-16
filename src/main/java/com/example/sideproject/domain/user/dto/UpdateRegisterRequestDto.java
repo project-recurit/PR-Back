@@ -9,6 +9,7 @@ public record UpdateRegisterRequestDto(
         String socialId,
         Position position,
         List<Long> techStackIds,
-        String nickname
+        String nickname,
+        String bio
 ) {
 }

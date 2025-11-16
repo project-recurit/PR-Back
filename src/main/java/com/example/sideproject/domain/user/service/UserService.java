@@ -10,7 +10,6 @@ import com.example.sideproject.global.auth.service.TokenService;
 import com.example.sideproject.global.enums.ErrorType;
 import com.example.sideproject.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +24,10 @@ public class UserService {
     private final TokenService tokenService;
 
     @Transactional
-    public void register(SignUpRequestDto requestDto) {
+    public User register(SignUpRequestDto requestDto) {
         User user = requestDto.toEntity(UserStatus.INACTIVE_USER);
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -50,7 +49,8 @@ public class UserService {
         user.updateRegisterInfo(
                 requestDto.position(),
                 requestDto.nickname(),
-                techStacks
+                techStacks,
+                requestDto.bio()
         );
 
         User savedUser = userRepository.save(user);
