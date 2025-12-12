@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,19 +16,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TechStackService {
     private final TechStackRepository techStackRepository;
-    private final TechStackCacheRepository techStackCacheRepository;
+//    private final TechStackCacheRepository techStackCacheRepository;
 
     public List<TechStackDto> getTeckStackList(){
-        List<TechStack> cacheTechStacks = techStackCacheRepository.findTechStack();
+//        List<TechStack> cacheTechStacks = techStackCacheRepository.findTechStack();
 
-        if (!cacheTechStacks.isEmpty()) {
-            return TechStackDto.of(cacheTechStacks);
-        }
+//        if (!cacheTechStacks.isEmpty()) {
+//            return TechStackDto.of(cacheTechStacks);
+//        }
 
         List<TechStack> techStacks = techStackRepository.findAll();
-        for (TechStack techStack : techStacks) {
-            techStackCacheRepository.save(techStack);
-        }
+//        for (TechStack techStack : techStacks) {
+//            techStackCacheRepository.save(techStack);
+//        }
+//
+//        List<TechStackDto> a = new ArrayList<>();
         return TechStackDto.of(techStacks);
     }
 
